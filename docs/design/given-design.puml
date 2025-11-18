@@ -6,14 +6,43 @@ package domain.game {
         -isMarked: boolean
         -isFacedUp: boolean
 
-        +Card(cardType: CardType): Card
+        +Card(cardType: CardType)
         +getCardType(): CardType
         +checkIfMarked(): boolean
         +setFacedUp(): void
         +checkIfFacedUp(): boolean
     }
 
-    enum CardType {
+    +enum CardType {
+        'QUESTION: should i specify the GameType enum that's passed into each of these CardType enums?
+        NOPE,
+        DEFUSE,
+        ATTACK,
+        SHUFFLE,
+        SKIP,
+        SEE_THE_FUTURE,
+        CAT_ONE,
+        CAT_TWO,
+        CAT_THREE,
+        CAT_FOUR,
+        EXPLODING_KITTEN,
+        STREAKING_KITTEN,
+        SWAP_TOP_AND_BOTTOM,
+        GARBAGE_COLLECTION,
+        CURSE_OF_THE_CAT_BUTT,
+        ALTER_THE_FUTURE,
+        CATOMIC_BOMB,
+        SUPER_SKIP,
+        MARK,
+        IMPLODING_KITTEN,
+        REVERSE,
+        FERAL_CAT,
+        TARGETED_ATTACK,
+        DRAW_FROM_THE_BOTTOM
+
+        -{final} gameType: GameType
+
+        +CardType(gameType: GameType)
     }
 
     class Deck {
