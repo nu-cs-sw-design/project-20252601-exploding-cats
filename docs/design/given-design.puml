@@ -186,7 +186,30 @@ package domain.game {
         +createCardList(): ArrayList<Card>
     }
 
-    class Player {
+    +class Player {
+        -playerID: int
+        -hand: List<Card>
+        -isDead: boolean
+        -rand: Random
+        -isCursed: boolean
+        -{static}{final} MUST_ADD_DEFUSE_CARD_EXCEPTION: String
+        -{static}{final} INVALID_INDEX_EXCEPTION: String
+        -{static}{final} NO_CARD_FOUND_EXCEPTION: String
+
+        +Player(playerID: int, instantiator: Instantiator)
+        +getPlayerID(): int
+        +addDefuse(defuse: Card): void
+        +hasCard(cardType: CardType): boolean
+        +getHandSize(): int
+        +getCardAt(index: int): Card
+        +getIndexOfCard(cardType: CardType): int
+        +removeCardFromHand(index: int): CardType
+        +shuffleHand(): void
+        +checkNumberOfCardsInHand(cardType: CardType): int
+        +getIsDead(): boolean
+        +setIdDead(): void
+        +getIsCursed(): boolean
+        +setCursed(isCursed: boolean): void
     }
 }
 
