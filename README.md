@@ -1,7 +1,7 @@
 # Project: Functional and Flexible Refactoring of Exploding Kittens
 
 ## Contributors
-Original codebase provided by Dr. Yiji Zhang
+Original codebase provided by Dr. Yiji Zhang\
 Refactoring conducted by Joanna Soltys
 
 ## Dependencies
@@ -11,13 +11,12 @@ Refactoring conducted by Joanna Soltys
 - [TODO] add any external libraries here
 
 ## Build Instructions
-In IntelliJ, press the Gradle (elephant) icon on the right-hand side of the IDE.
-Under course-project/Tasks/build, double-click on "build" to build the project.
-To run the project, first open the Main file in [src/java/ui/Main](/src/java/ui/Main.java).
-Then navigate the green arrow play button located towards the top right of the IntelliJ IDE.
-If needed, select the dropdown to the left of the play button so that "Current File" is selected.
-Press the play button to begin running this project, 
-which is a command-line application that will prompt the user in the terminal.
+1) In IntelliJ, press the Gradle (elephant) icon on the right-hand side of the IDE.
+2) Under course-project/Tasks/build, double-click on "build" to build the project.
+3) To run the project, first open the Main file in [src/main/java/ui/Main](src/main/java/ui/Main.java).
+4) Then navigate the green arrow play button located towards the top right of the IntelliJ IDE.
+5) If needed, select the dropdown to the left of the play button so that "Current File" is selected.
+6) Press the play button to begin running this project, which is a command-line application that will prompt the user in the terminal.
 
 ## Fair Use Clause
 The codebase is strictly used for educational purposes only.
