@@ -1,7 +1,16 @@
 @startuml
 
 package domain.game {
-    class Card {
+    +class Card {
+        -cardType: CardType
+        -isMarked: boolean
+        -isFacedUp: boolean
+
+        +Card(cardType: CardType): Card
+        +getCardType(): CardType
+        +checkIfMarked(): boolean
+        +setFacedUp(): void
+        +checkIfFacedUp(): boolean
     }
 
     enum CardType {
