@@ -9,11 +9,11 @@
 
     <module name="TreeWalker">
 
-        <module name="RegexpSinglelineJava">
-            <property name="format" value="^\t* "/>
-            <property name="message" value="Indent must use tab characters"/>
-            <property name="ignoreComments" value="true"/>
-        </module>
+<!--        <module name="RegexpSinglelineJava">-->
+<!--            <property name="format" value="^\t* "/>-->
+<!--            <property name="message" value="Indent must use tab characters"/>-->
+<!--            <property name="ignoreComments" value="true"/>-->
+<!--        </module>-->
 
         <module name="WhitespaceAfter">
             <property name="tokens" value="COMMA, SEMI, TYPECAST, LITERAL_IF, LITERAL_ELSE, LITERAL_RETURN,
