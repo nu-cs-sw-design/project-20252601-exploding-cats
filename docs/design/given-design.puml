@@ -1,6 +1,6 @@
 @startuml
 
-package domain.game {
+package domain {
     +class Card {
         -cardType: CardType
         -isMarked: boolean
@@ -215,6 +215,71 @@ package domain.game {
 
 package ui {
     class GameUI {
+        -game: Game
+        -messages: ResourceBundle
+
+        +GameUI(game: Game)
+        +chooseLanguage(): void
+        +chooseGame(): void
+        +chooseNumberOfPlayers(): void
+        -checkValidPlayerIndexInput(): int
+        -startAttackFollowUp(targeted: boolean): void
+        -swapTopAndBottom(): void
+        -playAttack(targeted: boolean): void
+        -playGarbageCollection(): void
+        -printPlayerTurn(): void
+        -playedCard(): int
+        -playSpecialCombo(): int
+        -playNope(playerIndex: int): void
+        -checkAllPlayersForNope(playerIndex: int): boolean
+        -playExplodingKitten(playerIndex: int): boolean
+        -endTurn(): boolean
+        -checkIfTheyEndTurn(): boolean
+        -playCurseOfTheCatButt(): void
+        -playSpecialComboTwoCards(cardType: CardType): void
+        -drawFromTheBottom(): void
+        -playMark(): void
+        -playCatomicBomb(): void
+        -playReverse(): void
+        -playSpecialComboThreeCards(cardType: CardType): void
+        -playSeeTheFuture(): void
+        -playShuffle(): void
+        -playSkip(superSkip: boolean): void
+        -playAlterTheFuture(): void
+        -checkIfCatCard(cardType: CardType): boolean
+        -checkNumberOfFeralCats(playerIndex: int): int
+        -promptCursedMessage(): void
+        -checkCardIfInvalid(card: Card): boolean
+        -playImplodingKitten(card: Card): boolean
+        +startTurn(): void
+        +endGame(): void
+        +checkIfGameOver(): boolean
+        -checkUserWithinBounds(userIndex: int): boolean
+        -checkUserOutOfBounds(userIndex: int): boolean
+        -checkIfPlayerIsAlive(userIndex: int): boolean
+        -hasCard(userIndex: int, cardType: CardType): boolean
+        -hasCardDirect(player: Player, cardType: CardType): boolean
+        -checkCardWithinBounds(cardIndex: int, player: Player): boolean
+        -checkCardWithinBoundsIndexed(cardIndex: int, player: Player): boolean
+        -checkMatchingCardType(cardType: CardType, cardTypeTwo: CardType): boolean
+        -checkIfPlayerIsCursed(player: Player): boolean
+        -checkReversed(): boolean
+        -getHandSize(playerIndex: int): int
+        -checkIfCardMarked(playerIndex: int, cardIndex: int): boolean
+        -getNumberOfPlayers(): int
+        -checkExplodingKitten(playerIndex: int): boolean
+        -checkIfNumberOfTurnsGreaterThanZero(): boolean
+        -checkIfNumberOfTurnsIsZero(): boolean
+        -checkIfCurrentPlayerTurn(playerIndex: int): boolean
+        -getDeckSize(): int
+        -matchingGameType(gameType: GameType): boolean
+        -checkFeralCat(numberOfFeralCatsToPlay: int, numberOfFeralCats: int, numberOfCatType: int, threshold: int): boolean
+        -checkIfDifferentCardType(cardType: CardType, cardTypeTwo: CardType): boolean
+        -checkAllPlayersNope(): boolean
+        -checkNumberOfCards(player: Player, cardType: CardType, threshold: int): boolean
+        -getLocalizedCardType(cardType: CardType): String
+        -checkNegativeIndexDeck(indexToInsert: int): boolean
+        -checkIfGreaterThanMaxIndexDeck(indexToInsert: int): boolean
     }
 
     class Main {
