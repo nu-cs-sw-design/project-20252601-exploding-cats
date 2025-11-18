@@ -180,7 +180,10 @@ package domain.game {
         IMPLODING_KITTENS
     }
 
-    class Instantiator {
+    +class Instantiator {
+        +createCard(cardType: CardType): Card
+        +createRandom(): Random
+        +createCardList(): ArrayList<Card>
     }
 
     class Player {
