@@ -242,7 +242,6 @@ package domain {
     Game..>CardType
     Instantiator..>CardType
     Instantiator..>Card
-    Instantiator..>Random
     Player..>CardType
     Player..>"throws"IllegalArgumentException
 }
@@ -353,5 +352,6 @@ ui.GameUI-->ResourceBundle
 domain.Deck-->Random
 domain.Game-->Random
 domain.Player-->Random
+domain.Instantiator..>Random
 
 @enduml
