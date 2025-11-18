@@ -79,7 +79,98 @@ package domain.game {
         -checkIfIndexOutOfRange(index: int): boolean
     }
 
-    class Game {
+    +class Game {
+        -numberOfPlayers: int
+        -gameType: GameType
+        -domain.game.Deck deck;
+        -domain.game.Player[] players;
+        -Random rand;
+        -int currentPlayerTurn;
+        -int currentPlayerNumberOfTurns;
+        -boolean isReversed;
+        -List<Integer> attackQueue;
+        -int attackCounter;
+        -int numberOfAttacks;
+        -int[] turnTracker;
+        -boolean attacked;
+        -{static}{final} PLAYER_HAND_EMPTY_EXCEPTION: String
+        -{static}{final} INVALID_PLAYER_INDEX_EXCEPTION: String
+        -{static}{final} INVALID_GAME_TYPE_EXCEPTION: String
+        -{static}{final} NO_PLAYERS_EXCEPTION: String
+        -{static}{final} OUT_OF_BOUNDS_PLAYER_INDEX_EXCEPTION: String
+        -{static}{final} PLAYER_DEAD_EXCEPTION: String
+        -{static}{final} CARD_INDEX_OUT_OF_BOUNDS_EXCEPTION: String
+        -{static}{final} CARD_TYPE_NOT_FOUND_EXCEPTION: String
+        -{static}{final} INVALID_NUMBER_OF_PLAYERS_EXCEPTION: String
+        -{static}{final} NUMBER_OF_TURNS_OUT_OF_BOUNDS_EXCEPTION: String
+
+        +Game(numberOfPlayers: int, gameType: GameType, deck: Deck, players: Player[], rand: Random, attackQueue: List<Integer>, turnTracker: int[])
+        +swapTopAndBottom(): void
+        +stealRandomCard(playerToStealFrom: int): Card
+        +stealTypeCard(cardType: CardType, playerToStealFrom: int): void
+        +startAttackPhase(): void
+        +playAttack(): void
+        +playTargetedAttack(attackedPlayerIndex: int): void
+        +playExplodingKitten(playerIndex: int): boolean
+        +playImplodingKitten(): void
+        +playDefuse(idxToInsertExplodingKitten: int, playerIndex: int): void
+        +drawFromBottom(): Card
+        +playCatomicBomb(): void
+        +setNumberOfPlayers(numberOfPlayers: int): void
+        +playReverse(): void
+        +retriveGameMode(gameType: GameType): void
+        +selectRandomPlayer(): Player
+        +playShuffle(numberOfShuffles: int): void
+        +playSkip(superSkip: boolean): int
+        +playGarbageCollection(cardToDiscard: CardType)
+        +getDeck(): Deck
+        +incrementPlayerTurn(): void
+        +incrementAttackCounter(): void
+        +setAttackCounter(playerIndex: int): void
+        ~getGameTypeForTesting: GameType
+        +getGameType(): GameType 'NOTE: THIS DEFEATS THE POINT OF THE PACKAGE PRIVATE GETTER ABOVE
+        +getPlayerAtIndex(playerIndex: int): Player
+        +addAttacks(): void
+        +playMark(playerIndex: int, cardIndex: int): void
+        +addAttackQueue(attack: int): void
+        +removeAttackQueue(): int
+        +isAttackQueueEmpty(): boolean
+        +setPlayerNumberOfTurns(): void
+        +getPlayerTurn(): int
+        +getNumberOfPlayers(): int
+        +checkNumberOfAlivePlayers(): int
+        +setCurrentPlayerNumberOfTurns(numberOfTurns: int): void
+        +decrementNumberOfTurns(): void
+        +getNumberOfTurns(): int
+        +getDeckSize(): int
+        +drawCard(): Card
+        +getCardAtIndex(cardIndex: int): Card
+        +removeCardFromHand(playerIndex: int, cardType: CardType): void
+        +getIndexOfCardFromHand(playerIndex: int, cardType: CardType): int
+        +addCardToHand(card: Card): void
+        +checkIfPlayerDead(playerIndex: int): boolean
+        +checkIfPlayerHasCard(playerIndex: int, cardType: CardType): boolean
+        +getCardType(playerIndex: int, cardIndex: int): CardType
+        +getHandSize(playerIndex: int): int
+        +getDeckCardType(deckIndex: int): CardType
+        +getIsReversed(): boolean
+        #setCurrentPlayerTurn(turn: int): void
+        -matchingGameType(gameType: GameType): boolean
+        -checkCardOutOfBoundsIndexed(cardIndex: int, playerIndex: int): boolean
+        -checkUserOutOfBounds(userIndex: int): boolean
+        -checkDeckHasOneCardOrLess(): boolean
+        -checkPlayerHandEmpty(player: Player): boolean
+        -checkInvalidNumberOfPlayers(numPlayers: int): boolean
+        -hasZeroPlayers(): boolean
+        -checkIfNumberOfTurnsOutOfBounds(): boolean
+        -checkIfNumberOfTurnsIsZero(): boolean
+        +setTurnToTargetedIndexIfAttackOccurred(): void
+        +getTurnCountOfPlayer(playerIndex: int): int
+        +getAttacked(): boolean
+        +getAttackCounter(): int
+        +getNumberOfAttacks(): int
+        ~setNumberOfAttacks(numberOfAttacks: int): void
+        ~setAttacked(attacked: boolean): void
     }
 
     enum GameType {
