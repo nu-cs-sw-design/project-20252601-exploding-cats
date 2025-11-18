@@ -173,7 +173,11 @@ package domain.game {
         ~setAttacked(attacked: boolean): void
     }
 
-    enum GameType {
+    +enum GameType {
+        NONE,
+        EXPLODING_KITTENS,
+        STREAKING_KITTENS,
+        IMPLODING_KITTENS
     }
 
     class Instantiator {
