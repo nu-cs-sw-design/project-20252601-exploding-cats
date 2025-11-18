@@ -14,7 +14,6 @@ package domain {
     }
 
     +enum CardType {
-        'QUESTION: should i specify the GameType enum that's passed into each of these CardType enums?
         NOPE,
         DEFUSE,
         ATTACK,
@@ -214,7 +213,7 @@ package domain {
 }
 
 package ui {
-    class GameUI {
+    +class GameUI {
         -game: Game
         -messages: ResourceBundle
 
@@ -282,12 +281,9 @@ package ui {
         -checkIfGreaterThanMaxIndexDeck(indexToInsert: int): boolean
     }
 
-    class Main {
+    +class Main {
+        +{static} main(String[] args): void
     }
 }
-
-'QUESTIONS:
-'-how to best represent the resource bundle? package? class?
-'-out of curiosity, are tests ever part of a design diagram?
 
 @enduml
