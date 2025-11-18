@@ -1,0 +1,38 @@
+@startuml
+
+package domain.game {
+    class Card {
+    }
+
+    enum CardType {
+    }
+
+    class Deck {
+    }
+
+    class Game {
+    }
+
+    enum GameType {
+    }
+
+    class Instantiator {
+    }
+
+    class Player {
+    }
+}
+
+package ui {
+    class GameUI {
+    }
+
+    class Main {
+    }
+}
+
+'QUESTIONS:
+'-how to best represent the resource bundle? package? class?
+'-out of curiosity, are tests ever part of a design diagram?
+
+@enduml
