@@ -210,6 +210,41 @@ package domain {
         +getIsCursed(): boolean
         +setCursed(isCursed: boolean): void
     }
+
+    exception IllegalArgumentException {
+    }
+
+    exception UnsupportedOperationException {
+    }
+
+    exception IndexOutOfBoundsException {
+    }
+
+    'Association (has-a/has-many)
+    Card-->CardType
+    CardType-->GameType
+    Deck-->"*"Card
+    Deck-->GameType
+    Deck-->Instantiator
+    Game-->GameType
+    Game-->Deck
+    Game-->"*"Player
+    Player-->"*"Card
+
+    'Dependencies
+    Deck..>CardType
+    Deck..>"throws"UnsupportedOperationException
+    Deck..>"throws"IllegalArgumentException
+    Deck..>"throws"IndexOutOfBoundsException
+    Game..>Card
+    Game..>"throws"IllegalArgumentException
+    Game..>"throws"UnsupportedOperationException
+    Game..>CardType
+    Instantiator..>CardType
+    Instantiator..>Card
+    Instantiator..>Random
+    Player..>CardType
+    Player..>"throws"IllegalArgumentException
 }
 
 package ui {
@@ -284,6 +319,39 @@ package ui {
     +class Main {
         +{static} main(String[] args): void
     }
+
+    'Association (has-a/has-many)
+    GameUI-->domain.Game
+
+    'Dependencies
+    GameUI..>domain.GameType
+    GameUI..>domain.CardType
+    GameUI..>domain.Player
+    GameUI..>domain.Card
+    GameUI..>domain.Deck
+    Main..>domain.Instantiator
+    Main..>domain.Deck
+    Main..>"*"domain.Player
+    Main..>domain.Game
+    Main..>GameUI
+    Main..>domain.GameType
+    Main..>domain.CardType
+    Main..>domain.Card
 }
+
++class Scanner {
+}
+
++abstract class ResourceBundle {
+}
+
++class Random {
+}
+
+ui.GameUI..>Scanner
+ui.GameUI-->ResourceBundle
+domain.Deck-->Random
+domain.Game-->Random
+domain.Player-->Random
 
 @enduml
