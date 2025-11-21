@@ -1,5 +1,4 @@
 # Software Requirement Document: Use Cases
-
 _Note: All of the following use cases assume that Exploding Kittens is being played without any expansion packs._
 
 ## UC1: Start the Game
@@ -22,7 +21,7 @@ _Note: All of the following use cases assume that Exploding Kittens is being pla
 
 ## UC2: Draw an Exploding Kitten Card
 **Actor:** Player who’s actively taking their turn\
-**Precondition:** Player just ended their turn and drew an Exploding Kitten card\
+**Precondition:** Player just ended their turn and drew an Exploding Kitten card
 
 **Basic Flow:**
 1) The system notifies the player that they have drawn an Exploding Kitten.
@@ -47,7 +46,7 @@ _Note: All of the following use cases assume that Exploding Kittens is being pla
 
 ## UC3: Playing a Defuse Card
 **Actor:** Player\
-**Precondition:** The player has just ended their turn and drawn an Exploding Kitten, but they had at least 1 Defuse card in their hand that the system has automatically decided to apply.\
+**Precondition:** The player has just ended their turn and drawn an Exploding Kitten, but they had at least 1 Defuse card in their hand that the system has automatically decided to apply.
 
 **Basic Flow:**
 1)	The system informs the player that they will be using a Defuse card from their deck.
