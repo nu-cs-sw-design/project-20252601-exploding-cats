@@ -126,8 +126,8 @@ package domain {
         +incrementPlayerTurn(): void
         +incrementAttackCounter(): void
         +setAttackCounter(playerIndex: int): void
-        ~getGameTypeForTesting: GameType
-        +getGameType(): GameType 'NOTE: THIS DEFEATS THE POINT OF THE PACKAGE PRIVATE GETTER ABOVE
+        ~getGameTypeForTesting(): GameType
+        +getGameType(): GameType
         +getPlayerAtIndex(playerIndex: int): Player
         +addAttacks(): void
         +playMark(playerIndex: int, cardIndex: int): void
