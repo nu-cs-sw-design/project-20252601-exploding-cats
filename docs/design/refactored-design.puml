@@ -1,0 +1,112 @@
+@startuml
+
+package ui {
+}
+
+package domain {
+    'TODO: go back through each class to look at access modifiers (plus each design principle)
+    'TODO: look into best practices for naming classes in clean code/what verbs to avoid
+    '      (like what's the best thing to rename GameEngine to?)
+    +class GameEngine {
+    }
+
+    +interface GameCommand {
+    }
+
+    'TODO: can make other types of command for things like seeing into the future
+    '      for example, PeekFutureCardsCommand, ChangeFutureCardOrderCommand, ReverseTurnDirectionCommand, SkipTurnCommand, etc.
+    +class ShuffleCommand {
+    }
+
+    +class UndoActionCommand {
+    }
+
+    'TODO: see if Card is better as an interface or an abstract class
+    +abstract class Card {
+        -cardType: CardType
+    }
+
+    +class ShuffleCard {
+    }
+
+    +class NopeCard {
+    }
+
+    +class ExplodingKittenCard {
+    }
+
+    +class DefuseCard {
+    }
+
+    'TODO: figure out if I want the CardType enum still and if so, how to incorporate into the rest of my design?
+    +enum CardType {
+        NOPE,
+        DEFUSE,
+        ATTACK,
+        SHUFFLE,
+        SKIP,
+        SEE_THE_FUTURE,
+        CAT_ONE,
+        CAT_TWO,
+        CAT_THREE,
+        CAT_FOUR,
+        EXPLODING_KITTEN,
+        STREAKING_KITTEN,
+        SWAP_TOP_AND_BOTTOM,
+        GARBAGE_COLLECTION,
+        CURSE_OF_THE_CAT_BUTT,
+        ALTER_THE_FUTURE,
+        CATOMIC_BOMB,
+        SUPER_SKIP,
+        MARK,
+        IMPLODING_KITTEN,
+        REVERSE,
+        FERAL_CAT,
+        TARGETED_ATTACK,
+        DRAW_FROM_THE_BOTTOM
+
+        'TODO: figure out if I still want cards to have the GameType field
+        -{final} gameType: GameType
+
+        +CardType(gameType: GameType)
+    }
+
+    +enum GameType {
+        'TODO: look into when GameType = NONE is used? is that just at the beginning during set up?
+        NONE,
+        EXPLODING_KITTENS,
+        STREAKING_KITTENS,
+        IMPLODING_KITTENS
+    }
+
+    'TODO: play around with the directions of the arrows to make the diagram easier to understand
+    GameEngine-->"*"GameCommand
+    GameEngine..>Card
+
+    ShuffleCommand..u..|>GameCommand
+    UndoActionCommand..u..|>GameCommand
+
+    ShuffleCard..>ShuffleCommand
+    NopeCard..>UndoActionCommand
+
+    ShuffleCard--|>Card
+    NopeCard--|>Card
+    ExplodingKittenCard--|>Card
+    DefuseCard--|>Card
+
+    Card-->CardType
+    CardType-->GameType
+}
+
+package java {
+    +class Scanner {
+    }
+
+    +abstract class ResourceBundle {
+    }
+
+    +class Random {
+    }
+}
+
+@enduml
