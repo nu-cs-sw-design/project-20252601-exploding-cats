@@ -126,8 +126,8 @@ package domain {
         +incrementPlayerTurn(): void
         +incrementAttackCounter(): void
         +setAttackCounter(playerIndex: int): void
-        ~getGameTypeForTesting: GameType
-        +getGameType(): GameType 'NOTE: THIS DEFEATS THE POINT OF THE PACKAGE PRIVATE GETTER ABOVE
+        ~getGameTypeForTesting(): GameType
+        +getGameType(): GameType
         +getPlayerAtIndex(playerIndex: int): Player
         +addAttacks(): void
         +playMark(playerIndex: int, cardIndex: int): void
@@ -211,15 +211,6 @@ package domain {
         +setCursed(isCursed: boolean): void
     }
 
-    exception IllegalArgumentException {
-    }
-
-    exception UnsupportedOperationException {
-    }
-
-    exception IndexOutOfBoundsException {
-    }
-
     'Association (has-a/has-many)
     Card-->CardType
     CardType-->GameType
@@ -233,17 +224,11 @@ package domain {
 
     'Dependencies
     Deck..>CardType
-    Deck..>"throws"UnsupportedOperationException
-    Deck..>"throws"IllegalArgumentException
-    Deck..>"throws"IndexOutOfBoundsException
     Game..>Card
-    Game..>"throws"IllegalArgumentException
-    Game..>"throws"UnsupportedOperationException
     Game..>CardType
     Instantiator..>CardType
     Instantiator..>Card
     Player..>CardType
-    Player..>"throws"IllegalArgumentException
 }
 
 package ui {
@@ -338,20 +323,22 @@ package ui {
     Main..>domain.Card
 }
 
-+class Scanner {
+package java {
+    +class Scanner {
+    }
+
+    +abstract class ResourceBundle {
+    }
+
+    +class Random {
+    }
 }
 
-+abstract class ResourceBundle {
-}
-
-+class Random {
-}
-
-ui.GameUI..>Scanner
-ui.GameUI-->ResourceBundle
-domain.Deck-->Random
-domain.Game-->Random
-domain.Player-->Random
-domain.Instantiator..>Random
+ui.GameUI..>java.Scanner
+ui.GameUI-->java.ResourceBundle
+domain.Deck-->java.Random
+domain.Game-->java.Random
+domain.Player-->java.Random
+domain.Instantiator..>java.Random
 
 @enduml
