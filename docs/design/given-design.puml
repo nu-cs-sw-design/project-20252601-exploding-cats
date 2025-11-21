@@ -338,20 +338,22 @@ package ui {
     Main..>domain.Card
 }
 
-+class Scanner {
+package java {
+    +class Scanner {
+    }
+
+    +abstract class ResourceBundle {
+    }
+
+    +class Random {
+    }
 }
 
-+abstract class ResourceBundle {
-}
-
-+class Random {
-}
-
-ui.GameUI..>Scanner
-ui.GameUI-->ResourceBundle
-domain.Deck-->Random
-domain.Game-->Random
-domain.Player-->Random
-domain.Instantiator..>Random
+ui.GameUI..>java.Scanner
+ui.GameUI-->java.ResourceBundle
+domain.Deck-->java.Random
+domain.Game-->java.Random
+domain.Player-->java.Random
+domain.Instantiator..>java.Random
 
 @enduml
