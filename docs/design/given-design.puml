@@ -211,15 +211,6 @@ package domain {
         +setCursed(isCursed: boolean): void
     }
 
-    exception IllegalArgumentException {
-    }
-
-    exception UnsupportedOperationException {
-    }
-
-    exception IndexOutOfBoundsException {
-    }
-
     'Association (has-a/has-many)
     Card-->CardType
     CardType-->GameType
@@ -233,17 +224,11 @@ package domain {
 
     'Dependencies
     Deck..>CardType
-    Deck..>"throws"UnsupportedOperationException
-    Deck..>"throws"IllegalArgumentException
-    Deck..>"throws"IndexOutOfBoundsException
     Game..>Card
-    Game..>"throws"IllegalArgumentException
-    Game..>"throws"UnsupportedOperationException
     Game..>CardType
     Instantiator..>CardType
     Instantiator..>Card
     Player..>CardType
-    Player..>"throws"IllegalArgumentException
 }
 
 package ui {
