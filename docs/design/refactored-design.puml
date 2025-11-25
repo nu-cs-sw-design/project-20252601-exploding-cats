@@ -14,9 +14,22 @@ package ui {
 package domain {
     'TODO: go back through each class to look at access modifiers (plus each design principle)
     'TODO: look into best practices for naming classes in clean code/what verbs to avoid
-    '      (like what's the best thing to rename GameEngine to?)
-    +class GameEngine {
-        -deck: List<Card>
+    
+    +class DeckActionLoader {
+        -deck: Deck
+    
+        +DeckActionLoader()
+        +setUpDeck()
+        -instantiateDeck()
+        -instantiateDeckActionCommands()
+    }
+
+    note top of DeckActionLoader
+        DeckActionLoader will be responsible for instantiating
+        the Deck and any concrete command classes.
+    end note
+    
+    +class GameInvoker {
         -rand: Random
         -gameType: GameType
         -numPlayers: int
@@ -32,43 +45,63 @@ package domain {
         -{static}{final} MISMATCH_ORDER_SIZE_EXCEPTION: String
         -{static}{final} INDEX_OUT_OF_RANGE_EXCEPTION: String
 
-        'TODO: update constructor args depending on relationship between UI and domain and whether GameEngine should
+        'TODO: update constructor args depending on relationship between UI and domain and whether GameInvoker should
         '      instantiate things itself
-        +GameEngine()
+        +GameInvoker()
     }
 
-    +interface GameCommand {
+    +interface DeckActionCommand {
         ' QUESTION: how do I let command only correspond to one of these functions? read further about command pattern
-        +alterDeck(): void
-        +peekDeck():
+        +execute(): void
+        +undo(): void
     }
 
-    'TODO: can make other types of command for things like seeing into the future
-    '      for example, PeekFutureCardsCommand, ChangeFutureCardOrderCommand, ReverseTurnDirectionCommand, SkipTurnCommand, etc.
-    +class ShuffleCommand {
+    'TODO: can make other types of command for things like seeing into the future (but keeping simple for now)
+    '      for example, PeekThreeCardsCommand, PeekFiveCardsCommand, ChangeFutureCardOrderCommand, ReverseTurnDirectionCommand, SkipTurnCommand, etc.
+    +class ShuffleDeckCommand {
+        -deck: Deck
+
+        +ShuffleDeckCommand(Deck deck)
+        +execute(): void
     }
 
-    +class UndoActionCommand {
+    +class DefuseKittenCommand {
+        -deck: Deck
+
+        +DefuseKittenCommand(Deck deck)
+        +execute(): void
+        +undo(): void
+
     }
 
-    'TODO: see if Card is better as an interface or an abstract class
-    +abstract class Card {
+    note top of DefuseKittenCommand: Defuse cannot be 'Noped', so calling undo() would throw an exception.
+
+    'TODO: come back to see how I can restrict access as much as possible for classes, esp Deck
+    +class Deck {
+        -deck: List<Card>
+
+        +Deck()
+        +executeActionCorrespondingToCardType(cardType: CardType)
+        -shuffleDeck(): void
+        -peekTopThreeCards(): List<Card>
+        -peekTopFiveCards(): List<Card>
+        -drawCardFromTop(): Card
+        -drawCardFromBottom(): Card
+
+        -insertCards(cardType: CardType, numberOfCards: int, bottom: boolean): void
+        -insertExplodingKittenAtIndex(index: int): void
+        -insertImplodingKittenAtIndex(index: int): void
+
+        'TODO: add more methods here based on what actions deck needs to allow
+    }
+
+    note top of Deck: Deck is the receiver in Command Pattern
+
+    +class Card {
         -cardType: CardType
         -isMarked: boolean
 
         +Card(cardType: CardType)
-    }
-
-    +class ShuffleCard {
-    }
-
-    +class NopeCard {
-    }
-
-    +class ExplodingKittenCard {
-    }
-
-    +class DefuseCard {
     }
 
     'TODO: add any other concrete card classes as needed here
@@ -116,21 +149,22 @@ package domain {
         IMPLODING_KITTENS
     }
 
-    'TODO: play around with the directions of the arrows to make the diagram easier to understand
-    GameEngine-->"*"GameCommand
-    GameEngine..>Card
-    GameEngine-->Deck
+    note top of DeckActionCommand
+        To avoid cluttering the diagram for the time being,
+        I only included the concrete command classes that correspond
+        to the 4 cards that I will be implementing during my refactoring.
+    end note
 
-    ShuffleCommand..u..|>GameCommand
-    UndoActionCommand..u..|>GameCommand
+    DeckActionLoader..>Deck
+    DeckActionLoader..>ShuffleDeckCommand
+    DeckActionLoader..>DefuseKittenCommand
 
-    ShuffleCard..>ShuffleCommand
-    NopeCard..>UndoActionCommand
+    GameInvoker-->"*"DeckActionCommand
 
-    ShuffleCard--|>Card
-    NopeCard--|>Card
-    ExplodingKittenCard--|>Card
-    DefuseCard--|>Card
+    ShuffleDeckCommand..|>DeckActionCommand
+    ShuffleDeckCommand-->Deck
+
+    Deck-u->"*"Card
 
     Card-->CardType
     CardType-->GameType
