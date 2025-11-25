@@ -12,12 +12,9 @@ package ui {
 }
 
 package domain {
-    'TODO: go back through each class to look at access modifiers (plus each design principle)
-    'TODO: look into best practices for naming classes in clean code/what verbs to avoid
-    
     +class DeckActionLoader {
         -deck: Deck
-    
+
         +DeckActionLoader()
         +setUpDeck()
         -instantiateDeck()
@@ -28,7 +25,7 @@ package domain {
         DeckActionLoader will be responsible for instantiating
         the Deck and any concrete command classes.
     end note
-    
+
     +class GameInvoker {
         -rand: Random
         -gameType: GameType
@@ -50,33 +47,117 @@ package domain {
         +GameInvoker()
     }
 
-    +interface DeckActionCommand {
-        ' QUESTION: how do I let command only correspond to one of these functions? read further about command pattern
+    interface Command {
+        +execute(): void
+    }
+
+    +abstract class DeckActionCommand {
         +execute(): void
         +undo(): void
     }
 
-    'TODO: can make other types of command for things like seeing into the future (but keeping simple for now)
-    '      for example, PeekThreeCardsCommand, PeekFiveCardsCommand, ChangeFutureCardOrderCommand, ReverseTurnDirectionCommand, SkipTurnCommand, etc.
+    note top of DeckActionCommand
+        I represented DeckActionCommand with an abstract class
+        rather than an interface so that I can provide a default
+        concrete implementation of the undo() method that does nothing
+        because not all cards can be Nope'd (i.e. exploding kittens,
+        defuse, etc.). However, any card that CAN be noped can
+        simply override the undo() method.
+
+        On a separate note, to avoid cluttering the diagram for the time being,
+        I only included the concrete command classes that correspond
+        to the 4 cards that I will be implementing during my refactoring.
+    end note
+
     +class ShuffleDeckCommand {
         -deck: Deck
 
         +ShuffleDeckCommand(Deck deck)
         +execute(): void
+        +undo(): void
     }
 
-    +class DefuseKittenCommand {
+    +class DefuseCommand {
         -deck: Deck
 
-        +DefuseKittenCommand(Deck deck)
+        +DefuseCommand(Deck deck)
         +execute(): void
-        +undo(): void
-
     }
 
-    note top of DefuseKittenCommand: Defuse cannot be 'Noped', so calling undo() would throw an exception.
+    +class ExplodeCommand {
+        +ExplodeCommand()
+        +execute(): void
+    }
 
-    'TODO: come back to see how I can restrict access as much as possible for classes, esp Deck
+    +class NopeCommand {
+        +NopeCommand()
+        +execute(): void
+        +undo(): void
+    }
+
+    +abstract class TurnActionCommand {
+        +execute()
+    }
+
+    +class PlayerHand {
+        +playerID: PlayerID
+        -hand: List<Card>
+
+        +PlayerHand()
+
+        -addCardToHand(card: Card): void
+        -removeCardFromHand(playerIndex: int, cardType: CardType): void
+        +getIndexOfCardFromHand(playerIndex: int, cardType: CardType): int
+
+        +playDefuse(idxToInsertExplodingKitten: int, playerIndex: int): void
+        +playCatomicBomb(): void
+        +playReverse(): void
+        +playSkip(superSkip: boolean): int
+        +playGarbageCollection(cardToDiscard: CardType)
+        +playMark(playerIndex: int, cardIndex: int): void
+        +playTargetedAttack(attackedPlayerIndex: int): void
+        'QUESTION: in what cases are the following two methods used, and do I need to keep them?
+        +playExplodingKitten(playerIndex: int): boolean
+        +playImplodingKitten(): void
+
+        +stealRandomCardFromPlayer(player: Player): void
+        +stealSpecificCardFromPlayer(cardType: CardType, player: PlayerID): void
+        +attackPlayer(player: Player): void
+
+        -checkPlayerHandEmpty(player: Player): boolean
+        +checkIfPlayerDead(playerIndex: int): boolean
+        +checkIfPlayerHasCard(playerIndex: int, cardType: CardType): boolean
+
+        'MOVE ELSEWHERE: turn handling
+'        +setNumberOfPlayers(numberOfPlayers: int): void
+'        +retriveGameMode(gameType: GameType): void
+'        +selectRandomPlayer(): PlayerID
+'        +incrementPlayerTurn(): void
+'        +setPlayerNumberOfTurns(): void
+'        +getPlayerTurn(): int
+'        +getNumberOfPlayers(): int
+'        +checkNumberOfAlivePlayers(): int
+'        +setCurrentPlayerNumberOfTurns(numberOfTurns: int): void
+'        +decrementNumberOfTurns(): void
+'        +getNumberOfTurns(): int
+'        #setCurrentPlayerTurn(turn: int): void
+'        -matchingGameType(gameType: GameType): boolean
+
+        'MOVE ELSEWHERE: attack handling
+'        +startAttackPhase(): void
+'        +incrementAttackCounter(): void
+'        +setAttackCounter(playerIndex: int): void
+'        +addAttacks(): void
+'        +addAttackQueue(attack: int): void
+'        +removeAttackQueue(): int
+'        +isAttackQueueEmpty(): boolean
+'        +getAttacked(): boolean
+'        +getAttackCounter(): int
+'        +getNumberOfAttacks(): int
+'        ~setNumberOfAttacks(numberOfAttacks: int): void
+'        ~setAttacked(attacked: boolean): void
+    }
+
     +class Deck {
         -deck: List<Card>
 
@@ -92,7 +173,7 @@ package domain {
         -insertExplodingKittenAtIndex(index: int): void
         -insertImplodingKittenAtIndex(index: int): void
 
-        'TODO: add more methods here based on what actions deck needs to allow
+        -swapTopAndBottomCards(): void
     }
 
     note top of Deck: Deck is the receiver in Command Pattern
@@ -104,11 +185,6 @@ package domain {
         +Card(cardType: CardType)
     }
 
-    'TODO: add any other concrete card classes as needed here
-    'QUESTION!!: cuz so many card types, do I want Card to instead just be CardType, with extra field that corresponds
-    '          to command it returns?
-
-    'TODO: figure out if I want the CardType enum still and if so, how to incorporate into the rest of my design?
     +enum CardType {
         NOPE,
         DEFUSE,
@@ -135,7 +211,6 @@ package domain {
         TARGETED_ATTACK,
         DRAW_FROM_THE_BOTTOM
 
-        'TODO: figure out if I still want cards to have the GameType field
         -{final} gameType: GameType
 
         +CardType(gameType: GameType)
@@ -149,25 +224,37 @@ package domain {
         IMPLODING_KITTENS
     }
 
-    note top of DeckActionCommand
-        To avoid cluttering the diagram for the time being,
-        I only included the concrete command classes that correspond
-        to the 4 cards that I will be implementing during my refactoring.
-    end note
+    +enum PlayerID {
+        PLAYER_ONE,
+        PLAYER_TWO,
+        PLAYER_THREE,
+        PLAYER_FOUR,
+        PLAYER_FIVE
+    }
 
     DeckActionLoader..>Deck
     DeckActionLoader..>ShuffleDeckCommand
-    DeckActionLoader..>DefuseKittenCommand
+    DeckActionLoader..>DefuseCommand
+    DeckActionLoader..>ExplodeCommand
+    DeckActionLoader..>NopeCommand
 
-    GameInvoker-->"*"DeckActionCommand
-
+    GameInvoker-->"*"Command
+    DeckActionCommand--|>Command
+    TurnActionCommand--|>Command
     ShuffleDeckCommand..|>DeckActionCommand
+    DefuseCommand..|>DeckActionCommand
+    ExplodeCommand..|>DeckActionCommand
+    NopeCommand..|>DeckActionCommand
+
     ShuffleDeckCommand-->Deck
+    DefuseCommand-->Deck
 
     Deck-u->"*"Card
-
     Card-->CardType
     CardType-->GameType
+
+    GameInvoker-->"*"PlayerHand
+    PlayerHand-->PlayerID
 }
 
 package java {
