@@ -1,5 +1,13 @@
 @startuml
 
+' NEXT BIG STEPS:
+' finish draft of general idea of domain classes and theirs vars
+' draft how the UI class should be broken up into classes and vars
+' add in the methods (and make sure accounting for all fields/functs of original design)
+' make sure i've updated all the class relationships/arrows
+' go over the design, focus on making it functional first basically
+' then dive deeper into things like access modifiers, design principles, etc
+
 package ui {
 }
 
@@ -8,9 +16,31 @@ package domain {
     'TODO: look into best practices for naming classes in clean code/what verbs to avoid
     '      (like what's the best thing to rename GameEngine to?)
     +class GameEngine {
+        -deck: List<Card>
+        -rand: Random
+        -gameType: GameType
+        -numPlayers: int
+
+        'TODO: come back to eval whether want these here, i pulled these along for now cuz they were in OG Deck class
+        'TODO: may want to move the exceptions to be local to functions instead? deps on if reused
+        -maxDeckSize: int
+        -instantiator: Instantiator
+        -{static}{final} DECK_FULL_EXCEPTION: String
+        -{static}{final} DRAW_FROM_EMPTY_DECK_EXCEPTION: String
+        -{static}{final} NEGATIVE_INDEX_EXCEPTION: String
+        -{static}{final} INDEX_GREATER_THAN_DECK_SIZE_EXCEPTION: String
+        -{static}{final} MISMATCH_ORDER_SIZE_EXCEPTION: String
+        -{static}{final} INDEX_OUT_OF_RANGE_EXCEPTION: String
+
+        'TODO: update constructor args depending on relationship between UI and domain and whether GameEngine should
+        '      instantiate things itself
+        +GameEngine()
     }
 
     +interface GameCommand {
+        ' QUESTION: how do I let command only correspond to one of these functions? read further about command pattern
+        +alterDeck(): void
+        +peekDeck():
     }
 
     'TODO: can make other types of command for things like seeing into the future
@@ -24,6 +54,9 @@ package domain {
     'TODO: see if Card is better as an interface or an abstract class
     +abstract class Card {
         -cardType: CardType
+        -isMarked: boolean
+
+        +Card(cardType: CardType)
     }
 
     +class ShuffleCard {
@@ -37,6 +70,10 @@ package domain {
 
     +class DefuseCard {
     }
+
+    'TODO: add any other concrete card classes as needed here
+    'QUESTION!!: cuz so many card types, do I want Card to instead just be CardType, with extra field that corresponds
+    '          to command it returns?
 
     'TODO: figure out if I want the CardType enum still and if so, how to incorporate into the rest of my design?
     +enum CardType {
@@ -82,6 +119,7 @@ package domain {
     'TODO: play around with the directions of the arrows to make the diagram easier to understand
     GameEngine-->"*"GameCommand
     GameEngine..>Card
+    GameEngine-->Deck
 
     ShuffleCommand..u..|>GameCommand
     UndoActionCommand..u..|>GameCommand
