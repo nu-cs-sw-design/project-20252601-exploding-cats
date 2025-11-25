@@ -8,43 +8,61 @@
 ' go over the design, focus on making it functional first basically
 ' then dive deeper into things like access modifiers, design principles, etc
 
+'TODO: update constructor args as needed
+
 package ui {
 }
 
 package domain {
-    +class DeckActionLoader {
+    +class GameLoader {
         -deck: Deck
 
-        +DeckActionLoader()
-        +setUpDeck()
+        +GameLoader()
+        +setUpGame()
         -instantiateDeck()
         -instantiateDeckActionCommands()
+        -instantiateTurnOrder()
+        -instantiateTurnActionCommands()
     }
 
-    note top of DeckActionLoader
-        DeckActionLoader will be responsible for instantiating
-        the Deck and any concrete command classes.
-    end note
-
     +class GameInvoker {
-        -rand: Random
-        -gameType: GameType
-        -numPlayers: int
+        -commands: List<Command>
 
-        'TODO: come back to eval whether want these here, i pulled these along for now cuz they were in OG Deck class
-        'TODO: may want to move the exceptions to be local to functions instead? deps on if reused
-        -maxDeckSize: int
-        -instantiator: Instantiator
-        -{static}{final} DECK_FULL_EXCEPTION: String
-        -{static}{final} DRAW_FROM_EMPTY_DECK_EXCEPTION: String
-        -{static}{final} NEGATIVE_INDEX_EXCEPTION: String
-        -{static}{final} INDEX_GREATER_THAN_DECK_SIZE_EXCEPTION: String
-        -{static}{final} MISMATCH_ORDER_SIZE_EXCEPTION: String
-        -{static}{final} INDEX_OUT_OF_RANGE_EXCEPTION: String
-
-        'TODO: update constructor args depending on relationship between UI and domain and whether GameInvoker should
-        '      instantiate things itself
         +GameInvoker()
+        +executeCommands(): void
+    }
+
+    interface Receiver {
+        +executeActionCorrespondingToCardType(cardType: CardType)
+    }
+
+    +class TurnOrder {
+        -numPlayers: int
+        -activePlayer: PlayerID
+        -turnOrder: List<PlayerID>
+
+        +TurnOrder(numPlayers: int)
+        +executeActionCorrespondingToCardType(cardType: CardType)
+        -selectRandomPlayer(): PlayerID
+        -incrementPlayerTurn(): void
+        -decrementNumberOfTurns(): void
+        -setCurrentPlayerTurn(turn: int): void
+    }
+
+    +class Deck {
+        -deck: List<Card>
+
+        +Deck()
+        +executeActionCorrespondingToCardType(cardType: CardType)
+        -drawCardFromTop(): Card
+        -drawCardFromBottom(): Card
+        -swapTopAndBottomCards(): void
+        -shuffleDeck(): void
+        -peekTopThreeCards(): List<Card>
+        -peekTopFiveCards(): List<Card>
+        -insertCards(cardType: CardType, numberOfCards: int, bottom: boolean): void
+        -insertExplodingKittenAtIndex(index: int): void
+        -insertImplodingKittenAtIndex(index: int): void
     }
 
     interface Command {
@@ -95,7 +113,20 @@ package domain {
         +undo(): void
     }
 
+    'TODO: may need to update this interface to allow for arguments (in which case won't share common Command interface)
     +abstract class TurnActionCommand {
+        +execute()
+    }
+
+    +class NextTurnCommand {
+        +execute()
+    }
+
+    +class SkipTurnCommand {
+        +execute()
+    }
+
+    +class ForceTurnCommand {
         +execute()
     }
 
@@ -128,22 +159,11 @@ package domain {
         +checkIfPlayerDead(playerIndex: int): boolean
         +checkIfPlayerHasCard(playerIndex: int, cardType: CardType): boolean
 
-        'MOVE ELSEWHERE: turn handling
-'        +setNumberOfPlayers(numberOfPlayers: int): void
-'        +retriveGameMode(gameType: GameType): void
-'        +selectRandomPlayer(): PlayerID
-'        +incrementPlayerTurn(): void
-'        +setPlayerNumberOfTurns(): void
-'        +getPlayerTurn(): int
-'        +getNumberOfPlayers(): int
-'        +checkNumberOfAlivePlayers(): int
-'        +setCurrentPlayerNumberOfTurns(numberOfTurns: int): void
-'        +decrementNumberOfTurns(): void
-'        +getNumberOfTurns(): int
-'        #setCurrentPlayerTurn(turn: int): void
-'        -matchingGameType(gameType: GameType): boolean
+        'TODO: MOVE ELSEWHERE: game mode handling
+        ' +retriveGameMode(gameType: GameType): void
+        ' -matchingGameType(gameType: GameType): boolean
 
-        'MOVE ELSEWHERE: attack handling
+        'TODO: MOVE ELSEWHERE: attack handling
 '        +startAttackPhase(): void
 '        +incrementAttackCounter(): void
 '        +setAttackCounter(playerIndex: int): void
@@ -157,26 +177,6 @@ package domain {
 '        ~setNumberOfAttacks(numberOfAttacks: int): void
 '        ~setAttacked(attacked: boolean): void
     }
-
-    +class Deck {
-        -deck: List<Card>
-
-        +Deck()
-        +executeActionCorrespondingToCardType(cardType: CardType)
-        -shuffleDeck(): void
-        -peekTopThreeCards(): List<Card>
-        -peekTopFiveCards(): List<Card>
-        -drawCardFromTop(): Card
-        -drawCardFromBottom(): Card
-
-        -insertCards(cardType: CardType, numberOfCards: int, bottom: boolean): void
-        -insertExplodingKittenAtIndex(index: int): void
-        -insertImplodingKittenAtIndex(index: int): void
-
-        -swapTopAndBottomCards(): void
-    }
-
-    note top of Deck: Deck is the receiver in Command Pattern
 
     +class Card {
         -cardType: CardType
@@ -232,11 +232,14 @@ package domain {
         PLAYER_FIVE
     }
 
-    DeckActionLoader..>Deck
-    DeckActionLoader..>ShuffleDeckCommand
-    DeckActionLoader..>DefuseCommand
-    DeckActionLoader..>ExplodeCommand
-    DeckActionLoader..>NopeCommand
+    TurnOrder--|>Receiver
+    Deck--|>Receiver
+
+    GameLoader..>Deck
+    GameLoader..>ShuffleDeckCommand
+    GameLoader..>DefuseCommand
+    GameLoader..>ExplodeCommand
+    GameLoader..>NopeCommand
 
     GameInvoker-->"*"Command
     DeckActionCommand--|>Command
@@ -245,6 +248,10 @@ package domain {
     DefuseCommand..|>DeckActionCommand
     ExplodeCommand..|>DeckActionCommand
     NopeCommand..|>DeckActionCommand
+
+    NextTurnCommand..|>TurnActionCommand
+    SkipTurnCommand..|>TurnActionCommand
+    ForceTurnCommand..|>TurnActionCommand
 
     ShuffleDeckCommand-->Deck
     DefuseCommand-->Deck
