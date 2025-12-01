@@ -11,6 +11,93 @@
 'TODO: update constructor args as needed
 
 package ui {
+    'TODO: SPLIT THESE UI CLASSES UP INTO SMALLER CLASSES
+    'TODO: THEN BEGIN CONNECTION TO DOMAIN
+    +class GameUI {
+        -game: Game
+        -messages: ResourceBundle
+
+        ' SET UP
+        +GameUI(game: Game)
+        +chooseLanguage(): void
+        +chooseGame(): void
+        +chooseNumberOfPlayers(): void
+
+        ' GAME LOGIC
+        +startTurn(): void
+        -endTurn(): boolean
+        +endGame(): void
+        -drawFromTheBottom(): void
+
+        ' ERROR CHECKING
+        -checkValidPlayerIndexInput(): int
+        -checkUserWithinBounds(userIndex: int): boolean
+        -checkUserOutOfBounds(userIndex: int): boolean
+        -checkCardWithinBounds(cardIndex: int, player: Player): boolean
+        -checkCardWithinBoundsIndexed(cardIndex: int, player: Player): boolean
+        -checkNegativeIndexDeck(indexToInsert: int): boolean
+        -checkIfGreaterThanMaxIndexDeck(indexToInsert: int): boolean
+
+        ' PLAY CARD TYPES
+        -startAttackFollowUp(targeted: boolean): void
+        -swapTopAndBottom(): void
+        -playAttack(targeted: boolean): void
+        -playGarbageCollection(): void
+        -playSpecialCombo(): int
+        -playNope(playerIndex: int): void
+        -playExplodingKitten(playerIndex: int): boolean
+        -playCurseOfTheCatButt(): void
+        -playSpecialComboTwoCards(cardType: CardType): void
+        -playMark(): void
+        -playCatomicBomb(): void
+        -playReverse(): void
+        -playSpecialComboThreeCards(cardType: CardType): void
+        -playSeeTheFuture(): void
+        -playShuffle(): void
+        -playSkip(superSkip: boolean): void
+        -playAlterTheFuture(): void
+        -playImplodingKitten(card: Card): boolean
+
+        ' SPECIAL CASE PRINTING
+        -printPlayerTurn(): void
+        -playedCard(): int
+        -promptCursedMessage(): void
+
+        ' SUPPORTING GAME LOGIC CHECKS
+        -checkIfTheyEndTurn(): boolean
+        -checkAllPlayersForNope(playerIndex: int): boolean
+        -checkIfCatCard(cardType: CardType): boolean
+        -checkNumberOfFeralCats(playerIndex: int): int
+        -checkCardIfInvalid(card: Card): boolean
+        +checkIfGameOver(): boolean
+        -checkIfPlayerIsAlive(userIndex: int): boolean
+        -hasCard(userIndex: int, cardType: CardType): boolean
+        -hasCardDirect(player: Player, cardType: CardType): boolean
+        -checkMatchingCardType(cardType: CardType, cardTypeTwo: CardType): boolean
+        -checkIfPlayerIsCursed(player: Player): boolean
+        -checkReversed(): boolean
+        -checkIfCardMarked(playerIndex: int, cardIndex: int): boolean
+        -checkExplodingKitten(playerIndex: int): boolean
+        -checkIfNumberOfTurnsGreaterThanZero(): boolean
+        -checkIfNumberOfTurnsIsZero(): boolean
+        -checkIfCurrentPlayerTurn(playerIndex: int): boolean
+        -checkFeralCat(numberOfFeralCatsToPlay: int, numberOfFeralCats: int, numberOfCatType: int, threshold: int): boolean
+        -checkIfDifferentCardType(cardType: CardType, cardTypeTwo: CardType): boolean
+        -checkAllPlayersNope(): boolean
+        -checkNumberOfCards(player: Player, cardType: CardType, threshold: int): boolean
+        -matchingGameType(gameType: GameType): boolean
+
+        ' GETTERS
+        -getHandSize(playerIndex: int): int
+        -getNumberOfPlayers(): int
+        -getDeckSize(): int
+        -getLocalizedCardType(cardType: CardType): String
+    }
+
+    +class Main {
+        +{static} main(String[] args): void
+    }
+
 }
 
 package domain {
@@ -67,6 +154,7 @@ package domain {
 
     interface Command {
         +execute(): void
+        +undo(): void
     }
 
     +abstract class DeckActionCommand {
@@ -92,7 +180,6 @@ package domain {
 
         +ShuffleDeckCommand(Deck deck)
         +execute(): void
-        +undo(): void
     }
 
     +class DefuseCommand {
@@ -116,7 +203,13 @@ package domain {
     'TODO: may need to update this interface to allow for arguments (in which case won't share common Command interface)
     +abstract class TurnActionCommand {
         +execute()
+        +{final} undo(): void
     }
+
+    note right of TurnActionCommand
+        The final undo() method in TurnActionCommand would be a
+        concrete method throwing an UnsupportedOperationException.
+    end note
 
     +class NextTurnCommand {
         +execute()
@@ -159,23 +252,29 @@ package domain {
         +checkIfPlayerDead(playerIndex: int): boolean
         +checkIfPlayerHasCard(playerIndex: int, cardType: CardType): boolean
 
-        'TODO: MOVE ELSEWHERE: game mode handling
-        ' +retriveGameMode(gameType: GameType): void
-        ' -matchingGameType(gameType: GameType): boolean
 
-        'TODO: MOVE ELSEWHERE: attack handling
-'        +startAttackPhase(): void
-'        +incrementAttackCounter(): void
-'        +setAttackCounter(playerIndex: int): void
-'        +addAttacks(): void
-'        +addAttackQueue(attack: int): void
-'        +removeAttackQueue(): int
-'        +isAttackQueueEmpty(): boolean
-'        +getAttacked(): boolean
-'        +getAttackCounter(): int
-'        +getNumberOfAttacks(): int
-'        ~setNumberOfAttacks(numberOfAttacks: int): void
-'        ~setAttacked(attacked: boolean): void
+    }
+
+    ' TODO: I moved attack logic into this class but I need to go back and
+    ' TODO (continued): to figure out how to connect this / where to rest of design based on use cases
+    +class AttackQueue() {
+        -List<Integer> attackQueue;
+        -int attackCounter;
+        -int numberOfAttacks;
+        -boolean attacked;
+
+        +startAttackPhase(): void
+        +incrementAttackCounter(): void
+        +setAttackCounter(playerIndex: int): void
+        +addAttacks(): void
+        +addAttackQueue(attack: int): void
+        +removeAttackQueue(): int
+        +isAttackQueueEmpty(): boolean
+        +getAttacked(): boolean
+        +getAttackCounter(): int
+        +getNumberOfAttacks(): int
+        ~setNumberOfAttacks(numberOfAttacks: int): void
+        ~setAttacked(attacked: boolean): void
     }
 
     +class Card {
@@ -214,10 +313,10 @@ package domain {
         -{final} gameType: GameType
 
         +CardType(gameType: GameType)
+        +hasMatchingGameType(otherCardType: CardType): boolean
     }
 
     +enum GameType {
-        'TODO: look into when GameType = NONE is used? is that just at the beginning during set up?
         NONE,
         EXPLODING_KITTENS,
         STREAKING_KITTENS,
