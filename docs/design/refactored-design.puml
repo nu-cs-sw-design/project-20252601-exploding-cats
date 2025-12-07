@@ -1,20 +1,19 @@
 @startuml
 
 ' NEXT BIG STEPS:
+'TODO: update constructor args as needed
+'TODO: add any instance variables each new class would need to fulfill functionality
 ' add in the methods (and make sure accounting for all fields/functs of original design)
 ' make sure i've updated all the class relationships/arrows
 ' go over the design, focus on making it functional first basically
 ' then dive deeper into things like access modifiers, design principles, etc
 
-'TODO: update constructor args as needed
 package ui {
     +class Main {
         +{static} main(String[] args): void
     }
 
-    'QUESTION: is there a way to abstract some of the card-specific logic to the domain layer?
     +class GameSetupUI() {
-        'TODO: add any instance variables each new class would need to fulfill functionality
         +GameSetUp()
         +chooseLanguage(): void
         +chooseGame(): void
@@ -46,7 +45,6 @@ package ui {
         -checkCardIfInvalid(card: Card): boolean
     }
 
-    'TODO: see if better to separate this close further into 2+ or not (weigh pros and cons)
     +class CardLogicUI() {
         -{final} commandFactory: SimpleCardCommandFactory
         -{final} gameInvoker: GameInvoker
@@ -62,52 +60,45 @@ package ui {
         ' PLAN: will prompt the user for the desired inputs based on the card's InputType
         -promptPlayerForInputType(CardType card): void
 
-        ' Deck
-        -drawFromTheBottom(): void
-        -swapTopAndBottom(): void
+        ' TODO: remove all the following once I've determined that I've properly abstracted them
+         ' Deck
+'        -drawFromTheBottom(): void
+'        -swapTopAndBottom(): void
 
         ' Playing cards
-        -playedCard(): int
-        -playAttack(targeted: boolean): void
-        -playGarbageCollection(): void
-        -playSpecialCombo(): int
-        -playNope(playerIndex: int): void
-        -playExplodingKitten(playerIndex: int): boolean
-        -playCurseOfTheCatButt(): void
-        -playSpecialComboTwoCards(cardType: CardType): void
-        -playMark(): void
-        -playCatomicBomb(): void
-        -playReverse(): void
-        -playSpecialComboThreeCards(cardType: CardType): void
-        -playSeeTheFuture(): void
-        -playShuffle(): void
-        -playSkip(superSkip: boolean): void
-        -playAlterTheFuture(): void
-        -playImplodingKitten(card: Card): boolean
+'        -playedCard(): int
+'        -playAttack(targeted: boolean): void
+'        -playGarbageCollection(): void
+'        -playSpecialCombo(): int
+'        -playNope(playerIndex: int): void
+'        -playExplodingKitten(playerIndex: int): boolean
+'        -playCurseOfTheCatButt(): void
+'        -playSpecialComboTwoCards(cardType: CardType): void
+'        -playMark(): void
+'        -playCatomicBomb(): void
+'        -playReverse(): void
+'        -playSpecialComboThreeCards(cardType: CardType): void
+'        -playSeeTheFuture(): void
+'        -playShuffle(): void
+'        -playSkip(superSkip: boolean): void
+'        -playAlterTheFuture(): void
+'        -playImplodingKitten(card: Card): boolean
+'
+'        ' Card action support
+'        -startAttackFollowUp(targeted: boolean): void
+'        -promptCursedMessage(): void
 
-        ' Card action support
-        -startAttackFollowUp(targeted: boolean): void
-        -promptCursedMessage(): void
-
-        ' General prerequisite checking
-        -hasCard(userIndex: int, cardType: CardType): boolean
-        -hasCardDirect(player: Player, cardType: CardType): boolean
-        -checkMatchingCardType(cardType: CardType, cardTypeTwo: CardType): boolean
-        -checkIfDifferentCardType(cardType: CardType, cardTypeTwo: CardType): boolean
-        -checkNumberOfCards(player: Player, cardType: CardType, threshold: int): boolean
-        -matchingGameType(gameType: GameType): boolean
-
-        ' Validating specific card action prerequisites
-        -checkAllPlayersForNope(playerIndex: int): boolean
-        -checkIfCatCard(cardType: CardType): boolean
-        -checkNumberOfFeralCats(playerIndex: int): int
-        -checkIfPlayerIsAlive(userIndex: int): boolean
-        -checkIfPlayerIsCursed(player: Player): boolean
-        -checkReversed(): boolean
-        -checkIfCardMarked(playerIndex: int, cardIndex: int): boolean
-        -checkExplodingKitten(playerIndex: int): boolean
-        -checkFeralCat(numberOfFeralCatsToPlay: int, numberOfFeralCats: int, numberOfCatType: int, threshold: int): boolean
-        -checkAllPlayersNope(): boolean
+'        ' Validating specific card action prerequisites
+'        -checkAllPlayersForNope(playerIndex: int): boolean
+'        -checkIfCatCard(cardType: CardType): boolean
+'        -checkNumberOfFeralCats(playerIndex: int): int
+'        -checkIfPlayerIsAlive(userIndex: int): boolean
+'        -checkIfPlayerIsCursed(player: Player): boolean
+'        -checkReversed(): boolean
+'        -checkIfCardMarked(playerIndex: int, cardIndex: int): boolean
+'        -checkExplodingKitten(playerIndex: int): boolean
+'        -checkFeralCat(numberOfFeralCatsToPlay: int, numberOfFeralCats: int, numberOfCatType: int, threshold: int): boolean
+'        -checkAllPlayersNope(): boolean
     }
 
     +class GameUI {
@@ -179,11 +170,15 @@ package domain {
     }
 
     +class SimpleCardCommandFactory() {
-        -{static}{final} cardTypeToCommand: Map<CardType, Command>
-
         +CardCommandFactory()
+        ' TODO: may need to adjust this if it's necessary to pass in the user input here (2 types of it: playerID vs int)
+        ' TODO: will also need to look into if any cards require more than 1 type of input (which i believe they do)
+        ' NOTE: getCommandForCardType will instantiate and return a Command corresponding to the CardType
         ' NOTE: there are less Commands than CardTypes because some share functionalities, like how CAT_ONE and CAT_TWO
         +getCommandForCardType(cardType: CardType): Command
+        -getCommandForNoInputCard(cardType: CardType): Command
+        -getCommandForPlayerInputCard(cardType: CardType, targetPlayer: PlayerID): Command
+        -getCommandForIndexInputCard(cardType: CardType, targetIndex: int): Command
     }
 
     +abstract class DeckActionCommand {
@@ -207,14 +202,42 @@ package domain {
     +class ShuffleDeckCommand {
         -deck: Deck
 
-        +ShuffleDeckCommand(Deck deck)
+        +ShuffleDeckCommand(deck: Deck)
         +execute(): void
+    }
+
+    +class SeeTheFutureCommand {
+        -deck: Deck
+        -timesFive: boolean
+
+        ' NOTE: if timesFive is true, then sees 5 cards into the future (expansion pack version)
+        ' NOTE: if timeFives is false, then 3 cards into the future (original version)
+        +SeeTheFutureCommand(deck: Deck, timesFive: boolean)
+        +execute(): void
+        +undo(): void
+    }
+
+    +class SwapTopAndBottomCardCommand {
+        -deck: Deck
+
+        +SwapTopAndBottomCardCommand(deck: Deck)
+        +execute(): void
+        +undo(): void
+    }
+
+    +class DrawBottomCardCommand {
+        -deck: Deck
+        -playerHand: PlayerHand
+
+        +DrawBottomCardCommand(deck: Deck, playerHand: PlayerHand)
+        +execute(): void
+        +undo(): void
     }
 
     +class DefuseCommand {
         -deck: Deck
 
-        +DefuseCommand(Deck deck)
+        +DefuseCommand(deck: Deck)
         +execute(): void
     }
 
@@ -223,34 +246,91 @@ package domain {
         +execute(): void
     }
 
+     +class ImplodeCommand {
+        -playerHand: PlayerHand
+
+        +ImplodeCommand()
+        +execute(): void
+}
+
     +class NopeCommand {
         +NopeCommand()
+
         +execute(): void
         +undo(): void
     }
 
     'TODO: may need to update this interface to allow for arguments (in which case won't share common Command interface)
-    +abstract class TurnActionCommand {
+    +abstract class TurnOrderCommand {
         +execute()
         +{final} undo(): void
     }
 
-    note right of TurnActionCommand
-        The final undo() method in TurnActionCommand would be a
+    note right of TurnOrderCommand
+        The final undo() method in TurnOrderCommand would be a
         concrete method throwing an UnsupportedOperationException.
     end note
 
-    +class NextTurnCommand {
-        +execute()
+     +class SkipTurnCommand {
+        -turnOrder: List<PlayerID>
+        -isSuper: boolean
+
+        +SkipTurnCommand(turnOrder: List<PlayerID>, isSuper: boolean)
+        +execute(): void
+        +undo(): void
     }
 
-    +class SkipTurnCommand {
-        +execute()
+    +class ReverseTurnOrder {
+        -turnOrder: List<PlayerID>
+
+        +SkipTurnCommand(turnOrder: List<PlayerID>)
+        +execute(): void
+        +undo(): void
     }
 
-    +class ForceTurnCommand {
-        +execute()
+    +class AttackPlayerCommand {
+        -turnOrder: List<PlayerID>
+
+        +AttackCommand(turnOrder: List<PlayerID>)
+        +execute(): void
+        +undo(): void
     }
+
+    +abstract class TurnOrderCommand {
+        +execute()
+        +{final} undo(): void
+    }
+
+    ' TODO: go into the commands later to flesh out any args they need to be functional
+    ' QUESTION: how accurate and functionally correct do I need to be with the specifics of each of these cards
+    ' QUESTION: in my design, as I'm likely to miss some details since I didn't have to write use cases for all of these?
+    +class CursePlayerCommand {
+        -targetPlayer: playerID
+
+        +CursePlayerCommand(targetPlayer: playerID)
+        +execute(): void
+        +undo(): void
+    }
+
+    +class MarkCardCommand {
+        -targetPlayer: PlayerID
+        -targetCardIndex: int
+
+        ' TODO: if more secure, could also use CardType here instead of cardIndex and loop through targetPlayer's hand
+        +MarkCardCommand(targetPlayer: playerID, targetCardIndex: int)
+        +execute(): void
+        +undo(): void
+    }
+
+    +class StealRandomCardCommand {
+        -targetPlayer: PlayerID
+
+        +StealRandomCardCommand(targetPlayer: playerID)
+        +execute(): void
+        +undo(): void
+    }
+
+
 
     +class PlayerHand {
         +playerID: PlayerID
@@ -340,12 +420,11 @@ package domain {
         DRAW_FROM_THE_BOTTOM
 
         -{final} gameType: GameType
-        ' TODO: is it ok to have this public since it's also final?
-         ' I want the UI class to easily be able to see this input type to reduce code duplication
-        +{final} inputType: InputType
+        -{final} inputType: InputType
 
         +CardType(gameType: GameType)
         +hasMatchingGameType(otherCardType: CardType): boolean
+        +isInputType(inputType: InputType): boolean
     }
 
     +enum GameType {
@@ -353,6 +432,12 @@ package domain {
         EXPLODING_KITTENS,
         STREAKING_KITTENS,
         IMPLODING_KITTENS
+    }
+
+    +enum InputType {
+        NO_INPUT,
+        PLAYER_ID_INPUT,
+        INDEX_INPUT
     }
 
     +enum PlayerID {
@@ -374,15 +459,15 @@ package domain {
 
     GameInvoker-->"*"Command
     DeckActionCommand--|>Command
-    TurnActionCommand--|>Command
+    TurnOrderCommand--|>Command
     ShuffleDeckCommand..|>DeckActionCommand
     DefuseCommand..|>DeckActionCommand
     ExplodeCommand..|>DeckActionCommand
     NopeCommand..|>DeckActionCommand
 
-    NextTurnCommand..|>TurnActionCommand
-    SkipTurnCommand..|>TurnActionCommand
-    ForceTurnCommand..|>TurnActionCommand
+    NextTurnCommand..|>TurnOrderCommand
+    SkipTurnCommand..|>TurnOrderCommand
+    ForceTurnCommand..|>TurnOrderCommand
 
     ShuffleDeckCommand-->Deck
     DefuseCommand-->Deck
