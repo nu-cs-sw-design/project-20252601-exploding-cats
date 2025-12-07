@@ -11,25 +11,36 @@
 'TODO: update constructor args as needed
 
 package ui {
-    'TODO: SPLIT THESE UI CLASSES UP INTO SMALLER CLASSES
-    'TODO: THEN BEGIN CONNECTION TO DOMAIN
-    +class GameUI {
-        -game: Game
-        -messages: ResourceBundle
+    +class Main {
+        +{static} main(String[] args): void
+    }
 
-        ' SET UP
-        +GameUI(game: Game)
+    'QUESTION: is there a way to abstract some of the card-specific logic to the domain layer?
+    +class GameSetupUI() {
+        'TODO: add any instance variables each new class would need to fulfill functionality
+        +GameSetUp()
         +chooseLanguage(): void
         +chooseGame(): void
         +chooseNumberOfPlayers(): void
+    }
 
-        ' GAME LOGIC
+    +class TurnLogicUI() {
+        +GameLogic()
+
         +startTurn(): void
+        -checkIfTheyEndTurn(): boolean
         -endTurn(): boolean
+        +checkIfGameOver(): boolean
         +endGame(): void
-        -drawFromTheBottom(): void
 
-        ' ERROR CHECKING
+        -printPlayerTurn(): void
+        -checkIfNumberOfTurnsGreaterThanZero(): boolean
+        -checkIfNumberOfTurnsIsZero(): boolean
+        -checkIfCurrentPlayerTurn(playerIndex: int): boolean
+    }
+
+    +class InputValidation {
+        +InputValidation()
         -checkValidPlayerIndexInput(): int
         -checkUserWithinBounds(userIndex: int): boolean
         -checkUserOutOfBounds(userIndex: int): boolean
@@ -37,10 +48,19 @@ package ui {
         -checkCardWithinBoundsIndexed(cardIndex: int, player: Player): boolean
         -checkNegativeIndexDeck(indexToInsert: int): boolean
         -checkIfGreaterThanMaxIndexDeck(indexToInsert: int): boolean
+        -checkCardIfInvalid(card: Card): boolean
+    }
 
-        ' PLAY CARD TYPES
-        -startAttackFollowUp(targeted: boolean): void
+    'TODO: see if better to separate this close further into 2+ or not (weigh pros and cons)
+    +class CardLogicUI() {
+        +CardLogicUI()
+
+        ' Deck
+        -drawFromTheBottom(): void
         -swapTopAndBottom(): void
+
+        ' Playing cards
+        -playedCard(): int
         -playAttack(targeted: boolean): void
         -playGarbageCollection(): void
         -playSpecialCombo(): int
@@ -58,45 +78,49 @@ package ui {
         -playAlterTheFuture(): void
         -playImplodingKitten(card: Card): boolean
 
-        ' SPECIAL CASE PRINTING
-        -printPlayerTurn(): void
-        -playedCard(): int
+        ' Card action support
+        -startAttackFollowUp(targeted: boolean): void
         -promptCursedMessage(): void
 
-        ' SUPPORTING GAME LOGIC CHECKS
-        -checkIfTheyEndTurn(): boolean
-        -checkAllPlayersForNope(playerIndex: int): boolean
-        -checkIfCatCard(cardType: CardType): boolean
-        -checkNumberOfFeralCats(playerIndex: int): int
-        -checkCardIfInvalid(card: Card): boolean
-        +checkIfGameOver(): boolean
-        -checkIfPlayerIsAlive(userIndex: int): boolean
+        ' General prerequisite checking
         -hasCard(userIndex: int, cardType: CardType): boolean
         -hasCardDirect(player: Player, cardType: CardType): boolean
         -checkMatchingCardType(cardType: CardType, cardTypeTwo: CardType): boolean
+        -checkIfDifferentCardType(cardType: CardType, cardTypeTwo: CardType): boolean
+        -checkNumberOfCards(player: Player, cardType: CardType, threshold: int): boolean
+        -matchingGameType(gameType: GameType): boolean
+
+        ' Validating specific card action prerequisites
+        -checkAllPlayersForNope(playerIndex: int): boolean
+        -checkIfCatCard(cardType: CardType): boolean
+        -checkNumberOfFeralCats(playerIndex: int): int
+        -checkIfPlayerIsAlive(userIndex: int): boolean
         -checkIfPlayerIsCursed(player: Player): boolean
         -checkReversed(): boolean
         -checkIfCardMarked(playerIndex: int, cardIndex: int): boolean
         -checkExplodingKitten(playerIndex: int): boolean
-        -checkIfNumberOfTurnsGreaterThanZero(): boolean
-        -checkIfNumberOfTurnsIsZero(): boolean
-        -checkIfCurrentPlayerTurn(playerIndex: int): boolean
         -checkFeralCat(numberOfFeralCatsToPlay: int, numberOfFeralCats: int, numberOfCatType: int, threshold: int): boolean
-        -checkIfDifferentCardType(cardType: CardType, cardTypeTwo: CardType): boolean
         -checkAllPlayersNope(): boolean
-        -checkNumberOfCards(player: Player, cardType: CardType, threshold: int): boolean
-        -matchingGameType(gameType: GameType): boolean
-
-        ' GETTERS
-        -getHandSize(playerIndex: int): int
-        -getNumberOfPlayers(): int
-        -getDeckSize(): int
-        -getLocalizedCardType(cardType: CardType): String
     }
 
-    +class Main {
-        +{static} main(String[] args): void
+    +class GameUI {
+        -game: Game
+        -messages: ResourceBundle
+        -turnLogicUI: TurnLogicUI
+        -inputValidator: InputValidation
+        -cardLogicUI: CardLogicUI
+
+        ' SET UP
+        +GameUI(game: Game)
+
+        ' GETTERS (commenting out for now to try to avoid needing getters)
+        ' -getHandSize(playerIndex: int): int
+        ' -getNumberOfPlayers(): int
+        ' -getDeckSize(): int
+        ' -getLocalizedCardType(cardType: CardType): String
     }
+
+
 
 }
 
