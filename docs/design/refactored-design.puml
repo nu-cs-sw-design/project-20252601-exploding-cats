@@ -1,15 +1,12 @@
 @startuml
 
 ' NEXT BIG STEPS:
-' finish draft of general idea of domain classes and theirs vars
-' draft how the UI class should be broken up into classes and vars
 ' add in the methods (and make sure accounting for all fields/functs of original design)
 ' make sure i've updated all the class relationships/arrows
 ' go over the design, focus on making it functional first basically
 ' then dive deeper into things like access modifiers, design principles, etc
 
 'TODO: update constructor args as needed
-
 package ui {
     +class Main {
         +{static} main(String[] args): void
@@ -43,9 +40,7 @@ package ui {
         +InputValidation()
         -checkValidPlayerIndexInput(): int
         -checkUserWithinBounds(userIndex: int): boolean
-        -checkUserOutOfBounds(userIndex: int): boolean
         -checkCardWithinBounds(cardIndex: int, player: Player): boolean
-        -checkCardWithinBoundsIndexed(cardIndex: int, player: Player): boolean
         -checkNegativeIndexDeck(indexToInsert: int): boolean
         -checkIfGreaterThanMaxIndexDeck(indexToInsert: int): boolean
         -checkCardIfInvalid(card: Card): boolean
@@ -53,7 +48,19 @@ package ui {
 
     'TODO: see if better to separate this close further into 2+ or not (weigh pros and cons)
     +class CardLogicUI() {
-        +CardLogicUI()
+        -{final} commandFactory: SimpleCardCommandFactory
+        -{final} gameInvoker: GameInvoker
+        -{final} inputValidator: InputValidation
+
+        +CardLogicUI(commandFactory, gameInvoker, inputValidator)
+
+        ' PLAN: playCard() will call the user for the desired inputs, take that input in
+        ' PLAN: then, based on the CardType, will call the commandFactory's createCommand with
+        ' PLAN: any necessary args, and then will call the invoker to execute that CommandType
+        ' PLAN: The goal here is to abstract the need to have so many different card-specific 'play' methods
+        +playCard(CardType card): void
+        ' PLAN: will prompt the user for the desired inputs based on the card's InputType
+        -promptPlayerForInputType(CardType card): void
 
         ' Deck
         -drawFromTheBottom(): void
@@ -110,18 +117,8 @@ package ui {
         -inputValidator: InputValidation
         -cardLogicUI: CardLogicUI
 
-        ' SET UP
         +GameUI(game: Game)
-
-        ' GETTERS (commenting out for now to try to avoid needing getters)
-        ' -getHandSize(playerIndex: int): int
-        ' -getNumberOfPlayers(): int
-        ' -getDeckSize(): int
-        ' -getLocalizedCardType(cardType: CardType): String
     }
-
-
-
 }
 
 package domain {
@@ -179,6 +176,14 @@ package domain {
     interface Command {
         +execute(): void
         +undo(): void
+    }
+
+    +class SimpleCardCommandFactory() {
+        -{static}{final} cardTypeToCommand: Map<CardType, Command>
+
+        +CardCommandFactory()
+        ' NOTE: there are less Commands than CardTypes because some share functionalities, like how CAT_ONE and CAT_TWO
+        +getCommandForCardType(cardType: CardType): Command
     }
 
     +abstract class DeckActionCommand {
@@ -335,6 +340,9 @@ package domain {
         DRAW_FROM_THE_BOTTOM
 
         -{final} gameType: GameType
+        ' TODO: is it ok to have this public since it's also final?
+         ' I want the UI class to easily be able to see this input type to reduce code duplication
+        +{final} inputType: InputType
 
         +CardType(gameType: GameType)
         +hasMatchingGameType(otherCardType: CardType): boolean
