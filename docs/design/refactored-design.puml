@@ -31,6 +31,7 @@ package ui {
         ~promptForPlayerID(): PlayerID
         ~promptForCardIndex(): int
         ~promptForCardType(): CardType
+        ~promptForYesNo(): boolean
         -playerIndexIsValid(): boolean
         -cardTypeIsValid(): boolean
     }
@@ -52,7 +53,8 @@ package ui {
         ' PLAN: The goal here is to abstract the need to have so many different card-specific 'play' methods
         -playCard(CardType card): void
         ' PLAN: will prompt the user for the desired inputs based on the card's InputType
-        -promptPlayerForInputType(CardType card): void
+        -promptPlayerForInputBasedOnCardType(CardType card): void
+        -promptOtherPlayersForNope(): void
         ' NOTE: promptForEndTurn was previously called checkIfTheyEndTurn
         -promptForTurnEnd(): boolean
         -endTurn(): void
@@ -93,8 +95,8 @@ package domain {
         -deck: Deck
         -turnOrder: TurnOrder
         -playerHands: Map<PlayerID, PlayerHand>
-        -{static}{final} commandFactory: SimpleCardCommandFactory
-        -{static}{final} gameInvoker: GameInvoker
+        -{final} commandFactory: SimpleCardCommandFactory
+        -{final} gameInvoker: GameInvoker
 
         +GameLoader(numPlayers: int, gameType: GameType)
         +setUpGame(): void
@@ -136,15 +138,14 @@ package domain {
         -turnOrder: List<PlayerID>
         -playerHands: Map<PlayerID, PlayerHand>
 
-        +CardCommandFactory()
-        ' TODO: may need to adjust this if it's necessary to pass in the user input here (2 types of it: playerID vs int)
-        ' TODO: will also need to look into if any cards require more than 1 type of input (which i believe they do)
+        +SimpleCardCommandFactory(deck: Deck, turnOrder: TurnOrder, hands: Map<PlayerID, PlayerHand>)
+        ' TODO: adjust these "command constructor" options as needed later
         ' NOTE: getCommandForCardType will instantiate and return a Command corresponding to the CardType
         ' NOTE: there are less Commands than CardTypes because some share functionalities, like how CAT_ONE and CAT_TWO
-        +getCommandForCardType(cardType: CardType, arguments): Command
-        -getCommandForNoInputCard(cardType: CardType): Command
-        -getCommandForPlayerInputCard(cardType: CardType, targetPlayer: PlayerID): Command
-        -getCommandForIndexInputCard(cardType: CardType, targetIndex: int): Command
+        +createCommand(cardType: CardType, currentPlayerID: PlayerID): Command
+        +createTargetedCommand(cardType: CardType, currentPlayerID: PlayerID, targetPlayerID: PlayerID): Command
+        +createIndexCommand(cardType: CardType, currentPlayer: PlayerID, index: int): Command
+        +createTypeRequestCommand(actionCardType: CardType, currentPlayer: PlayerID, inputCardType: CardType): Command
     }
 
     +interface Command {
@@ -317,6 +318,15 @@ package domain {
         ~execute(): void
     }
 
+    ~class CatomicBombCommand {
+        -deck: Deck
+        -turnOrder: TurnOrder
+
+        ~CatomicBombCommand(deck: Deck, turnOrder: TurnOrder)
+        ~execute(): void
+        ~undo(): void
+    }
+
     ' ============================================================
     '                          RECEIVERS
     ' ============================================================
@@ -336,11 +346,7 @@ package domain {
         ~playMark(targetCardIndex: int, targetPlayerHand: PlayerHand): void
         ~playCursePlayer(playerID: Player): void
         ~playCursed(): void
-        ~playCatomicBomb(): void
-        ~playDefuse(): void
-        ~playReinsertExplodingKitten(deckIndex: int): void
         ~playExplode(): void
-        ~playFlipAndReinsertImplodingKitten(deckIndex: int): void
         ~playImplode(): void
         -setCursed(isCursed: boolean): void
         -getIndexOfCardType(cardType: CardType): int
@@ -380,6 +386,8 @@ package domain {
         ~peekTopThreeCards(): List<Card>
         ~peekTopFiveCards(): List<Card>
         ~insertCardAtIndex(cardType: CardType, index: int): void
+        ~shuffleAndPlaceExplodingKittensOnTop(): void
+        ~flipAndReinsertImplodingKitten(deckIndex: int): void
         -checkCardIndexWithinBounds(index: int): boolean
     }
 
@@ -490,6 +498,7 @@ package domain {
     StealRandomCardCommand--|>ReversibleCommand
     AddCardTypeToHandCommand--|>IrreversibleCommand
     RemoveCardFromHandCommand--|>IrreversibleCommand
+    CatomicBombCommand--|>ReversibleCommand
 
     ' Concrete command instance variables
     StealRandomCardCommand-->"*"PlayerHand
@@ -506,6 +515,7 @@ package domain {
     AttackTargetedPlayerCommand-->TurnOrder
     SkipTurnCommand-->TurnOrder
     ReverseTurnOrderCommand-->TurnOrder
+    CatomicBombCommand-->TurnOrder
 
     ExplodeCommand-->Deck
     ShuffleDeckCommand-->Deck
@@ -515,6 +525,7 @@ package domain {
     DrawTopCardCommand-->Deck
     SeeTheFutureCommand-->Deck
     SwapTopAndBottomCardCommand-->Deck
+    CatomicBombCommand-->Deck
 
     AttackTargetedPlayerCommand-->PlayerID
     AddCardTypeToHandCommand-->CardType
