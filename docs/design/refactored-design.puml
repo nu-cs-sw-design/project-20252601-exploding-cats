@@ -195,10 +195,11 @@ package domain {
     ~class DefuseCommand {
         -playerHand: PlayerHand
 
-        ~DefuseCommand(deck: Deck)
+        ~DefuseCommand(playerHand: PlayerHand)
         ~execute(): void
     }
 
+    'TODO: take steps to make Nope functional
     ~class NopeCommand {
         ~NopeCommand()
         ~execute(): void
@@ -215,9 +216,9 @@ package domain {
     }
 
     ~class ReverseTurnOrderCommand {
-        -turnOrder: List<PlayerID>
+        -turnOrder: TurnOrder
 
-        ~SkipTurnCommand(turnOrder: List<PlayerID>)
+        ~SkipTurnCommand(turnOrder: TurnOrder)
         ~execute(): void
         ~undo(): void
     }
@@ -225,9 +226,18 @@ package domain {
     ' PLAN: Utilize this class and GameInvoker list to implement attack stacking
     ' PLAN: and to replace the need for a manual attack queue
     ~class AttackPlayerCommand {
-        -turnOrder: List<PlayerID>
+        -turnOrder: TurnOrder
 
-        ~AttackCommand(turnOrder: List<PlayerID>)
+        ~AttackCommand(turnOrder: TurnOrder)
+        ~execute(): void
+        ~undo(): void
+    }
+
+    ~class AttackTargetedPlayerCommand {
+        -turnOrder: TurnOrder
+        -targetPlayerID: PlayerID
+
+        ~AttackTargetedCommand(turnOrder: TurnOrder, targetPlayerID: PlayerID)
         ~execute(): void
         ~undo(): void
     }
@@ -241,8 +251,9 @@ package domain {
 
     ~class ExplodeCommand {
         -playerHand: PlayerHand
+        -deck: Deck
 
-        ~ExplodeCommand(playerHand: PlayerHand)
+        ~ExplodeCommand(playerHand: PlayerHand, deck: Deck)
         ~execute(): void
     }
 
@@ -263,38 +274,43 @@ package domain {
     }
 
     ~class StealRandomCardCommand {
+        -sourcePlayerHand: PlayerHand
         -targetPlayerHand: PlayerHand
 
-        ~StealRandomCardCommand(targetPlayerHand: PlayerHand)
+        ~StealRandomCardCommand(sourcePlayerHand: PlayerHand, targetPlayerHand: PlayerHand)
         ~execute(): void
         ~undo(): void
     }
 
-    ~class AddCardToHandCommand {
+    ~class AddCardTypeToHandCommand {
+        -cardType: CardType
         -playerHand: PlayerHand
 
-        ~AddCardToHandCommand(playerHand: PlayerHand)
+        ~AddCardTypeToHandCommand(cardType: CardType, playerHand: PlayerHand)
         ~execute(): void
     }
 
     ~class RemoveCardFromHandCommand {
+        -cardIndex: int
         -playerHand: PlayerHand
 
-        ~RemoveCardFromCommand(playerHand: PlayerHand)
+        ~RemoveCardFromCommand(cardIndex: int, playerHand: PlayerHand)
         ~execute(): void
     }
 
     ~class DrawTopCardCommand {
+        -playerHand: PlayerHand
         -deck: Deck
 
-        ~DrawTopCardCommand(deck: Deck)
+        ~DrawTopCardCommand(playerHand: PlayerHand, deck: Deck)
         ~execute(): void
     }
 
     ~class DrawBottomCardCommand {
+        -playerHand: PlayerHand
         -deck: Deck
 
-        ~DrawBottomCardCommand(deck: Deck)
+        ~DrawBottomCardCommand(playerHand: PlayerHand, deck: Deck)
         ~execute(): void
     }
 
@@ -309,7 +325,7 @@ package domain {
         -isCursed: boolean
 
         +PlayerHand()
-        ~addCardToHand(card: Card): void
+        ~addCardTypeToHand(cardType: CardType): void
         ~removeCardFromHand(card: Card): void
         ~playGarbageCollection(card: Card): void
         ~stealRandomCardFromPlayer(targetPlayerHand: PlayerHand): void
@@ -435,7 +451,6 @@ package domain {
     GameLoader..>Deck
 
     GameInvoker-->"*"Command
-    GameInvoker-->"*"PlayerHand
 
     ReversibleCommand..|>Command
     IrreversibleCommand..|>Command
@@ -455,29 +470,42 @@ package domain {
     SkipTurnCommand--|>ReversibleCommand
     ReverseTurnOrderCommand--|>ReversibleCommand
     AttackPlayerCommand--|>ReversibleCommand
+    AttackTargetedPlayerCommand--|>ReversibleCommand
     FlipImplodeFaceUpCommand--|>IrreversibleCommand
     ExplodeCommand--|>IrreversibleCommand
     CursePlayerCommand--|>ReversibleCommand
     MarkCardCommand--|>ReversibleCommand
     StealRandomCardCommand--|>ReversibleCommand
+    AddCardTypeToHandCommand--|>IrreversibleCommand
+    RemoveCardFromHandCommand--|>IrreversibleCommand
 
     ' TODO: Concrete command instance variables
-    StealRandomCardCommand-->PlayerHand
+    StealRandomCardCommand-->"*"PlayerHand
     MarkCardCommand-->PlayerHand
     CursePlayerCommand-->PlayerHand
     DrawTopCardCommand-->PlayerHand
     DrawBottomCardCommand-->PlayerHand
+    ExplodeCommand-->PlayerHand
+    AddCardTypeToHandCommand-->PlayerHand
+    RemoveCardFromHandCommand-->PlayerHand
+    DefuseCommand-->PlayerHand
 
     AttackPlayerCommand-->TurnOrder
+    AttackTargetedPlayerCommand-->TurnOrder
     SkipTurnCommand-->TurnOrder
     ReverseTurnOrderCommand-->TurnOrder
 
+    ' ExplodeCommand-->Deck
     ShuffleDeckCommand-->Deck
     StealRandomCardCommand-->Deck
-    DefuseCommand-->Deck
     FlipImplodeFaceUpCommand-->Deck
     DrawBottomCardCommand-->Deck
     DrawTopCardCommand-->Deck
+    SeeTheFutureCommand-->Deck
+    SwapTopAndBottomCardCommand-->Deck
+
+    AttackTargetedPlayerCommand-->PlayerID
+    AddCardTypeToHandCommand-->CardType
 
     Deck-u->"*"Card
     Deck..>CardType
