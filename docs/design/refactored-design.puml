@@ -13,30 +13,30 @@ package ui {
         +{static} main(String[] args): void
     }
 
-    +class GameSetupUI() {
-        +GameSetUp()
-        +chooseLanguage(): void
-        +chooseGame(): void
-        +chooseNumberOfPlayers(): void
+    +class GameUI {
+        -messages: ResourceBundle
+        -gameType: GameType
+        -numPlayers: numPlayers
+        -gameLoader: GameLoader
+
+        +GameUI()
+        +promptForGameSetup(gameLoader: GameLoader): void
+        -promptForLanguage(): void
+        -promptForGameType(): void
+        -promptForNumberOfPlayers(): int
+        ' PLAN: GameUI will call GameLoader#setupGame() and will initialize any other necessary classes
+        ' PLAN: to get the game started here, which will include passing in the ResourceBundle to other UI classes,
+        ' PLAN: as well as passing in the game type and player number into domain-level classes
+        ' PLAN: startGame will end with calling TurnLogicUI#startTurn
+        +startGame(): void
     }
 
-    +class TurnLogicUI() {
-        +GameLogic()
+    ' TODO: maybe make InputValidator a singleton if it's beneficial? look into it
+    +class InputValidator {
+        -numPlayers: int
+        -gameType: GameType
 
-        +startTurn(): void
-        -checkIfTheyEndTurn(): boolean
-        -endTurn(): boolean
-        +checkIfGameOver(): boolean
-        +endGame(): void
-
-        -printPlayerTurn(): void
-        -checkIfNumberOfTurnsGreaterThanZero(): boolean
-        -checkIfNumberOfTurnsIsZero(): boolean
-        -checkIfCurrentPlayerTurn(playerIndex: int): boolean
-    }
-
-    +class InputValidation {
-        +InputValidation()
+        +InputValidator(numPlayers: int)
         -checkValidPlayerIndexInput(): int
         -checkUserWithinBounds(userIndex: int): boolean
         -checkCardWithinBounds(cardIndex: int, player: Player): boolean
@@ -45,10 +45,33 @@ package ui {
         -checkCardIfInvalid(card: Card): boolean
     }
 
-    +class CardLogicUI() {
+    +class TurnLogicUI {
+        -inputValidator: InputValidator
+        -messages: ResourceBundle
+        -numPlayers: int
+        -turnOrder: TurnOrder
+        -CardLogicUI: CardLogicUI
+
+        ' PLAN: TurnLogicUI instantiates the TurnOrder and CardLogicUI
+        +TurnLogicUI(inputValidator: InputValidator, messages: ResourceBundle, numPlayers: int)
+        ' PLAN: incorporate logic from printPlayerTurn into startTurn, if possible
+        +startTurn(): void
+        'NOTE: promptForEndTurn was previously called checkIfTheyEndTurn
+        -promptForTurnEnd(): boolean
+        -endTurn(): boolean
+        -checkIfGameOver(): boolean
+        -endGame(): void
+
+        ' NOTE: leave this logic for domain classes
+'        -checkIfNumberOfTurnsGreaterThanZero(): boolean
+'        -checkIfNumberOfTurnsIsZero(): boolean
+'        -checkIfCurrentPlayerTurn(playerIndex: int): boolean
+    }
+
+    +class CardLogicUI {
         -{final} commandFactory: SimpleCardCommandFactory
         -{final} gameInvoker: GameInvoker
-        -{final} inputValidator: InputValidation
+        -{final} inputValidator: InputValidator
 
         +CardLogicUI(commandFactory, gameInvoker, inputValidator)
 
@@ -100,17 +123,29 @@ package ui {
 '        -checkFeralCat(numberOfFeralCatsToPlay: int, numberOfFeralCats: int, numberOfCatType: int, threshold: int): boolean
 '        -checkAllPlayersNope(): boolean
     }
-
-    +class GameUI {
-        -game: Game
-        -messages: ResourceBundle
-        -turnLogicUI: TurnLogicUI
-        -inputValidator: InputValidation
-        -cardLogicUI: CardLogicUI
-
-        +GameUI(game: Game)
-    }
 }
+Main..>ui.GameUI
+Main..>domain.GameLoader
+
+GameUI-->java.ResourceBundle
+GameUI-->domain.GameLoader
+GameUI-->domain.GameType
+GameUI..>ui.InputValidator
+GameUI..>ui.TurnLogicUI
+
+InputValidator-->domain.GameType
+
+TurnLogicUI-->ui.InputValidator
+TurnLogicUI-->java.ResourceBundle
+TurnLogicUI-->domain.TurnOrder
+TurnLogicUI-->ui.CardLogicUI
+
+CardLogicUI-->CardLogicUI
+CardLogicUI-->Deck
+CardLogicUI-->SimpleCardCommandFactory
+CardLogicUI-->GameInvoker
+CardLogicUI-->InputValidator
+CardLogicUI..>CardType
 
 package domain {
     +class GameLoader {
@@ -170,12 +205,15 @@ package domain {
     }
 
     +class SimpleCardCommandFactory() {
+        -deck: Deck
+        -turnOrder: List<PlayerID>
+
         +CardCommandFactory()
         ' TODO: may need to adjust this if it's necessary to pass in the user input here (2 types of it: playerID vs int)
         ' TODO: will also need to look into if any cards require more than 1 type of input (which i believe they do)
         ' NOTE: getCommandForCardType will instantiate and return a Command corresponding to the CardType
         ' NOTE: there are less Commands than CardTypes because some share functionalities, like how CAT_ONE and CAT_TWO
-        +getCommandForCardType(cardType: CardType): Command
+        +getCommandForCardType(cardType: CardType, arguments): Command
         -getCommandForNoInputCard(cardType: CardType): Command
         -getCommandForPlayerInputCard(cardType: CardType, targetPlayer: PlayerID): Command
         -getCommandForIndexInputCard(cardType: CardType, targetIndex: int): Command
