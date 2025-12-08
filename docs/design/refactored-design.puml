@@ -105,15 +105,19 @@ TurnLogicUI-->ui.InputValidator
 CardLogicUI-->ui.InputValidator
 
 package domain {
+    ' ============================================================
+    '         ABSTRACTIONS AND/OR ACCESSIBLE BY UI LAYER
+    ' ============================================================
     +class GameLoader {
         -deck: Deck
+        -turnOrder: TurnOrder
+        -playerHands: Map<PlayerID, PlayerHand>
 
         +GameLoader()
         +setUpGame()
         -instantiateDeck()
-        -instantiateDeckActionCommands()
         -instantiateTurnOrder()
-        -instantiateTurnActionCommands()
+        -instantiatePlayerHands()
     }
 
     +class GameInvoker {
@@ -122,10 +126,6 @@ package domain {
         +GameInvoker()
         +addCommand(command: Command): void
         +executeCommands(): void
-    }
-
-    interface Receiver {
-        +executeActionCorrespondingToCardType(cardType: CardType)
     }
 
     +class SimpleCardCommandFactory {
@@ -148,12 +148,12 @@ package domain {
         +undo(): void
     }
 
-    +abstract class ReversibleCommand {
+    ~abstract class ReversibleCommand {
         +execute(): void
         +undo(): void
     }
 
-    +abstract class IrreversibleCommand {
+    ~abstract class IrreversibleCommand {
         +execute(): void
         +{final} undo(): void
     }
@@ -163,180 +163,204 @@ package domain {
         concrete method throwing an UnsupportedOperationException.
     end note
 
-    +class ShuffleDeckCommand {
+    ' ============================================================
+    '          BEGINNING OF CONCRETE CARD COMMANDS
+    ' ============================================================
+    ~class ShuffleDeckCommand {
         -deck: Deck
 
-        +ShuffleDeckCommand(deck: Deck)
-        +execute(): void
+        ~ShuffleDeckCommand(deck: Deck)
+        ~execute(): void
     }
 
-    +class SeeTheFutureCommand {
+    ~class SeeTheFutureCommand {
         -deck: Deck
         -timesFive: boolean
 
         ' NOTE: if timesFive is true, then sees 5 cards into the future (expansion pack version)
         ' NOTE: if timeFives is false, then 3 cards into the future (original version)
-        +SeeTheFutureCommand(deck: Deck, timesFive: boolean)
-        +execute(): void
-        +undo(): void
+        ~SeeTheFutureCommand(deck: Deck, timesFive: boolean)
+        ~execute(): void
+        ~undo(): void
     }
 
-    +class SwapTopAndBottomCardCommand {
+    ~class SwapTopAndBottomCardCommand {
         -deck: Deck
 
-        +SwapTopAndBottomCardCommand(deck: Deck)
-        +execute(): void
-        +undo(): void
+        ~SwapTopAndBottomCardCommand(deck: Deck)
+        ~execute(): void
+        ~undo(): void
     }
 
-    +class DrawBottomCardCommand {
+    ~class DrawTopCardCommand {
+        -deck: Deck
+
+        ~DrawTopCardCommand(deck: Deck)
+        ~execute(): void
+    }
+
+    ~class DrawBottomCardCommand {
         -deck: Deck
         -playerHand: PlayerHand
 
-        +DrawBottomCardCommand(deck: Deck, playerHand: PlayerHand)
-        +execute(): void
-        +undo(): void
+        ~DrawBottomCardCommand(deck: Deck, playerHand: PlayerHand)
+        ~execute(): void
     }
 
-    +class DefuseCommand {
+    ~class DefuseCommand {
         -deck: Deck
+        -playerHand: PlayerHand
 
-        +DefuseCommand(deck: Deck)
-        +execute(): void
+        ~DefuseCommand(deck: Deck)
+        ~execute(): void
     }
 
-    +class NopeCommand {
-        +NopeCommand()
-
-        +execute(): void
-        +undo(): void
+    ~class NopeCommand {
+        ~NopeCommand()
+        ~execute(): void
+        ~undo(): void
     }
 
-     +class SkipTurnCommand {
-        -turnOrder: List<PlayerID>
+     ~class SkipTurnCommand {
+        -turnOrder: TurnOrder
         -isSuper: boolean
 
-        +SkipTurnCommand(turnOrder: List<PlayerID>, isSuper: boolean)
-        +execute(): void
-        +undo(): void
+        ~SkipTurnCommand(turnOrder: TurnOrder, isSuper: boolean)
+        ~execute(): void
+        ~undo(): void
     }
 
-    +class ReverseTurnOrderCommand {
+    ~class ReverseTurnOrderCommand {
         -turnOrder: List<PlayerID>
 
-        +SkipTurnCommand(turnOrder: List<PlayerID>)
-        +execute(): void
-        +undo(): void
+        ~SkipTurnCommand(turnOrder: List<PlayerID>)
+        ~execute(): void
+        ~undo(): void
     }
 
     ' PLAN: Utilize this class and GameInvoker list to implement attack stacking
     ' PLAN: and to replace the need for a manual attack queue
-    +class AttackPlayerCommand {
+    ~class AttackPlayerCommand {
         -turnOrder: List<PlayerID>
 
-        +AttackCommand(turnOrder: List<PlayerID>)
-        +execute(): void
-        +undo(): void
+        ~AttackCommand(turnOrder: List<PlayerID>)
+        ~execute(): void
+        ~undo(): void
     }
 
-    +class FlipImplodeFaceUpCommand {
+    ~class FlipImplodeFaceUpCommand {
+        -deck: Deck
+
+        ~FlipImplodeFaceUpCommand(deck: Deck)
+        ~execute(): void
+    }
+
+    ~class ExplodeCommand {
         -playerHand: PlayerHand
 
-        +FlipImplodeFaceUpCommand()
-        +execute(): void
-    }
-
-    +class ExplodeCommand {
-        +ExplodeCommand()
-        +execute(): void
+        ~ExplodeCommand(playerHand: PlayerHand)
+        ~execute(): void
     }
 
     ' QUESTION: how accurate and functionally correct do I need to be with the specifics of each of these cards
     ' QUESTION: in my design, as I'm likely to miss some details since I didn't have to write use cases for all of these?
-    +class CursePlayerCommand {
+    ~class CursePlayerCommand {
+        -playerHand: PlayerHand
         -targetPlayer: playerID
 
-        +CursePlayerCommand(targetPlayer: playerID)
-        +execute(): void
-        +undo(): void
+        ~CursePlayerCommand(playerHand: PlayerHand, targetPlayer: playerID)
+        ~execute(): void
+        ~undo(): void
     }
 
-    +class MarkCardCommand {
+    ~class MarkCardCommand {
+        -playerHand: PlayerHand
         -targetPlayer: PlayerID
-        -targetCardIndex: int
 
-        ' TODO: if more secure, could also use CardType here instead of cardIndex and loop through targetPlayer's hand
-        +MarkCardCommand(targetPlayer: playerID, targetCardIndex: int)
-        +execute(): void
-        +undo(): void
+        ~MarkCardCommand(playerHand: PlayerHand, targetPlayer: PlayerID)
+        ~execute(): void
+        ~undo(): void
     }
 
-    +class StealRandomCardCommand {
+    ~class StealRandomCardCommand {
         -targetPlayer: PlayerID
         -random: Random
 
-        +StealRandomCardCommand(targetPlayer: playerID)
-        +execute(): void
-        +undo(): void
+        ~StealRandomCardCommand(targetPlayer: PlayerID)
+        ~execute(): void
+        ~undo(): void
     }
 
+    ~class AddCardToHandCommand {
+        -playerHand: PlayerHand
+
+        ~AddCardToHandCommand(playerHand: PlayerHand)
+        ~execute(): void
+    }
+
+    ~class RemoveCardFromHandCommand {
+        -playerHand: PlayerHand
+
+        ~RemoveCardFromCommand(playerHand: PlayerHand)
+        ~execute(): void
+    }
+
+    ' ============================================================
+    '                          RECEIVERS
+    ' ============================================================
+
     +class PlayerHand {
-        +playerID: PlayerID
+        -playerID: PlayerID
         -hand: List<Card>
         -isDead: boolean
 
         +PlayerHand()
-
-        -addCardToHand(card: Card): void
-        -removeCardFromHand(playerIndex: int, cardType: CardType): void
-        +getIndexOfCardFromHand(playerIndex: int, cardType: CardType): int
-
-        +playDefuse(idxToInsertExplodingKitten: int, playerIndex: int): void
-        +playCatomicBomb(): void
-        +playReverse(): void
-        +playSkip(superSkip: boolean): int
-        +playGarbageCollection(cardToDiscard: CardType)
-        +playMark(playerIndex: int, cardIndex: int): void
-        +playTargetedAttack(attackedPlayerIndex: int): void
-        +playExplodingKitten(playerIndex: int): boolean
-        +playImplodingKitten(): void
-
-        +stealRandomCardFromPlayer(player: Player): void
-        +stealSpecificCardFromPlayer(cardType: CardType, player: PlayerID): void
-        +attackPlayer(player: Player): void
-
-        -checkPlayerHandEmpty(player: Player): boolean
+        ~addCardToHand(card: Card): void
+        ~removeCardFromHand(card: Card): void
+        ~playDefuse(indexToInsertExplodingKitten: int): void
+        ~playCatomicBomb(): void
+        ~playGarbageCollection(indexOfCardToDispose: int): void
+        ~playMark(targetPlayer: PlayerID, cardIndex: int): void
+        ~playTargetedAttack(attackedPlayerIndex: int): void
+        ~playExplodingKitten(): void
+        ~playImplodingKitten(): void
+        ~stealRandomCardFromPlayer(player: Player): void
+        ~stealSpecificCardFromPlayer(card: Card, player: PlayerID): void
         -checkIfPlayerDead(playerIndex: int): boolean
         -checkIfPlayerHasCard(playerIndex: int, cardType: CardType): boolean
+        -checkPlayerHandEmpty(player: Player): boolean
+        ~getIndexOfCardType(cardType: CardType): int
     }
 
     +class TurnOrder {
         -numPlayers: int
         -activePlayer: PlayerID
+        -activePlayerNumTurns: int
         -turnOrder: List<PlayerID>
 
         +TurnOrder(numPlayers: int)
-        +executeActionCorrespondingToCardType(cardType: CardType)
+        ~startTurn(): void
+        ~playSkip(superSkip: boolean): int
+        ~playReverseTurnOrder(): void
+        ~playAttack(): void
+        ~playTargetedAttack(targetPlayer: Player): void
+        -incrementActivePlayerNumTurns(): void
+        -decrementActivePlayerNumTurns(): void
+        -endTurn(): void
         -selectRandomPlayer(): PlayerID
-        -incrementPlayerTurn(): void
-        -decrementNumberOfTurns(): void
-        -setCurrentPlayerTurn(turn: int): void
     }
 
     +class Deck {
         -deck: List<Card>
 
         +Deck()
-        +executeActionCorrespondingToCardType(cardType: CardType)
-        -drawCardFromTop(): Card
-        -drawCardFromBottom(): Card
-        -swapTopAndBottomCards(): void
-        -shuffleDeck(): void
-        -peekTopThreeCards(): List<Card>
-        -peekTopFiveCards(): List<Card>
-        -insertCards(cardType: CardType, numberOfCards: int, bottom: boolean): void
-        -insertExplodingKittenAtIndex(index: int): void
-        -insertImplodingKittenAtIndex(index: int): void
+        ~drawCardFromTop(): Card
+        ~drawCardFromBottom(): Card
+        ~swapTopAndBottomCards(): void
+        ~shuffleDeck(): void
+        ~peekTopThreeCards(): List<Card>
+        ~peekTopFiveCards(): List<Card>
+        ~insertCardAtIndex(cardType: CardType, index: int): void
     }
 
     +class Card {
@@ -346,6 +370,10 @@ package domain {
 
         +Card(cardType: CardType)
     }
+
+    ' ============================================================
+    '                           ENUMS
+    ' ============================================================
 
     +enum CardType {
         NOPE,
@@ -402,6 +430,9 @@ package domain {
         PLAYER_FIVE
     }
 
+    ' ============================================================
+    '                      CLASS RELATIONSHIPS
+    ' ============================================================
     GameLoader..>Deck
 
     GameInvoker-->"*"Command
@@ -431,12 +462,22 @@ package domain {
     StealRandomCardCommand--|>ReversibleCommand
 
     'TODO: command instance vars
-    ShuffleDeckCommand-->Deck
-    DefuseCommand-->Deck
+    StealRandomCardCommand-->PlayerHand
+    MarkCardCommand-->PlayerHand
+    CursePlayerCommand-->PlayerHand
+    DrawTopCardCommand-->PlayerHand
+    DrawBottomCardCommand-->PlayerHand
 
-    TurnOrder--|>Receiver
-    Deck--|>Receiver
-    PlayerHand--|>Receiver
+    AttackPlayerCommand-->TurnOrder
+    SkipTurnCommand-->TurnOrder
+    ReverseTurnOrderCommand-->TurnOrder
+
+    ShuffleDeckCommand-->Deck
+    StealRandomCardCommand-->Deck
+    DefuseCommand-->Deck
+    FlipImplodeFaceUpCommand-->Deck
+    DrawBottomCardCommand-->Deck
+    DrawTopCardCommand-->Deck
 
     Deck-u->"*"Card
     Deck..>CardType
