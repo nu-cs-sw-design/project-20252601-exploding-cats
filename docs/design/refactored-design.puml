@@ -192,23 +192,7 @@ package domain {
         ~undo(): void
     }
 
-    ~class DrawTopCardCommand {
-        -deck: Deck
-
-        ~DrawTopCardCommand(deck: Deck)
-        ~execute(): void
-    }
-
-    ~class DrawBottomCardCommand {
-        -deck: Deck
-        -playerHand: PlayerHand
-
-        ~DrawBottomCardCommand(deck: Deck, playerHand: PlayerHand)
-        ~execute(): void
-    }
-
     ~class DefuseCommand {
-        -deck: Deck
         -playerHand: PlayerHand
 
         ~DefuseCommand(deck: Deck)
@@ -262,31 +246,26 @@ package domain {
         ~execute(): void
     }
 
-    ' QUESTION: how accurate and functionally correct do I need to be with the specifics of each of these cards
-    ' QUESTION: in my design, as I'm likely to miss some details since I didn't have to write use cases for all of these?
     ~class CursePlayerCommand {
-        -playerHand: PlayerHand
-        -targetPlayer: playerID
+        -targetPlayerHand: PlayerHand
 
-        ~CursePlayerCommand(playerHand: PlayerHand, targetPlayer: playerID)
+        ~CursePlayerCommand(targetPlayerHand: PlayerHand)
         ~execute(): void
         ~undo(): void
     }
 
     ~class MarkCardCommand {
-        -playerHand: PlayerHand
-        -targetPlayer: PlayerID
+        -targetPlayerHand: PlayerHand
 
-        ~MarkCardCommand(playerHand: PlayerHand, targetPlayer: PlayerID)
+        ~MarkCardCommand(targetPlayerHand: PlayerHand)
         ~execute(): void
         ~undo(): void
     }
 
     ~class StealRandomCardCommand {
-        -targetPlayer: PlayerID
-        -random: Random
+        -targetPlayerHand: PlayerHand
 
-        ~StealRandomCardCommand(targetPlayer: PlayerID)
+        ~StealRandomCardCommand(targetPlayerHand: PlayerHand)
         ~execute(): void
         ~undo(): void
     }
@@ -305,6 +284,20 @@ package domain {
         ~execute(): void
     }
 
+    ~class DrawTopCardCommand {
+        -deck: Deck
+
+        ~DrawTopCardCommand(deck: Deck)
+        ~execute(): void
+    }
+
+    ~class DrawBottomCardCommand {
+        -deck: Deck
+
+        ~DrawBottomCardCommand(deck: Deck)
+        ~execute(): void
+    }
+
     ' ============================================================
     '                          RECEIVERS
     ' ============================================================
@@ -313,39 +306,45 @@ package domain {
         -playerID: PlayerID
         -hand: List<Card>
         -isDead: boolean
+        -isCursed: boolean
 
         +PlayerHand()
         ~addCardToHand(card: Card): void
         ~removeCardFromHand(card: Card): void
-        ~playDefuse(indexToInsertExplodingKitten: int): void
+        ~playGarbageCollection(card: Card): void
+        ~stealRandomCardFromPlayer(targetPlayerHand: PlayerHand): void
+        ~stealSpecificCardFromPlayer(cardType: CardType, targetPlayerHand: PlayerHand): void
+        ~playMark(targetCardIndex: int, targetPlayerHand: PlayerHand): void
+        ~playCursePlayer(playerID: Player): void
+        ~playCursed(): void
         ~playCatomicBomb(): void
-        ~playGarbageCollection(indexOfCardToDispose: int): void
-        ~playMark(targetPlayer: PlayerID, cardIndex: int): void
-        ~playTargetedAttack(attackedPlayerIndex: int): void
-        ~playExplodingKitten(): void
-        ~playImplodingKitten(): void
-        ~stealRandomCardFromPlayer(player: Player): void
-        ~stealSpecificCardFromPlayer(card: Card, player: PlayerID): void
+        ~playDefuse(): void
+        ~playReinsertExplodingKitten(deckIndex: int): void
+        ~playExplode(): void
+        ~playFlipAndReinsertImplodingKitten(deckIndex: int): void
+        ~playImplode(): void
+        -setCursed(isCursed: boolean): void
+        -getIndexOfCardType(cardType: CardType): int
         -checkIfPlayerDead(playerIndex: int): boolean
         -checkIfPlayerHasCard(playerIndex: int, cardType: CardType): boolean
         -checkPlayerHandEmpty(player: Player): boolean
-        ~getIndexOfCardType(cardType: CardType): int
     }
 
     +class TurnOrder {
         -numPlayers: int
         -activePlayer: PlayerID
-        -activePlayerNumTurns: int
         -turnOrder: List<PlayerID>
+        -numTurnsPerPlayer: Map<PlayerID, Integer>
+        -random: Random
 
         +TurnOrder(numPlayers: int)
         ~startTurn(): void
         ~playSkip(superSkip: boolean): int
         ~playReverseTurnOrder(): void
         ~playAttack(): void
-        ~playTargetedAttack(targetPlayer: Player): void
-        -incrementActivePlayerNumTurns(): void
-        -decrementActivePlayerNumTurns(): void
+        ~playTargetedAttack(targetPlayer): void
+        -addToNumTurnsForPlayerID(playerID: PlayerID, numTurnsToAdd: int): void
+        -subtractFromNumTurnsForPlayerID(playerID: PlayerID, numTurnsToSubstract: int): void
         -endTurn(): void
         -selectRandomPlayer(): PlayerID
     }
@@ -445,6 +444,7 @@ package domain {
     SimpleCardCommandFactory-->"*"PlayerID
     SimpleCardCommandFactory..>Command
 
+    ' TODO: Interfaces implemented by concrete commands
     ShuffleDeckCommand--|>ReversibleCommand
     SeeTheFutureCommand--|>ReversibleCommand
     SwapTopAndBottomCardCommand--|>ReversibleCommand
@@ -461,7 +461,7 @@ package domain {
     MarkCardCommand--|>ReversibleCommand
     StealRandomCardCommand--|>ReversibleCommand
 
-    'TODO: command instance vars
+    ' TODO: Concrete command instance variables
     StealRandomCardCommand-->PlayerHand
     MarkCardCommand-->PlayerHand
     CursePlayerCommand-->PlayerHand
@@ -505,6 +505,6 @@ package java {
     }
 }
 
-StealRandomCardCommand-->java.Random
+PlayerHand-->java.Random
 
 @enduml
