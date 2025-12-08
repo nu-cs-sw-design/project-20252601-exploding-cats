@@ -1,12 +1,11 @@
 @startuml
 
 ' NEXT BIG STEPS:
-'TODO: update constructor args as needed
-'TODO: add any instance variables each new class would need to fulfill functionality
+' update constructor args as needed
+' add any instance variables each new class would need to fulfill functionality
 ' add in the methods (and make sure accounting for all fields/functs of original design)
 ' make sure i've updated all the class relationships/arrows
-' go over the design, focus on making it functional first basically
-' then dive deeper into things like access modifiers, design principles, etc
+' dive deeper into things like access modifiers, design principles, etc
 
 package ui {
     +class Main {
@@ -31,7 +30,6 @@ package ui {
         +startGame(): void
     }
 
-    ' TODO: maybe make InputValidator a singleton if it's beneficial? look into it
     +class InputValidator {
         -numPlayers: int
         -gameType: GameType
@@ -61,11 +59,6 @@ package ui {
         -endTurn(): boolean
         -checkIfGameOver(): boolean
         -endGame(): void
-
-        ' NOTE: leave this logic for domain classes
-'        -checkIfNumberOfTurnsGreaterThanZero(): boolean
-'        -checkIfNumberOfTurnsIsZero(): boolean
-'        -checkIfCurrentPlayerTurn(playerIndex: int): boolean
     }
 
     +class CardLogicUI {
@@ -82,46 +75,6 @@ package ui {
         +playCard(CardType card): void
         ' PLAN: will prompt the user for the desired inputs based on the card's InputType
         -promptPlayerForInputType(CardType card): void
-
-        ' TODO: remove all the following once I've determined that I've properly abstracted them
-         ' Deck
-'        -drawFromTheBottom(): void
-'        -swapTopAndBottom(): void
-
-        ' Playing cards
-'        -playedCard(): int
-'        -playAttack(targeted: boolean): void
-'        -playGarbageCollection(): void
-'        -playSpecialCombo(): int
-'        -playNope(playerIndex: int): void
-'        -playExplodingKitten(playerIndex: int): boolean
-'        -playCurseOfTheCatButt(): void
-'        -playSpecialComboTwoCards(cardType: CardType): void
-'        -playMark(): void
-'        -playCatomicBomb(): void
-'        -playReverse(): void
-'        -playSpecialComboThreeCards(cardType: CardType): void
-'        -playSeeTheFuture(): void
-'        -playShuffle(): void
-'        -playSkip(superSkip: boolean): void
-'        -playAlterTheFuture(): void
-'        -playImplodingKitten(card: Card): boolean
-'
-'        ' Card action support
-'        -startAttackFollowUp(targeted: boolean): void
-'        -promptCursedMessage(): void
-
-'        ' Validating specific card action prerequisites
-'        -checkAllPlayersForNope(playerIndex: int): boolean
-'        -checkIfCatCard(cardType: CardType): boolean
-'        -checkNumberOfFeralCats(playerIndex: int): int
-'        -checkIfPlayerIsAlive(userIndex: int): boolean
-'        -checkIfPlayerIsCursed(player: Player): boolean
-'        -checkReversed(): boolean
-'        -checkIfCardMarked(playerIndex: int, cardIndex: int): boolean
-'        -checkExplodingKitten(playerIndex: int): boolean
-'        -checkFeralCat(numberOfFeralCatsToPlay: int, numberOfFeralCats: int, numberOfCatType: int, threshold: int): boolean
-'        -checkAllPlayersNope(): boolean
     }
 }
 Main..>ui.GameUI
@@ -130,22 +83,21 @@ Main..>domain.GameLoader
 GameUI-->java.ResourceBundle
 GameUI-->domain.GameLoader
 GameUI-->domain.GameType
-GameUI..>ui.InputValidator
 GameUI..>ui.TurnLogicUI
 
-InputValidator-->domain.GameType
-
-TurnLogicUI-->ui.InputValidator
 TurnLogicUI-->java.ResourceBundle
 TurnLogicUI-->domain.TurnOrder
 TurnLogicUI-->ui.CardLogicUI
 
-CardLogicUI-->CardLogicUI
-CardLogicUI-->Deck
-CardLogicUI-->SimpleCardCommandFactory
-CardLogicUI-->GameInvoker
-CardLogicUI-->InputValidator
-CardLogicUI..>CardType
+CardLogicUI-->domain.SimpleCardCommandFactory
+CardLogicUI-->domain.GameInvoker
+CardLogicUI..>domain.CardType
+
+'TODO: come back to these relationships for InputValidation to best match design principles
+InputValidator-->domain.GameType
+GameUI..>ui.InputValidator
+TurnLogicUI-->ui.InputValidator
+CardLogicUI-->domain.InputValidator
 
 package domain {
     +class GameLoader {
