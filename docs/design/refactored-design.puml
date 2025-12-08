@@ -126,6 +126,11 @@ package domain {
         ' PLAN: undoLastCommand or redoLastCommand as appropriate (the latter representing)
         ' PLAN: "noping" a Nope
         ~addCommand(): void
+        ' PLAN: before undoing any command, CommandHistory will confirm that CommandHistory
+        ' PLAN: is an instance of ReversibleCommand first (which opts to increase coupling
+        ' PLAN: by a bit for the goal keeping the Command interface representative of its
+        ' PLAN: true capabilities rather than claiming some commands are reversible when
+        ' PLAN: they are not)
         -undoLastCommand(): void
         -redoLastCommand(): void
     }
@@ -147,7 +152,6 @@ package domain {
 
     +interface Command {
         +execute(): void
-        +undo(): void
     }
 
     ~abstract class ReversibleCommand {
@@ -157,13 +161,7 @@ package domain {
 
     ~abstract class IrreversibleCommand {
         +execute(): void
-        +{final} undo(): void
     }
-
-    note right of IrreversibleCommand
-        The final undo() method in IrreversibleCommand would be a
-        concrete method throwing an UnsupportedOperationException.
-    end note
 
     ' ============================================================
     '          BEGINNING OF CONCRETE CARD COMMANDS
