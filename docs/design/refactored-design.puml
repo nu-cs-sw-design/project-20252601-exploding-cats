@@ -8,19 +8,19 @@ package ui {
     }
 
     ~class GameStartUI {
-        -inputReader: InputReader
-        -gameLoader: GameLoader
+        -{final} inputReader: InputReader
+        -{final} gameLoader: GameLoader
 
         ~GameStartUI(inputReader: InputReader, gameLoader: GameLoader)
         ' PLAN: calls InputReader's methods to prompt for language, game type, and player number
-        ' PLAN: then, calls GameLoader#setUpGame
+        ' PLAN: then, calls GameLoader#setUpGame, #instantiateCommandFactory, and #instantiateGameInvoker
         ' PLAN: lastly, instantiates GameDurationUI and calls runGameLoop
         ~startGame(): void
     }
 
     ~class InputReader {
-        -messages: ResourceBundle
-        -scanner: Scanner
+        -{final} messages: ResourceBundle
+        -{final} scanner: Scanner
         -numPlayers: int
         -gameType: GameType
 
@@ -39,12 +39,11 @@ package ui {
     ~class GameDurationUI {
         -{final} commandFactory: SimpleCardCommandFactory
         -{final} gameInvoker: GameInvoker
-        -inputReader: InputReader
-        -messages: ResourceBundle
+        -{final} inputReader: InputReader
+        -{final} messages: ResourceBundle
 
-        ' PLAN: GameDurationUI calls GameLoader to get commandFactory and gameInvoker
         ' PLAN: incorporate logic from printPlayerTurn into startTurn, if possible
-        ~GameDurationUI(messages: ResourceBundle)
+        ~GameDurationUI(messages: ResourceBundle, commandFactory: SimpleCardCommandFactory, gameInvoker: GameInvoker)
         ~runGameLoop(): void
         -promptForTurnStart(): void
         ' PLAN: playCard() will call the user for the desired inputs, take that input in
@@ -90,8 +89,8 @@ package domain {
     '         ABSTRACTIONS AND/OR ACCESSIBLE BY UI LAYER
     ' ============================================================
     +class GameLoader {
-        -numPlayers: int
-        -gameType: GameType
+        -{final} numPlayers: int
+        -{final} gameType: GameType
         -deck: Deck
         -turnOrder: TurnOrder
         -playerHands: Map<PlayerID, PlayerHand>
@@ -100,13 +99,11 @@ package domain {
 
         +GameLoader(numPlayers: int, gameType: GameType)
         +setUpGame(): void
-        +{static} getCommandFactory(): SimpleCardCommandFactory
-        +{static} getGameInvoker(): GameInvoker
         -instantiateDeck(): void
         -instantiateTurnOrder(): void
         -instantiatePlayerHands(): void
-        -instantiateCommandFactory(): void
-        -instantiateGameInvoker(): void
+        ~instantiateCommandFactory(): SimpleCardCommandFactory
+        ~instantiateGameInvoker(): GameInvoker
     }
 
     +class GameInvoker {
@@ -134,12 +131,12 @@ package domain {
     }
 
     +class SimpleCardCommandFactory {
-        -deck: Deck
-        -turnOrder: List<PlayerID>
-        -playerHands: Map<PlayerID, PlayerHand>
+        -{final} deck: Deck
+        -{final} turnOrder: List<PlayerID>
+        -{final} playerHands: Map<PlayerID, PlayerHand>
 
         +SimpleCardCommandFactory(deck: Deck, turnOrder: TurnOrder, hands: Map<PlayerID, PlayerHand>)
-        ' TODO: adjust these "command constructor" options as needed later
+        ' TODO: adjust these "command constructor" options as needed later to ensure minimum required dependencies created
         ' NOTE: getCommandForCardType will instantiate and return a Command corresponding to the CardType
         ' NOTE: there are less Commands than CardTypes because some share functionalities, like how CAT_ONE and CAT_TWO
         +createCommand(cardType: CardType, currentPlayerID: PlayerID): Command
@@ -172,15 +169,15 @@ package domain {
     '          BEGINNING OF CONCRETE CARD COMMANDS
     ' ============================================================
     ~class ShuffleDeckCommand {
-        -deck: Deck
+        -{final} deck: Deck
 
         ~ShuffleDeckCommand(deck: Deck)
         ~execute(): void
     }
 
     ~class SeeTheFutureCommand {
-        -deck: Deck
-        -timesFive: boolean
+        -{final} deck: Deck
+        -{final} timesFive: boolean
 
         ' NOTE: if timesFive is true, then sees 5 cards into the future (expansion pack version)
         ' NOTE: if timeFives is false, then 3 cards into the future (original version)
@@ -190,7 +187,7 @@ package domain {
     }
 
     ~class SwapTopAndBottomCardCommand {
-        -deck: Deck
+        -{final} deck: Deck
 
         ~SwapTopAndBottomCardCommand(deck: Deck)
         ~execute(): void
@@ -198,7 +195,7 @@ package domain {
     }
 
     ~class DefuseCommand {
-        -playerHand: PlayerHand
+        -{final} playerHand: PlayerHand
 
         ~DefuseCommand(playerHand: PlayerHand)
         ~execute(): void
@@ -211,8 +208,8 @@ package domain {
     }
 
      ~class SkipTurnCommand {
-        -turnOrder: TurnOrder
-        -isSuper: boolean
+        -{final} turnOrder: TurnOrder
+        -{final} isSuper: boolean
 
         ~SkipTurnCommand(turnOrder: TurnOrder, isSuper: boolean)
         ~execute(): void
@@ -220,7 +217,7 @@ package domain {
     }
 
     ~class ReverseTurnOrderCommand {
-        -turnOrder: TurnOrder
+        -{final} turnOrder: TurnOrder
 
         ~SkipTurnCommand(turnOrder: TurnOrder)
         ~execute(): void
@@ -230,7 +227,7 @@ package domain {
     ' PLAN: Utilize this class and GameInvoker list to implement attack stacking
     ' PLAN: and to replace the need for a manual attack queue
     ~class AttackPlayerCommand {
-        -turnOrder: TurnOrder
+        -{final} turnOrder: TurnOrder
 
         ~AttackCommand(turnOrder: TurnOrder)
         ~execute(): void
@@ -238,8 +235,8 @@ package domain {
     }
 
     ~class AttackTargetedPlayerCommand {
-        -turnOrder: TurnOrder
-        -targetPlayerID: PlayerID
+        -{final} turnOrder: TurnOrder
+        -{final} targetPlayerID: PlayerID
 
         ~AttackTargetedCommand(turnOrder: TurnOrder, targetPlayerID: PlayerID)
         ~execute(): void
@@ -247,14 +244,14 @@ package domain {
     }
 
     ~class FlipImplodeFaceUpCommand {
-        -deck: Deck
+        -{final} deck: Deck
 
         ~FlipImplodeFaceUpCommand(deck: Deck)
         ~execute(): void
     }
 
     ~class ExplodeCommand {
-        -playerHand: PlayerHand
+        -{final} playerHand: PlayerHand
         -deck: Deck
 
         ~ExplodeCommand(playerHand: PlayerHand, deck: Deck)
@@ -262,7 +259,7 @@ package domain {
     }
 
     ~class CursePlayerCommand {
-        -targetPlayerHand: PlayerHand
+        -{final} targetPlayerHand: PlayerHand
 
         ~CursePlayerCommand(targetPlayerHand: PlayerHand)
         ~execute(): void
@@ -270,7 +267,7 @@ package domain {
     }
 
     ~class MarkCardCommand {
-        -targetPlayerHand: PlayerHand
+        -{final} targetPlayerHand: PlayerHand
 
         ~MarkCardCommand(targetPlayerHand: PlayerHand)
         ~execute(): void
@@ -278,8 +275,8 @@ package domain {
     }
 
     ~class StealRandomCardCommand {
-        -sourcePlayerHand: PlayerHand
-        -targetPlayerHand: PlayerHand
+        -{final} sourcePlayerHand: PlayerHand
+        -{final} targetPlayerHand: PlayerHand
 
         ~StealRandomCardCommand(sourcePlayerHand: PlayerHand, targetPlayerHand: PlayerHand)
         ~execute(): void
@@ -287,40 +284,40 @@ package domain {
     }
 
     ~class AddCardTypeToHandCommand {
-        -cardType: CardType
-        -playerHand: PlayerHand
+        -{final} cardType: CardType
+        -{final} playerHand: PlayerHand
 
         ~AddCardTypeToHandCommand(cardType: CardType, playerHand: PlayerHand)
         ~execute(): void
     }
 
     ~class RemoveCardFromHandCommand {
-        -cardIndex: int
-        -playerHand: PlayerHand
+        -{final} cardIndex: int
+        -{final} playerHand: PlayerHand
 
         ~RemoveCardFromCommand(cardIndex: int, playerHand: PlayerHand)
         ~execute(): void
     }
 
     ~class DrawTopCardCommand {
-        -playerHand: PlayerHand
-        -deck: Deck
+        -{final} playerHand: PlayerHand
+        -{final} deck: Deck
 
         ~DrawTopCardCommand(playerHand: PlayerHand, deck: Deck)
         ~execute(): void
     }
 
     ~class DrawBottomCardCommand {
-        -playerHand: PlayerHand
-        -deck: Deck
+        -{final} playerHand: PlayerHand
+        -{final} deck: Deck
 
         ~DrawBottomCardCommand(playerHand: PlayerHand, deck: Deck)
         ~execute(): void
     }
 
     ~class CatomicBombCommand {
-        -deck: Deck
-        -turnOrder: TurnOrder
+        -{final} deck: Deck
+        -{final} turnOrder: TurnOrder
 
         ~CatomicBombCommand(deck: Deck, turnOrder: TurnOrder)
         ~execute(): void
@@ -331,9 +328,10 @@ package domain {
     '                          RECEIVERS
     ' ============================================================
 
+    ' TODO: try to abstract more of this logic to Commands to avoid low cohesion
     +class PlayerHand {
-        -playerID: PlayerID
-        -hand: List<Card>
+        -{final} playerID: PlayerID
+        -{final} hand: List<Card>
         -isDead: boolean
         -isCursed: boolean
 
@@ -359,9 +357,9 @@ package domain {
     +class TurnOrder {
         -numPlayers: int
         -activePlayer: PlayerID
-        -turnOrder: List<PlayerID>
-        -numTurnsPerPlayer: Map<PlayerID, Integer>
-        -random: Random
+        -{final} turnOrder: List<PlayerID>
+        -{final} numTurnsPerPlayer: Map<PlayerID, Integer>
+        -{final} random: Random
 
         +TurnOrder(numPlayers: int)
         ~startTurn(): void
@@ -376,7 +374,7 @@ package domain {
     }
 
     +class Deck {
-        -deck: List<Card>
+        -{final} deck: List<Card>
 
         +Deck()
         ~drawCardFromTop(): Card
@@ -392,7 +390,7 @@ package domain {
     }
 
     +class Card {
-        -cardType: CardType
+        -{final} cardType: CardType
         -isMarked: boolean
         -isFaceUp: boolean
 
@@ -472,6 +470,7 @@ package domain {
 
     GameInvoker-->"*"Command
 
+    ' TODO: see if can think of better way to structure reversability as a behavior while maintaining substituability
     ReversibleCommand..|>Command
     IrreversibleCommand..|>Command
 
