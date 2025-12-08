@@ -1,9 +1,8 @@
 @startuml
 
 ' NEXT BIG STEPS:
-' update constructor args as needed
-' add any instance variables each new class would need to fulfill functionality
-' add in the methods (and make sure accounting for all fields/functs of original design)
+' update instance variables and constructor args as needed to be fully functional
+' add in any methods I missed that are needed for functionality
 ' make sure i've updated all the class relationships/arrows
 ' dive deeper into things like access modifiers, design principles, etc
 
@@ -57,7 +56,7 @@ package ui {
         +TurnLogicUI(inputValidator: InputValidator, messages: ResourceBundle, numPlayers: int)
         ' PLAN: incorporate logic from printPlayerTurn into startTurn, if possible
         +startTurn(): void
-        'NOTE: promptForEndTurn was previously called checkIfTheyEndTurn
+        ' NOTE: promptForEndTurn was previously called checkIfTheyEndTurn
         -promptForTurnEnd(): boolean
         -endTurn(): boolean
         -checkIfGameOver(): boolean
@@ -230,6 +229,8 @@ package domain {
         +undo(): void
     }
 
+    ' PLAN: Utilize this class and GameInvoker list to implement attack stacking
+    ' PLAN: and to replace the need for a manual attack queue
     +class AttackPlayerCommand {
         -turnOrder: List<PlayerID>
 
@@ -250,7 +251,6 @@ package domain {
         +execute(): void
     }
 
-    ' TODO: go into the commands later to flesh out any args they need to be functional
     ' QUESTION: how accurate and functionally correct do I need to be with the specifics of each of these cards
     ' QUESTION: in my design, as I'm likely to miss some details since I didn't have to write use cases for all of these?
     +class CursePlayerCommand {
@@ -283,6 +283,7 @@ package domain {
     +class PlayerHand {
         +playerID: PlayerID
         -hand: List<Card>
+        -isDead: boolean
 
         +PlayerHand()
 
@@ -297,7 +298,6 @@ package domain {
         +playGarbageCollection(cardToDiscard: CardType)
         +playMark(playerIndex: int, cardIndex: int): void
         +playTargetedAttack(attackedPlayerIndex: int): void
-        'QUESTION: in what cases are the following two methods used, and do I need to keep them?
         +playExplodingKitten(playerIndex: int): boolean
         +playImplodingKitten(): void
 
@@ -306,8 +306,8 @@ package domain {
         +attackPlayer(player: Player): void
 
         -checkPlayerHandEmpty(player: Player): boolean
-        +checkIfPlayerDead(playerIndex: int): boolean
-        +checkIfPlayerHasCard(playerIndex: int, cardType: CardType): boolean
+        -checkIfPlayerDead(playerIndex: int): boolean
+        -checkIfPlayerHasCard(playerIndex: int, cardType: CardType): boolean
     }
 
     +class TurnOrder {
@@ -337,28 +337,6 @@ package domain {
         -insertCards(cardType: CardType, numberOfCards: int, bottom: boolean): void
         -insertExplodingKittenAtIndex(index: int): void
         -insertImplodingKittenAtIndex(index: int): void
-    }
-
-    ' TODO: I moved attack logic into this class but I need to go back and
-    ' TODO (continued): to figure out how to connect this / where to rest of design based on use cases
-    +class AttackQueue() {
-        -List<Integer> attackQueue;
-        -int attackCounter;
-        -int numberOfAttacks;
-        -boolean attacked;
-
-        +startAttackPhase(): void
-        +incrementAttackCounter(): void
-        +setAttackCounter(playerIndex: int): void
-        +addAttacks(): void
-        +addAttackQueue(attack: int): void
-        +removeAttackQueue(): int
-        +isAttackQueueEmpty(): boolean
-        +getAttacked(): boolean
-        +getAttackCounter(): int
-        +getNumberOfAttacks(): int
-        ~setNumberOfAttacks(numberOfAttacks: int): void
-        ~setAttacked(attacked: boolean): void
     }
 
     +class Card {
@@ -423,22 +401,6 @@ package domain {
         PLAYER_FOUR,
         PLAYER_FIVE
     }
-
-    ' List of command for reference
-    'ShuffleDeckCommand
-    'SeeTheFutureCommand
-    'SwapTopAndBottomCardCommand
-    'DrawBottomCardCommand
-    'DefuseCommand
-    'NopeCommand
-    'SkipTurnCommand
-    'ReverseTurnOrderCommand
-    'AttackPlayerCommand
-    'ImplodeCommand
-    'ExplodeCommand
-    'CursePlayerCommand
-    'MarkCardCommand
-    'StealRandomCardCommand
 
     GameLoader..>Deck
 
