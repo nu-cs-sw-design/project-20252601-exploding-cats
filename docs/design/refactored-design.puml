@@ -17,6 +17,7 @@ package ui {
         -gameType: GameType
         -numPlayers: numPlayers
         -gameLoader: GameLoader
+        -scanner: Scanner
 
         +GameUI()
         +promptForGameSetup(gameLoader: GameLoader): void
@@ -49,6 +50,8 @@ package ui {
         -numPlayers: int
         -turnOrder: TurnOrder
         -CardLogicUI: CardLogicUI
+        ' QUESTION: is it okay for each UI class to instantiate its own Scanner as needed (whether as instance or locally)?
+        -scanner: Scanner
 
         ' PLAN: TurnLogicUI instantiates the TurnOrder and CardLogicUI
         +TurnLogicUI(inputValidator: InputValidator, messages: ResourceBundle, numPlayers: int)
@@ -84,16 +87,19 @@ GameUI-->java.ResourceBundle
 GameUI-->domain.GameLoader
 GameUI-->domain.GameType
 GameUI..>ui.TurnLogicUI
+GameUI-->java.Scanner
 
 TurnLogicUI-->java.ResourceBundle
 TurnLogicUI-->domain.TurnOrder
 TurnLogicUI-->ui.CardLogicUI
+CardLogicUI..>java.Scanner
 
 CardLogicUI-->domain.SimpleCardCommandFactory
 CardLogicUI-->domain.GameInvoker
 CardLogicUI..>domain.CardType
+CardLogicUI..>java.Scanner
 
-'TODO: come back to these relationships for InputValidation to best match design principles
+'TODO: come back to these relationships for InputValidation and Scanner to best match design principles
 InputValidator-->domain.GameType
 GameUI..>ui.InputValidator
 TurnLogicUI-->ui.InputValidator
@@ -123,7 +129,7 @@ package domain {
         +executeActionCorrespondingToCardType(cardType: CardType)
     }
 
-    +class SimpleCardCommandFactory() {
+    +class SimpleCardCommandFactory {
         -deck: Deck
         -turnOrder: List<PlayerID>
 
@@ -232,11 +238,6 @@ package domain {
         +undo(): void
     }
 
-    +abstract class PlayerHandCommand {
-        +execute(): void
-        +undo(): void
-    }
-
     +class FlipImplodeFaceUpCommand {
         -playerHand: PlayerHand
 
@@ -272,6 +273,7 @@ package domain {
 
     +class StealRandomCardCommand {
         -targetPlayer: PlayerID
+        -random: Random
 
         +StealRandomCardCommand(targetPlayer: playerID)
         +execute(): void
@@ -443,13 +445,12 @@ package domain {
     GameInvoker-->"*"Command
     GameInvoker-->"*"PlayerHand
 
-    SimpleCardCommandFactory-->Deck
-    SimpleCardCommandFactory-->"*"PlayerID
-
-
-
     ReversibleCommand..|>Command
     IrreversibleCommand..|>Command
+
+    SimpleCardCommandFactory-->Deck
+    SimpleCardCommandFactory-->"*"PlayerID
+    SimpleCardCommandFactory..>Command
 
     ShuffleDeckCommand--|>ReversibleCommand
     SeeTheFutureCommand--|>ReversibleCommand
@@ -467,20 +468,27 @@ package domain {
     MarkCardCommand--|>ReversibleCommand
     StealRandomCardCommand--|>ReversibleCommand
 
+    'TODO: command instance vars
+    ShuffleDeckCommand-->Deck
+    DefuseCommand-->Deck
+
     TurnOrder--|>Receiver
     Deck--|>Receiver
     PlayerHand--|>Receiver
 
-    ShuffleDeckCommand-->Deck
-    DefuseCommand-->Deck
-
     Deck-u->"*"Card
+    Deck..>CardType
+
+    TurnOrder-->"*"PlayerID
+    TurnOrder..>CardType
+
+    PlayerHand-->PlayerID
+    PlayerHand-->"*"Card
+    PlayerHand..>CardType
+
     Card-->CardType
     CardType-->GameType
     CardType-->InputType
-
-
-    PlayerHand-->PlayerID
 }
 
 package java {
@@ -493,5 +501,7 @@ package java {
     +class Random {
     }
 }
+
+StealRandomCardCommand-->java.Random
 
 @enduml
