@@ -1,11 +1,5 @@
 @startuml
 
-' NEXT BIG STEPS:
-' update instance variables and constructor args as needed to be fully functional
-' add in any methods I missed that are needed for functionality
-' make sure i've updated all the class relationships/arrows
-' dive deeper into things like access modifiers, design principles, etc
-
 package ui {
     +class Main {
         +{static} main(String[] args): void
@@ -19,14 +13,13 @@ package ui {
         -scanner: Scanner
 
         +GameUI()
-        +promptForGameSetup(gameLoader: GameLoader): void
+        +promptForGameSetUp(gameLoader: GameLoader): void
         -promptForLanguage(): void
         -promptForGameType(): void
         -promptForNumberOfPlayers(): int
-        ' PLAN: GameUI will call GameLoader#setupGame() and will initialize any other necessary classes
-        ' PLAN: to get the game started here, which will include passing in the ResourceBundle to other UI classes,
-        ' PLAN: as well as passing in the game type and player number into domain-level classes
-        ' PLAN: startGame will end with calling TurnLogicUI#startTurn
+        ' PLAN: GameUI will call GameLoader#setUpGame() and GameLoader#getCommandFactory to get the game started here,
+        ' PLAN: and then it'll use its instance variables and the command factories to also instantiate
+        ' PLAN: any necessary UI classes, and lastly, it'll end with a call to turnLogicUI#startTurn
         +startGame(): void
     }
 
@@ -46,15 +39,13 @@ package ui {
     +class TurnLogicUI {
         -inputValidator: InputValidator
         -messages: ResourceBundle
-        -numPlayers: int
-        -turnOrder: TurnOrder
-        -CardLogicUI: CardLogicUI
-        ' QUESTION: is it okay for each UI class to instantiate its own Scanner as needed (whether as instance or locally)?
+        ' QUESTION: is it okay for each UI class to instantiate its own Scanner as needed (whether as an instance or locally)?
         -scanner: Scanner
+        -cardLogicUI: CardLogicUI
 
-        ' PLAN: TurnLogicUI instantiates the TurnOrder and CardLogicUI
-        +TurnLogicUI(inputValidator: InputValidator, messages: ResourceBundle, numPlayers: int)
+        ' PLAN: TurnLogicUI instantiates CardLogicUI and Scanner
         ' PLAN: incorporate logic from printPlayerTurn into startTurn, if possible
+        +TurnLogicUI(inputValidator: InputValidator, messages: ResourceBundle)
         +startTurn(): void
         ' NOTE: promptForEndTurn was previously called checkIfTheyEndTurn
         -promptForTurnEnd(): boolean
@@ -63,24 +54,23 @@ package ui {
         -endGame(): void
     }
 
-    +class CardLogicUI {
+    ~class CardLogicUI {
         -{final} commandFactory: SimpleCardCommandFactory
         -{final} gameInvoker: GameInvoker
-        -{final} inputValidator: InputValidator
 
-        +CardLogicUI(commandFactory, gameInvoker, inputValidator)
-
+        ~CardLogicUI(commandFactory: SimpleCardCommandFactory, gameInvoker: GameInvoker)
         ' PLAN: playCard() will call the user for the desired inputs, take that input in
         ' PLAN: then, based on the CardType, will call the commandFactory's createCommand with
         ' PLAN: any necessary args, and then will call the invoker to execute that CommandType
         ' PLAN: The goal here is to abstract the need to have so many different card-specific 'play' methods
-        +playCard(CardType card): void
+        ~playCard(CardType card): void
         ' PLAN: will prompt the user for the desired inputs based on the card's InputType
         -promptPlayerForInputType(CardType card): void
     }
 }
 Main..>ui.GameUI
 Main..>domain.GameLoader
+Main..>domain.GameInvoker
 
 GameUI-->java.ResourceBundle
 GameUI-->domain.GameLoader
@@ -89,7 +79,6 @@ GameUI..>ui.TurnLogicUI
 GameUI-->java.Scanner
 
 TurnLogicUI-->java.ResourceBundle
-TurnLogicUI-->domain.TurnOrder
 TurnLogicUI-->ui.CardLogicUI
 CardLogicUI..>java.Scanner
 
@@ -102,7 +91,6 @@ CardLogicUI..>java.Scanner
 InputValidator-->domain.GameType
 GameUI..>ui.InputValidator
 TurnLogicUI-->ui.InputValidator
-CardLogicUI-->ui.InputValidator
 
 package domain {
     ' ============================================================
@@ -112,12 +100,14 @@ package domain {
         -deck: Deck
         -turnOrder: TurnOrder
         -playerHands: Map<PlayerID, PlayerHand>
+        -commandFactory: SimpleCardCommandFactory
 
         +GameLoader()
-        +setUpGame()
-        -instantiateDeck()
-        -instantiateTurnOrder()
-        -instantiatePlayerHands()
+        +setUpGame(): void
+        +getCommandFactory(): SimpleCardCommandFactory
+        -instantiateDeck(): void
+        -instantiateTurnOrder(): void
+        -instantiatePlayerHands(): void
     }
 
     +class GameInvoker {
@@ -131,6 +121,7 @@ package domain {
     +class SimpleCardCommandFactory {
         -deck: Deck
         -turnOrder: List<PlayerID>
+        -playerHands: Map<PlayerID, PlayerHand>
 
         +CardCommandFactory()
         ' TODO: may need to adjust this if it's necessary to pass in the user input here (2 types of it: playerID vs int)
@@ -459,7 +450,7 @@ package domain {
     SimpleCardCommandFactory-->"*"PlayerID
     SimpleCardCommandFactory..>Command
 
-    ' TODO: Interfaces implemented by concrete commands
+    ' Interfaces implemented by concrete commands
     ShuffleDeckCommand--|>ReversibleCommand
     SeeTheFutureCommand--|>ReversibleCommand
     SwapTopAndBottomCardCommand--|>ReversibleCommand
@@ -479,7 +470,7 @@ package domain {
     AddCardTypeToHandCommand--|>IrreversibleCommand
     RemoveCardFromHandCommand--|>IrreversibleCommand
 
-    ' TODO: Concrete command instance variables
+    ' Concrete command instance variables
     StealRandomCardCommand-->"*"PlayerHand
     MarkCardCommand-->PlayerHand
     CursePlayerCommand-->PlayerHand
