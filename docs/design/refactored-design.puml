@@ -1,96 +1,90 @@
 @startuml
 
+' TODO: go back in to add static and final
+
 package ui {
     +class Main {
         +{static} main(String[] args): void
     }
 
-    +class GameUI {
+    ~class GameStartUI {
         -messages: ResourceBundle
-        -gameType: GameType
-        -numPlayers: numPlayers
         -gameLoader: GameLoader
         -scanner: Scanner
-
-        +GameUI()
-        +promptForGameSetUp(gameLoader: GameLoader): void
-        -promptForLanguage(): void
-        -promptForGameType(): void
-        -promptForNumberOfPlayers(): int
-        ' PLAN: GameUI will call GameLoader#setUpGame() and GameLoader#getCommandFactory to get the game started here,
-        ' PLAN: and then it'll use its instance variables and the command factories to also instantiate
-        ' PLAN: any necessary UI classes, and lastly, it'll end with a call to turnLogicUI#startTurn
-        +startGame(): void
-    }
-
-    +class InputValidator {
+        -input
         -numPlayers: int
         -gameType: GameType
 
-        +InputValidator(numPlayers: int)
-        -checkValidPlayerIndexInput(): int
-        -checkUserWithinBounds(userIndex: int): boolean
-        -checkCardWithinBounds(cardIndex: int, player: Player): boolean
-        -checkNegativeIndexDeck(indexToInsert: int): boolean
-        -checkIfGreaterThanMaxIndexDeck(indexToInsert: int): boolean
-        -checkCardIfInvalid(card: Card): boolean
+        ~GameStartUI()
+        ~startGame(): void
+        -promptForLanguage(): void
+        ' PLAN: instantiateGameDurationUI will first instantiate InputReader, prompting for player
+        ' PLAN: number and game type, which it will then use to instantiate GameDurationUI
+        -instantiateGameDurationUI(): GameDurationUI
     }
 
-    +class TurnLogicUI {
-        -inputValidator: InputValidator
+    ~class InputReader {
         -messages: ResourceBundle
-        ' QUESTION: is it okay for each UI class to instantiate its own Scanner as needed (whether as an instance or locally)?
         -scanner: Scanner
-        -cardLogicUI: CardLogicUI
+        -numPlayers: int
+        -gameType: GameType
 
-        ' PLAN: TurnLogicUI instantiates CardLogicUI and Scanner
-        ' PLAN: incorporate logic from printPlayerTurn into startTurn, if possible
-        +TurnLogicUI(inputValidator: InputValidator, messages: ResourceBundle)
-        +startTurn(): void
-        ' NOTE: promptForEndTurn was previously called checkIfTheyEndTurn
-        -promptForTurnEnd(): boolean
-        -endTurn(): boolean
-        -checkIfGameOver(): boolean
-        -endGame(): void
+        +InputReader(scanner: Scanner, messages: ResourceBundle)
+        ~promptForGameType(): GameType
+        ~promptForNumberOfPlayers(): int
+        ~promptForPlayerID(): PlayerID
+        ~promptForCardIndex(): int
+        ~promptForCardType(): CardType
+        -playerIndexIsValid(): boolean
+        -cardTypeIsValid(): boolean
     }
 
-    ~class CardLogicUI {
+    ~class GameDurationUI {
         -{final} commandFactory: SimpleCardCommandFactory
         -{final} gameInvoker: GameInvoker
+        -inputReader: InputReader
+        -messages: ResourceBundle
 
-        ~CardLogicUI(commandFactory: SimpleCardCommandFactory, gameInvoker: GameInvoker)
+        ' PLAN: GameDurationUI calls GameLoader to get commandFactory and gameInvoker
+        ' PLAN: incorporate logic from printPlayerTurn into startTurn, if possible
+        ~GameDurationUI(messages: ResourceBundle)
+        ~runGameLoop(): void
+        -promptForTurnStart(): void
         ' PLAN: playCard() will call the user for the desired inputs, take that input in
         ' PLAN: then, based on the CardType, will call the commandFactory's createCommand with
         ' PLAN: any necessary args, and then will call the invoker to execute that CommandType
         ' PLAN: The goal here is to abstract the need to have so many different card-specific 'play' methods
-        ~playCard(CardType card): void
+        -playCard(CardType card): void
         ' PLAN: will prompt the user for the desired inputs based on the card's InputType
         -promptPlayerForInputType(CardType card): void
+        ' NOTE: promptForEndTurn was previously called checkIfTheyEndTurn
+        -promptForTurnEnd(): boolean
+        -endTurn(): void
+        -checkIfGameOver(): boolean
+        -endGame(): void
     }
 }
-Main..>ui.GameUI
+Main..>ui.GameStartUI
 Main..>domain.GameLoader
 Main..>domain.GameInvoker
+Main..>java.Scanner
 
-GameUI-->java.ResourceBundle
-GameUI-->domain.GameLoader
-GameUI-->domain.GameType
-GameUI..>ui.TurnLogicUI
-GameUI-->java.Scanner
+GameStartUI-->java.ResourceBundle
+GameStartUI-->domain.GameLoader
+GameStartUI-->java.Scanner
+GameStartUI-->domain.GameType
+GameStartUI..>ui.GameDurationUI
+GameStartUI..>ui.InputReader
 
-TurnLogicUI-->java.ResourceBundle
-TurnLogicUI-->ui.CardLogicUI
-CardLogicUI..>java.Scanner
+GameDurationUI-->java.ResourceBundle
+GameDurationUI-->ui.InputReader
+GameDurationUI-->domain.SimpleCardCommandFactory
+GameDurationUI-->domain.GameInvoker
+GameDurationUI..>domain.CardType
 
-CardLogicUI-->domain.SimpleCardCommandFactory
-CardLogicUI-->domain.GameInvoker
-CardLogicUI..>domain.CardType
-CardLogicUI..>java.Scanner
-
-'TODO: come back to these relationships for InputValidation and Scanner to best match design principles
-InputValidator-->domain.GameType
-GameUI..>ui.InputValidator
-TurnLogicUI-->ui.InputValidator
+InputReader-->java.ResourceBundle
+InputReader-->java.Scanner
+InputReader-->GameType
 
 package domain {
     ' ============================================================
@@ -100,22 +94,42 @@ package domain {
         -deck: Deck
         -turnOrder: TurnOrder
         -playerHands: Map<PlayerID, PlayerHand>
-        -commandFactory: SimpleCardCommandFactory
+        -{static}{final} commandFactory: SimpleCardCommandFactory
+        -{static}{final} gameInvoker: GameInvoker
 
-        +GameLoader()
+        +GameLoader(numPlayers: )
         +setUpGame(): void
-        +getCommandFactory(): SimpleCardCommandFactory
+        +{static} getCommandFactory(): SimpleCardCommandFactory
+        +{static} getGameInvoker(): GameInvoker
         -instantiateDeck(): void
         -instantiateTurnOrder(): void
         -instantiatePlayerHands(): void
+        -instantiateCommandFactory(): void
+        -instantiateGameInvoker(): void
     }
 
     +class GameInvoker {
-        -commands: List<Command>
+        -commandHistory: CommandHistory
 
         +GameInvoker()
-        +addCommand(command: Command): void
-        +executeCommands(): void
+        ' PLAN: executeCommand always calls commandHistory.addCommand()
+        ' PLAN: and performs no action if a card is Noped
+        +executeCommand(): void
+    }
+
+    ~class CommandHistory {
+        ' PLAN: Nope Commands are not actually included in either List
+        ' PLAN: Rather, Nope cards dictate how Commands move between the lists
+        -commandsToDo: List<Command>
+        -nopedCommands: List<Command>
+
+        ~CommandHistory()
+        ' PLAN: addCommand checks if the command is a NOPE command, and if so, calls either
+        ' PLAN: undoLastCommand or redoLastCommand as appropriate (the latter representing)
+        ' PLAN: "noping" a Nope
+        ~addCommand(): void
+        -undoLastCommand(): void
+        -redoLastCommand(): void
     }
 
     +class SimpleCardCommandFactory {
@@ -190,7 +204,6 @@ package domain {
         ~execute(): void
     }
 
-    'TODO: take steps to make Nope functional
     ~class NopeCommand {
         ~NopeCommand()
         ~execute(): void
@@ -335,6 +348,7 @@ package domain {
         -checkIfPlayerDead(playerIndex: int): boolean
         -checkIfPlayerHasCard(playerIndex: int, cardType: CardType): boolean
         -checkPlayerHandEmpty(player: Player): boolean
+        -checkCardIndexWithinBounds(index: int): boolean
     }
 
     +class TurnOrder {
@@ -367,6 +381,7 @@ package domain {
         ~peekTopThreeCards(): List<Card>
         ~peekTopFiveCards(): List<Card>
         ~insertCardAtIndex(cardType: CardType, index: int): void
+        -checkCardIndexWithinBounds(index: int): boolean
     }
 
     +class Card {
@@ -425,7 +440,8 @@ package domain {
     +enum InputType {
         NO_INPUT,
         PLAYER_ID_INPUT,
-        INDEX_INPUT
+        INDEX_INPUT,
+        CARD_TYPE_INPUT
     }
 
     +enum PlayerID {
@@ -486,7 +502,7 @@ package domain {
     SkipTurnCommand-->TurnOrder
     ReverseTurnOrderCommand-->TurnOrder
 
-    ' ExplodeCommand-->Deck
+    ExplodeCommand-->Deck
     ShuffleDeckCommand-->Deck
     StealRandomCardCommand-->Deck
     FlipImplodeFaceUpCommand-->Deck
@@ -498,7 +514,7 @@ package domain {
     AttackTargetedPlayerCommand-->PlayerID
     AddCardTypeToHandCommand-->CardType
 
-    Deck-u->"*"Card
+    Deck-->"*"Card
     Deck..>CardType
 
     TurnOrder-->"*"PlayerID
