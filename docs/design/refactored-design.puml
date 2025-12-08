@@ -327,6 +327,8 @@ package domain {
     ' ============================================================
 
     ' TODO: try to abstract more of this logic to Commands to avoid low cohesion
+    ' TODO: which may depend slightly on my success with passing in args from the
+    ' TODO: UI in my implementation
     +class PlayerHand {
         -{final} playerID: PlayerID
         -{final} hand: List<Card>
