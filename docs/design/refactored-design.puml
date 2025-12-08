@@ -97,7 +97,7 @@ CardLogicUI..>domain.CardType
 InputValidator-->domain.GameType
 GameUI..>ui.InputValidator
 TurnLogicUI-->ui.InputValidator
-CardLogicUI-->domain.InputValidator
+CardLogicUI-->ui.InputValidator
 
 package domain {
     +class GameLoader {
@@ -115,45 +115,12 @@ package domain {
         -commands: List<Command>
 
         +GameInvoker()
+        +addCommand(command: Command): void
         +executeCommands(): void
     }
 
     interface Receiver {
         +executeActionCorrespondingToCardType(cardType: CardType)
-    }
-
-    +class TurnOrder {
-        -numPlayers: int
-        -activePlayer: PlayerID
-        -turnOrder: List<PlayerID>
-
-        +TurnOrder(numPlayers: int)
-        +executeActionCorrespondingToCardType(cardType: CardType)
-        -selectRandomPlayer(): PlayerID
-        -incrementPlayerTurn(): void
-        -decrementNumberOfTurns(): void
-        -setCurrentPlayerTurn(turn: int): void
-    }
-
-    +class Deck {
-        -deck: List<Card>
-
-        +Deck()
-        +executeActionCorrespondingToCardType(cardType: CardType)
-        -drawCardFromTop(): Card
-        -drawCardFromBottom(): Card
-        -swapTopAndBottomCards(): void
-        -shuffleDeck(): void
-        -peekTopThreeCards(): List<Card>
-        -peekTopFiveCards(): List<Card>
-        -insertCards(cardType: CardType, numberOfCards: int, bottom: boolean): void
-        -insertExplodingKittenAtIndex(index: int): void
-        -insertImplodingKittenAtIndex(index: int): void
-    }
-
-    interface Command {
-        +execute(): void
-        +undo(): void
     }
 
     +class SimpleCardCommandFactory() {
@@ -171,22 +138,24 @@ package domain {
         -getCommandForIndexInputCard(cardType: CardType, targetIndex: int): Command
     }
 
-    +abstract class DeckActionCommand {
+    +interface Command {
         +execute(): void
         +undo(): void
     }
 
-    note top of DeckActionCommand
-        I represented DeckActionCommand with an abstract class
-        rather than an interface so that I can provide a default
-        concrete implementation of the undo() method that does nothing
-        because not all cards can be Nope'd (i.e. exploding kittens,
-        defuse, etc.). However, any card that CAN be noped can
-        simply override the undo() method.
+    +abstract class ReversibleCommand {
+        +execute(): void
+        +undo(): void
+    }
 
-        On a separate note, to avoid cluttering the diagram for the time being,
-        I only included the concrete command classes that correspond
-        to the 4 cards that I will be implementing during my refactoring.
+    +abstract class IrreversibleCommand {
+        +execute(): void
+        +{final} undo(): void
+    }
+
+    note right of IrreversibleCommand
+        The final undo() method in IrreversibleCommand would be a
+        concrete method throwing an UnsupportedOperationException.
     end note
 
     +class ShuffleDeckCommand {
@@ -231,35 +200,12 @@ package domain {
         +execute(): void
     }
 
-    +class ExplodeCommand {
-        +ExplodeCommand()
-        +execute(): void
-    }
-
-     +class ImplodeCommand {
-        -playerHand: PlayerHand
-
-        +ImplodeCommand()
-        +execute(): void
-}
-
     +class NopeCommand {
         +NopeCommand()
 
         +execute(): void
         +undo(): void
     }
-
-    'TODO: may need to update this interface to allow for arguments (in which case won't share common Command interface)
-    +abstract class TurnOrderCommand {
-        +execute()
-        +{final} undo(): void
-    }
-
-    note right of TurnOrderCommand
-        The final undo() method in TurnOrderCommand would be a
-        concrete method throwing an UnsupportedOperationException.
-    end note
 
      +class SkipTurnCommand {
         -turnOrder: List<PlayerID>
@@ -270,7 +216,7 @@ package domain {
         +undo(): void
     }
 
-    +class ReverseTurnOrder {
+    +class ReverseTurnOrderCommand {
         -turnOrder: List<PlayerID>
 
         +SkipTurnCommand(turnOrder: List<PlayerID>)
@@ -286,9 +232,21 @@ package domain {
         +undo(): void
     }
 
-    +abstract class TurnOrderCommand {
-        +execute()
-        +{final} undo(): void
+    +abstract class PlayerHandCommand {
+        +execute(): void
+        +undo(): void
+    }
+
+    +class FlipImplodeFaceUpCommand {
+        -playerHand: PlayerHand
+
+        +FlipImplodeFaceUpCommand()
+        +execute(): void
+    }
+
+    +class ExplodeCommand {
+        +ExplodeCommand()
+        +execute(): void
     }
 
     ' TODO: go into the commands later to flesh out any args they need to be functional
@@ -320,8 +278,6 @@ package domain {
         +undo(): void
     }
 
-
-
     +class PlayerHand {
         +playerID: PlayerID
         -hand: List<Card>
@@ -350,8 +306,35 @@ package domain {
         -checkPlayerHandEmpty(player: Player): boolean
         +checkIfPlayerDead(playerIndex: int): boolean
         +checkIfPlayerHasCard(playerIndex: int, cardType: CardType): boolean
+    }
 
+    +class TurnOrder {
+        -numPlayers: int
+        -activePlayer: PlayerID
+        -turnOrder: List<PlayerID>
 
+        +TurnOrder(numPlayers: int)
+        +executeActionCorrespondingToCardType(cardType: CardType)
+        -selectRandomPlayer(): PlayerID
+        -incrementPlayerTurn(): void
+        -decrementNumberOfTurns(): void
+        -setCurrentPlayerTurn(turn: int): void
+    }
+
+    +class Deck {
+        -deck: List<Card>
+
+        +Deck()
+        +executeActionCorrespondingToCardType(cardType: CardType)
+        -drawCardFromTop(): Card
+        -drawCardFromBottom(): Card
+        -swapTopAndBottomCards(): void
+        -shuffleDeck(): void
+        -peekTopThreeCards(): List<Card>
+        -peekTopFiveCards(): List<Card>
+        -insertCards(cardType: CardType, numberOfCards: int, bottom: boolean): void
+        -insertExplodingKittenAtIndex(index: int): void
+        -insertImplodingKittenAtIndex(index: int): void
     }
 
     ' TODO: I moved attack logic into this class but I need to go back and
@@ -379,6 +362,7 @@ package domain {
     +class Card {
         -cardType: CardType
         -isMarked: boolean
+        -isFaceUp: boolean
 
         +Card(cardType: CardType)
     }
@@ -438,26 +422,54 @@ package domain {
         PLAYER_FIVE
     }
 
-    TurnOrder--|>Receiver
-    Deck--|>Receiver
+    ' List of command for reference
+    'ShuffleDeckCommand
+    'SeeTheFutureCommand
+    'SwapTopAndBottomCardCommand
+    'DrawBottomCardCommand
+    'DefuseCommand
+    'NopeCommand
+    'SkipTurnCommand
+    'ReverseTurnOrderCommand
+    'AttackPlayerCommand
+    'ImplodeCommand
+    'ExplodeCommand
+    'CursePlayerCommand
+    'MarkCardCommand
+    'StealRandomCardCommand
 
     GameLoader..>Deck
-    GameLoader..>ShuffleDeckCommand
-    GameLoader..>DefuseCommand
-    GameLoader..>ExplodeCommand
-    GameLoader..>NopeCommand
 
     GameInvoker-->"*"Command
-    DeckActionCommand--|>Command
-    TurnOrderCommand--|>Command
-    ShuffleDeckCommand..|>DeckActionCommand
-    DefuseCommand..|>DeckActionCommand
-    ExplodeCommand..|>DeckActionCommand
-    NopeCommand..|>DeckActionCommand
+    GameInvoker-->"*"PlayerHand
 
-    NextTurnCommand..|>TurnOrderCommand
-    SkipTurnCommand..|>TurnOrderCommand
-    ForceTurnCommand..|>TurnOrderCommand
+    SimpleCardCommandFactory-->Deck
+    SimpleCardCommandFactory-->"*"PlayerID
+
+
+
+    ReversibleCommand..|>Command
+    IrreversibleCommand..|>Command
+
+    ShuffleDeckCommand--|>ReversibleCommand
+    SeeTheFutureCommand--|>ReversibleCommand
+    SwapTopAndBottomCardCommand--|>ReversibleCommand
+    DrawBottomCardCommand--|>IrreversibleCommand
+    DrawTopCardCommand--|>IrreversibleCommand
+    DefuseCommand--|>IrreversibleCommand
+    NopeCommand--|>ReversibleCommand
+    SkipTurnCommand--|>ReversibleCommand
+    ReverseTurnOrderCommand--|>ReversibleCommand
+    AttackPlayerCommand--|>ReversibleCommand
+    FlipImplodeFaceUpCommand--|>IrreversibleCommand
+    ExplodeCommand--|>IrreversibleCommand
+    CursePlayerCommand--|>ReversibleCommand
+    MarkCardCommand--|>ReversibleCommand
+    StealRandomCardCommand--|>ReversibleCommand
+
+    TurnOrder--|>Receiver
+    Deck--|>Receiver
+    PlayerHand--|>Receiver
 
     ShuffleDeckCommand-->Deck
     DefuseCommand-->Deck
@@ -465,8 +477,9 @@ package domain {
     Deck-u->"*"Card
     Card-->CardType
     CardType-->GameType
+    CardType-->InputType
 
-    GameInvoker-->"*"PlayerHand
+
     PlayerHand-->PlayerID
 }
 
