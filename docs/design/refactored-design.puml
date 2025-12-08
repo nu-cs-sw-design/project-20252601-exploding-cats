@@ -8,19 +8,14 @@ package ui {
     }
 
     ~class GameStartUI {
-        -messages: ResourceBundle
+        -inputReader: InputReader
         -gameLoader: GameLoader
-        -scanner: Scanner
-        -input
-        -numPlayers: int
-        -gameType: GameType
 
-        ~GameStartUI()
+        ~GameStartUI(inputReader: InputReader, gameLoader: GameLoader)
+        ' PLAN: calls InputReader's methods to prompt for language, game type, and player number
+        ' PLAN: then, calls GameLoader#setUpGame
+        ' PLAN: lastly, instantiates GameDurationUI and calls runGameLoop
         ~startGame(): void
-        -promptForLanguage(): void
-        ' PLAN: instantiateGameDurationUI will first instantiate InputReader, prompting for player
-        ' PLAN: number and game type, which it will then use to instantiate GameDurationUI
-        -instantiateGameDurationUI(): GameDurationUI
     }
 
     ~class InputReader {
@@ -30,6 +25,7 @@ package ui {
         -gameType: GameType
 
         +InputReader(scanner: Scanner, messages: ResourceBundle)
+        ~promptForLanguage(): ResourceBundle
         ~promptForGameType(): GameType
         ~promptForNumberOfPlayers(): int
         ~promptForPlayerID(): PlayerID
@@ -64,17 +60,16 @@ package ui {
         -endGame(): void
     }
 }
-Main..>ui.GameStartUI
-Main..>domain.GameLoader
-Main..>domain.GameInvoker
-Main..>java.Scanner
 
-GameStartUI-->java.ResourceBundle
+Main..>java.Scanner
+Main..>InputReader
+Main..>ui.GameStartUI
+
+GameStartUI..>java.ResourceBundle
 GameStartUI-->domain.GameLoader
-GameStartUI-->java.Scanner
-GameStartUI-->domain.GameType
+GameStartUI..>domain.GameType
 GameStartUI..>ui.GameDurationUI
-GameStartUI..>ui.InputReader
+GameStartUI-->ui.InputReader
 
 GameDurationUI-->java.ResourceBundle
 GameDurationUI-->ui.InputReader
@@ -85,19 +80,23 @@ GameDurationUI..>domain.CardType
 InputReader-->java.ResourceBundle
 InputReader-->java.Scanner
 InputReader-->GameType
+InputReader..>PlayerID
+InputReader..>CardType
 
 package domain {
     ' ============================================================
     '         ABSTRACTIONS AND/OR ACCESSIBLE BY UI LAYER
     ' ============================================================
     +class GameLoader {
+        -numPlayers: int
+        -gameType: GameType
         -deck: Deck
         -turnOrder: TurnOrder
         -playerHands: Map<PlayerID, PlayerHand>
         -{static}{final} commandFactory: SimpleCardCommandFactory
         -{static}{final} gameInvoker: GameInvoker
 
-        +GameLoader(numPlayers: )
+        +GameLoader(numPlayers: int, gameType: GameType)
         +setUpGame(): void
         +{static} getCommandFactory(): SimpleCardCommandFactory
         +{static} getGameInvoker(): GameInvoker
@@ -455,7 +454,13 @@ package domain {
     ' ============================================================
     '                      CLASS RELATIONSHIPS
     ' ============================================================
-    GameLoader..>Deck
+    GameLoader-->Deck
+    GameLoader-->TurnOrder
+    GameLoader-->"*"PlayerHand
+    GameLoader-->GameType
+    GameLoader-->"*"PlayerID
+    GameLoader-->SimpleCardCommandFactory
+    GameLoader-->GameInvoker
 
     GameInvoker-->"*"Command
 
