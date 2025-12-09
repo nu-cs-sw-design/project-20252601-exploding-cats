@@ -20,7 +20,7 @@ class InputReader {
     this.scanner = scanner;
   }
 
-  ResourceBundle promptForLanguage() {
+  void promptAndSetLanguage() {
     final String language = "1. English\n2. 한국어\n";
     final String askLanguage = "Enter the number to choose the language:";
     final String invalidChoice = "Invalid choice. Please enter 1 or 2.";

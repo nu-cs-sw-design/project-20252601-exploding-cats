@@ -5,14 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class Deck {
-  // TODO: update this deck size if I add more card types
-  private final int MAX_DECK_SIZE = 52;
   private final List<Card> deck;
   private int numPlayers;
-
-//  private Random rand;
-//  private int maxDeckSize;
-//  private Instantiator instantiator;
 
   private static final String DECK_FULL_EXCEPTION = "Deck is full, cannot insert more cards.";
   private static final String DRAW_FROM_EMPTY_DECK_EXCEPTION =
@@ -26,16 +20,6 @@ public class Deck {
   private static final String INDEX_OUT_OF_RANGE_EXCEPTION =
           "Index out of range: %d. Valid range is 0 to %d.";
 
-//  public Deck(List<Card> deck, Random rand, int numPlayers, int maxDeckSize,
-//              Instantiator instantiator) {
-//    this.deck = deck;
-//    this.rand = rand;
-//
-//    this.numPlayers = numPlayers;
-//    this.maxDeckSize = maxDeckSize;
-//    this.instantiator = instantiator;
-//  }
-
   public Deck(int numPlayers) {
     this.numPlayers = numPlayers;
     this.deck = new ArrayList<Card>();
@@ -43,15 +27,34 @@ public class Deck {
   }
 
   private void initializeDeck() {
-    final int cardAddedFourTimes = 4;
-    final int cardAddedFiveTimes = 5;
+    // NOTE: Because I am only implementing 4 types of cards,
+    // I've kept the number of Exploding Kittens and Defuse cards
+    // consistent with the original game, but I have increased
+    // the number of Nope and Shuffle cards so that the total
+    // number of cards across the Deck and all PlayerHands is still 56
+    int numNopeInDeck = 23; // instead of original 4
+    int numShuffleInDeck = 23; // instead of original 5
+    int numExplodingKittensInDeck = numPlayers - 1;
+    int numDefuseInDeck = 6 - numPlayers;
 
-    // TODO: where are the exploding kittens added?
-    // TODO: and how can we make sure to have enough cards for both draw pile and player hands?
-    insertCard(CardType.NOPE, cardAddedFourTimes, false);
-    insertCard(CardType.SHUFFLE, cardAddedFourTimes, false);
-    insertCard(CardType.DEFUSE,
-            cardAddedFiveTimes - numPlayers, false);
+    insertCard(CardType.NOPE, numNopeInDeck, false);
+    insertCard(CardType.SHUFFLE, numShuffleInDeck, false);
+    insertCard(CardType.DEFUSE, numDefuseInDeck, false);
+    insertCard(CardType.EXPLODING_KITTEN, numExplodingKittensInDeck, false);
+  }
+
+  void removeExplodingKittens() {
+    for (int i = deck.size() - 1; i >= 0; i--) {
+      Card card = deck.get(i);
+      if (card.isCardType(CardType.EXPLODING_KITTEN)) {
+        deck.remove(i);
+      }
+    }
+  }
+
+  void reinsertExplodingKittens() {
+    int numExplodingKittensInDeck = numPlayers - 1;
+    insertCard(CardType.EXPLODING_KITTEN, numExplodingKittensInDeck, false);
   }
 
   void insertCard(CardType cardType, int numberOfCards, boolean bottom) {
@@ -72,9 +75,6 @@ public class Deck {
     }
   }
 
-//  int getDeckSize() {
-//    return deck.size();
-//  }
 
 //  public Card getCardAtIndex(int index) {
 //    return deck.get(index);
@@ -135,8 +135,12 @@ public class Deck {
 //    return deck.get(index).getCardType();
 //  }
 
+  int getDeckSize() {
+    return deck.size();
+  }
+
   private boolean addedOutOfBounds(int numberOfCards) {
-    return (deck.size() + numberOfCards) > MAX_DECK_SIZE;
+    return (deck.size() + numberOfCards) > deck.size();
   }
 
 //  private boolean explodingKittenIsAtIndex(int index) {

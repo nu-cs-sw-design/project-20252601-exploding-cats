@@ -37,6 +37,10 @@ public class TurnOrder {
     activePlayerID = turnOrder.get(0);
   }
 
+  PlayerID getCurrentPlayer() {
+    return activePlayerID;
+  }
+
   int checkNumberOfAlivePlayers() {
     return turnOrder.size();
   }

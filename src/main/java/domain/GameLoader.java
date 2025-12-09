@@ -5,56 +5,45 @@ import java.util.Map;
 
 public class GameLoader {
   private final int numPlayers;
-  private Deck deck;
-  private TurnOrder turnOrder;
+  private final Deck deck;
   private Map<PlayerID, PlayerHand> playerHands;
-  private SimpleCardCommandFactory commandFactory;
-  private GameInvoker gameInvoker;
 
-  public GameLoader(int numPlayers) {
+  public GameLoader(int numPlayers, Deck deck) {
     this.numPlayers = numPlayers;
+    this.deck = deck;
   }
 
-  public void setUpGame() {
-    this.instantiateDeck();
-    this.instantiateTurnOrder();
-    this.instantiatePlayerHands();
-    this.instantiateCommandFactory();
-    this.instantiateGameInvoker();
-  }
+  public Map<PlayerID, PlayerHand> instantiatePlayerHands() {
+   this.playerHands = new HashMap<PlayerID, PlayerHand>();
 
-  private void instantiateDeck() {
-    this.deck = new Deck(numPlayers);
-  }
-
-  private void instantiateTurnOrder() {
-    this.turnOrder = new TurnOrder(numPlayers);
-  }
-
-  private void instantiatePlayerHands() {
-    this.playerHands = new HashMap<PlayerID, PlayerHand>();
     int numPlayersLeft = numPlayers;
-
     for (PlayerID playerID : PlayerID.values()) {
       if (numPlayersLeft == 0) {
         break;
       }
 
       PlayerHand playerHand = new PlayerHand(playerID);
-      this.playerHands.put(playerID, playerHand);
+      playerHands.put(playerID, playerHand);
       numPlayersLeft--;
     }
+
+    populatePlayerHands();
+    return this.playerHands;
   }
 
-  public SimpleCardCommandFactory instantiateCommandFactory() {
-    SimpleCardCommandFactory factory = new SimpleCardCommandFactory(deck, turnOrder, playerHands);
-    this.commandFactory = factory;
-    return factory;
-  }
+  private void populatePlayerHands() {
+    final int startHandSize = 5;
+    deck.removeExplodingKittens();
+    deck.shuffleDeck();
 
-  public GameInvoker instantiateGameInvoker() {
-    GameInvoker gameInvoker = new GameInvoker();
-    this.gameInvoker = gameInvoker;
-    return gameInvoker;
+    for (int cardsDrawn = 0; cardsDrawn < startHandSize; cardsDrawn++) {
+      for (PlayerHand hand: playerHands.values()) {
+        Card card = deck.drawCard();
+        hand.addCardToHand(card);
+      }
+    }
+
+    deck.reinsertExplodingKittens();
+    deck.shuffleDeck();
   }
 }

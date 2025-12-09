@@ -12,7 +12,7 @@ public class PlayerHand {
   private static final String INVALID_INDEX_EXCEPTION = "Invalid Index";
   private static final String NO_CARD_FOUND_EXCEPTION = "No Card Found";
 
-  PlayerHand(PlayerID playerID) {
+  public PlayerHand(PlayerID playerID) {
     this.playerID = playerID;
     this.hand = new ArrayList<>();
   }
@@ -41,6 +41,10 @@ public class PlayerHand {
       }
     }
     return false;
+  }
+
+  List<Card> getHand() {
+    return hand;
   }
 
   private int getIndexOfCardType(CardType cardType) {

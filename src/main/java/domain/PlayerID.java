@@ -4,5 +4,6 @@ public enum PlayerID {
   PLAYER_ONE,
   PLAYER_TWO,
   PLAYER_THREE,
-  PLAYER_FOUR
+  PLAYER_FOUR,
+  PLAYER_FIVE
 }

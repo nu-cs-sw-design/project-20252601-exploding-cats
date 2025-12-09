@@ -1,22 +1,30 @@
 package presentation;
 
-import domain.GameLoader;
+import domain.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ResourceBundle;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
   public static void main(String[] args) {
+    // Setting up the game UI
     Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
     InputReader inputReader = new InputReader(scanner);
-
-    // TODO: Change output type of promptForLanguage to void if don't need to give it to GameStartUI
-    ResourceBundle messages = inputReader.promptForLanguage();
+    inputReader.promptAndSetLanguage();
     int numPlayers = inputReader.promptForNumPlayers();
 
-    GameLoader gameLoader = new GameLoader(numPlayers);
-    GameStartUI gameStartUI = new GameStartUI(inputReader, gameLoader);
-    gameStartUI.startGame();
+    // Setting up the game domain
+    Deck deck = new Deck(numPlayers);
+    GameLoader gameLoader = new GameLoader(numPlayers, deck);
+    TurnOrder turnOrder = new TurnOrder(numPlayers);
+    Map<PlayerID, PlayerHand> playerHands = gameLoader.instantiatePlayerHands();
+    SimpleCardCommandFactory commandFactory = new SimpleCardCommandFactory(deck, turnOrder, playerHands);
+    GameInvoker gameInvoker = new GameInvoker();
+    GameModel gameModel = new GameModel(deck, turnOrder, playerHands);
+
+    // Starting game
+    GameDurationUI gameDurationUI = new GameDurationUI(inputReader, commandFactory, gameInvoker, gameModel);
+    gameDurationUI.runGameLoop();
   }
 }
