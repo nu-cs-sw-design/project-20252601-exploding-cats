@@ -82,16 +82,6 @@ public class Player {
 		}
 	}
 
-	public int checkNumberOfCardsInHand(CardType cardType) {
-		int catCounter = 0;
-		for (Card card : hand) {
-			if (card.getCardType() == cardType) {
-				catCounter++;
-			}
-		}
-		return catCounter;
-	}
-
 	public boolean getIsDead() {
 		return isDead;
 	}

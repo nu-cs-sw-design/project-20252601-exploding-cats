@@ -42,16 +42,11 @@ public Deck(List<Card> deck, Random rand, int numberOfPlayers, int maxDeckSize,
 	}
 
 	public void initializeDeck() {
-		final int cardAddedThreeTimes = 3;
 		final int cardAddedFourTimes = 4;
 		final int cardAddedFiveTimes = 5;
-		final int cardAddedOnce = 1;
-		final int cardAddedTwice = 2;
 
 		insertCard(CardType.NOPE, cardAddedFourTimes, false);
-
 		insertCard(CardType.SHUFFLE, cardAddedFourTimes, false);
-
 		insertCard(CardType.DEFUSE,
 						cardAddedFiveTimes - numberOfPlayers, false);
 	}
@@ -88,16 +83,6 @@ public Deck(List<Card> deck, Random rand, int numberOfPlayers, int maxDeckSize,
 		}
 		else {
 			return this.deck.remove(this.deck.size() - 1);
-		}
-	}
-
-	public Card drawCardFromBottom() {
-		if (this.deck.isEmpty()) {
-			throw new UnsupportedOperationException
-					(DRAW_FROM_EMPTY_DECK_EXCEPTION);
-		}
-		else {
-			return this.deck.remove(0);
 		}
 	}
 

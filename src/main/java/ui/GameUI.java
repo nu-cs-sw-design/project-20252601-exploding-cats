@@ -78,48 +78,13 @@ public class GameUI {
 		}
 	}
 
-	private int checkValidPlayerIndexInput() {
-		Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
-		final String targetedAttackPrompt = messages.getString("targetedAttackPrompt");
-		final String userPlayedCardAtIndex = messages.getString("userPlayedCardAtIndex");
-		final String playerChooseDifferent = messages.getString("playerChooseDifferent");
-		final String invalidIndex = messages.getString("invalidIndex");
-		final String invalidNumber = messages.getString("invalidNumber");
-
-		while (true) {
-			System.out.println(targetedAttackPrompt);
-			String userInputTwo = scanner.nextLine();
-			try {
-				int userIndex = Integer.parseInt(userInputTwo);
-				if (checkUserWithinBounds(userIndex)) {
-					if (checkIfPlayerIsAlive(userIndex)) {
-						final String formattedMessage = MessageFormat.format
-							(userPlayedCardAtIndex, userIndex);
-						System.out.println(formattedMessage);
-						return userIndex;
-					} else {
-						System.out.println(playerChooseDifferent);
-					}
-				} else {
-					final String formattedMessage = MessageFormat.format
-						(invalidIndex, game.getNumberOfPlayers() - 1);
-					System.out.println(formattedMessage);
-				}
-			} catch (NumberFormatException e) {
-				System.out.println(invalidNumber);
-			}
-		}
-	}
-
 	private void printPlayerTurn() {
 		int currentPlayer = game.getPlayerTurn();
 		final String dividerLine = messages.getString("dividerLine");
 		final String currentPlayerTurnMessage;
 
-			currentPlayerTurnMessage = MessageFormat.format(
-					messages.getString("currentPlayerTurn"), currentPlayer);
-
-		Player player = game.getPlayerAtIndex(currentPlayer);
+		currentPlayerTurnMessage = MessageFormat.format(
+				messages.getString("currentPlayerTurn"), currentPlayer);
 
 		System.out.println(dividerLine);
 
@@ -241,17 +206,6 @@ public class GameUI {
 		final String validRangeMessage = MessageFormat.format(
 		messages.getString("validRangeMessage"), game.getDeckSize());
 		final String invalidInputMessage = messages.getString("invalidInputMessage");
-		final String cursedMessage = messages.getString("cursedExplodingMessage");
-		final String notDefuseCardMessage = messages.getString("notDefuseCardMessage");
-		final String discardCardMessage = messages.getString("discardCardMessage");
-		final String reenterDefuseMessage = messages.getString("reenterDefuseMessage");
-
-		final String anotherExplodingKittenMessage =
-				messages.getString("anotherExplodingKittenMessage");
-		final String defusedFirstExplodingKitten =
-				messages.getString("defusedFirstExplodingKitten");
-		final String discardStreakingKittenMessage =
-				messages.getString("discardStreakingKittenMessage");
 
 		System.out.println(explodingKittenMessage);
 		if (checkExplodingKitten(playerIndex)) {
@@ -259,8 +213,6 @@ public class GameUI {
 			System.out.println(youExplodedMessage);
 			return false;
 		} else {
-			Player player = game.getPlayerAtIndex(playerIndex);
-
 			System.out.println(defusedMessage);
 			System.out.println(whereToInsertMessage);
 			System.out.println(validRangeMessage);
@@ -281,8 +233,6 @@ public class GameUI {
 	}
 
 	private boolean endTurn() {
-		Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
-
 		Card cardDrawn = game.drawCard();
 		if (checkIfNumberOfTurnsGreaterThanZero()) {
 			game.decrementNumberOfTurns();
@@ -292,8 +242,6 @@ public class GameUI {
 		final String cardDrawnMessage = MessageFormat.format
 				(messages.getString("cardDrawnMessage"),
 						getLocalizedCardType(cardDrawn.getCardType()));
-		final String streakingKittenMessage = messages.getString("streakingKittenMessage");
-		final String invalidNumber = messages.getString("invalidNumber");
 		if (checkMatchingCardType(cardDrawn.getCardType(), CardType.EXPLODING_KITTEN)) {
 			System.out.println(cardDrawnMessage);
 
@@ -373,35 +321,14 @@ public class GameUI {
 		game.playShuffle(numberOfShuffle);
 	}
 
-	private boolean checkCardIfInvalid(Card card) {
-
-		CardType[] inValidCards = {CardType.NOPE,
-						CardType.DEFUSE, CardType.EXPLODING_KITTEN};
-		for (CardType inValidCard : inValidCards) {
-			if (checkMatchingCardType(card.getCardType(), inValidCard)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public void startTurn() {
 		if (checkIfNumberOfTurnsIsZero()) {
 
 			game.setPlayerNumberOfTurns();
 		}
 		printPlayerTurn();
-		Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
 		final String playerTurnsMessage = MessageFormat.format
 				(messages.getString("playerTurnsMessage"), game.getNumberOfTurns());
-		final String enterValidIntegerMessage = messages.getString("enterValidInteger");
-		final String notEnoughCardsComboMessage = messages.getString
-				("notEnoughCardsComboMessage");
-		final String notEnoughCardsMessage = messages.getString("notEnoughCardsMessage");
-		final String howManyFeralCatsMessage = messages.getString("howManyFeralCats");
-		final String invalidFeralCatsNumberMessage =
-				messages.getString("invalidFeralCatsNumber");
-		final String invalidCardTypeMessage = messages.getString("invalidCardTypeMessage");
 
 		System.out.println(playerTurnsMessage);
 
@@ -410,7 +337,6 @@ public class GameUI {
 
 			int cardIndex = playedCard();
 			int playerIndex = game.getPlayerTurn();
-			Player player = game.getPlayerAtIndex(playerIndex);
 			CardType cardType = game.getCardType(playerIndex, cardIndex);
 
 			if (checkIfDifferentCardType(cardType, CardType.EXPLODING_KITTEN)
@@ -439,30 +365,6 @@ public class GameUI {
 
 	public boolean checkIfGameOver() {
 		return game.checkNumberOfAlivePlayers() == 1;
-	}
-
-	private boolean checkUserWithinBounds(int userIndex) {
-		return userIndex >= 0 && userIndex < game.getNumberOfPlayers();
-	}
-
-	private boolean checkUserOutOfBounds(int userIndex) {
-		return userIndex < 0 || userIndex >= game.getNumberOfPlayers();
-	}
-
-	private boolean checkIfPlayerIsAlive(int userIndex) {
-		return !game.checkIfPlayerDead(userIndex);
-	}
-
-	private boolean hasCard(int userIndex, CardType cardType) {
-		return game.checkIfPlayerHasCard(userIndex, cardType);
-	}
-
-	private boolean hasCardDirect(Player player, CardType cardType) {
-		return player.hasCard(cardType);
-	}
-
-	private boolean checkCardWithinBounds(int cardIndex, Player player) {
-		return cardIndex >= 0 && cardIndex < player.getHandSize();
 	}
 
 	private boolean checkCardWithinBoundsIndexed(int cardIndex, int playerIndex) {
@@ -502,20 +404,6 @@ public class GameUI {
 		return game.getNumberOfTurns() == 0;
 	}
 
-	private boolean checkIfCurrentPlayerTurn(int playerIndex) {
-		return playerIndex == game.getPlayerTurn();
-	}
-
-	private int getDeckSize() {
-		return game.getDeckSize();
-	}
-
-	private boolean checkFeralCat(int numberOfFeralCatsToPlay,
-					int numberOfFeralCats, int numberOfCatType, int threshold) {
-		return numberOfFeralCatsToPlay > numberOfFeralCats ||
-				numberOfFeralCatsToPlay + numberOfCatType < threshold;
-	}
-
 	private boolean checkIfDifferentCardType(CardType cardType, CardType cardTypeTwo) {
 		return cardType != cardTypeTwo;
 	}
@@ -524,21 +412,9 @@ public class GameUI {
 		return checkAllPlayersForNope(game.getPlayerTurn());
 	}
 
-	private boolean checkNumberOfCards(Player player, CardType cardtype, int threshold) {
-		return player.checkNumberOfCardsInHand(cardtype) >= threshold;
-	}
-
 	private String getLocalizedCardType(CardType cardType) {
 		String cardTypeKey = "card." + cardType.name();
 		return messages.getString(cardTypeKey);
-	}
-
-	private boolean checkNegativeIndexDeck(int indexToInsert) {
-		return indexToInsert < 0;
-	}
-
-	private boolean checkIfGreaterThanMaxIndexDeck(int indexToInsert) {
-		return indexToInsert > game.getDeck().getDeckSize();
 	}
 }
 

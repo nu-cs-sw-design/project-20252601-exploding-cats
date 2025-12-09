@@ -1,34 +1,19 @@
 package domain.game;
 
-import java.util.List;
 import java.util.Random;
 
 public class Game {
 	private int numberOfPlayers;
-
 	private domain.game.Deck deck;
 	private domain.game.Player[] players;
 	private Random rand;
-
 	private int currentPlayerTurn;
 	private int currentPlayerNumberOfTurns;
-
 	private int[] turnTracker;
-
-	private static final String PLAYER_HAND_EMPTY_EXCEPTION = "Player has no cards to steal";
 	private static final String INVALID_PLAYER_INDEX_EXCEPTION = "Invalid player index.";
-	private static final String INVALID_GAME_TYPE_EXCEPTION = "Must Provide a Valid Game Type";
 	private static final String NO_PLAYERS_EXCEPTION = "No players to select from.";
-	private static final String OUT_OF_BOUNDS_PLAYER_INDEX_EXCEPTION =
-			"playerIndex out of Bounds";
-	private static final String PLAYER_DEAD_EXCEPTION = "Player is dead";
-	private static final String CARD_INDEX_OUT_OF_BOUNDS_EXCEPTION = "cardIndex out of Bounds";
-	private static final String CARD_TYPE_NOT_FOUND_EXCEPTION =
-			"Player does not have the card type to steal";
 	private static final String INVALID_NUMBER_OF_PLAYERS_EXCEPTION =
 			"Number of players must be between 2 and 5 inclusive";
-	private static final String NUMBER_OF_TURNS_OUT_OF_BOUNDS_EXCEPTION =
-			"Number of turns must be between 1 and 6.";
 
 public Game (int numberOfPlayers,
 						 Deck deck, domain.game.Player[] players,
@@ -199,21 +184,8 @@ public Game (int numberOfPlayers,
 
 	}
 
-	private boolean checkCardOutOfBoundsIndexed(int cardIndex, int playerIndex) {
-		return cardIndex > getHandSize(playerIndex) - 1
-				|| cardIndex < 0;
-	}
-
 	private boolean checkUserOutOfBounds(int userIndex) {
 		return userIndex < 0 || userIndex >= getNumberOfPlayers();
-	}
-
-	private boolean checkDeckHasOneCardOrLess() {
-		return deck.getDeckSize() <= 1;
-	}
-
-	private boolean checkPlayerHandEmpty(domain.game.Player player) {
-		return player.getHandSize() == 0;
 	}
 
 	private boolean checkInvalidNumberOfPlayers(int numPlayers) {
@@ -225,17 +197,6 @@ public Game (int numberOfPlayers,
 
 	private boolean hasZeroPlayers() {
 		return numberOfPlayers == 0;
-	}
-
-	private boolean checkIfNumberOfTurnsOutOfBounds() {
-		final int minNumberOfTurnsThreshold = 1;
-		final int maxNumberOfTurnsThreshold = 6;
-		return currentPlayerNumberOfTurns < minNumberOfTurnsThreshold
-				|| currentPlayerNumberOfTurns > maxNumberOfTurnsThreshold;
-	}
-
-	private boolean checkIfNumberOfTurnsIsZero() {
-		return currentPlayerNumberOfTurns == 0;
 	}
 
 	public int getTurnCountOfPlayer(int playerIndex) {
