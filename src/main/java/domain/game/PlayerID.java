@@ -1,4 +1,8 @@
 package domain.game;
 
-public class PlayerID {
+public enum PlayerID {
+  PLAYER_ONE,
+  PLAYER_TWO,
+  PLAYER_THREE,
+  PLAYER_FOUR
 }
