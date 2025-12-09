@@ -13,11 +13,6 @@ public class GameInvoker {
   }
 
   public void addCommand(Command command) {
-    if (isIrreversible(command)) {
-      commandHistory.add(command);
-      return;
-    }
-
     if (isNope(command)) {
       this.undoLastCommand();
       return;
@@ -35,22 +30,15 @@ public class GameInvoker {
     nopedCommandHistory.clear();
   }
 
-  private boolean isIrreversible(Command command) {
-    return (command instanceof IrreversibleCommand);
-  }
-
-  private boolean isNope(Command command) {
-    return (command instanceof NopeCommand);
-  }
-
   private void undoLastCommand() {
     int lastCommandIndex = commandHistory.size() - 1;
     Command lastCommand = commandHistory.get(lastCommandIndex);
 
     if (isNope(lastCommand)) {
       redoLastCommand();
-    }
-    else {
+    } else if (lastCommand.isIrreversible()) {
+      throw new UnsupportedOperationException("Cannot nope an irreversible command.");
+    } else {
       commandHistory.remove(lastCommandIndex);
       nopedCommandHistory.add(lastCommand);
     }
@@ -60,5 +48,9 @@ public class GameInvoker {
     int lastNopedCommandIndex = nopedCommandHistory.size() - 1;
     Command lastNopedCommand = nopedCommandHistory.remove(lastNopedCommandIndex);
     commandHistory.add(lastNopedCommand);
+  }
+
+  private boolean isNope(Command command) {
+    return (command instanceof NopeCommand);
   }
 }

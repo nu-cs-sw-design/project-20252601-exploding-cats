@@ -1,12 +1,7 @@
 package domain.game;
 
-class NopeCommand extends ReversibleCommand {
+class NopeCommand extends Command {
   NopeCommand() {
-  }
-
-  public void execute() {
-  }
-
-  public void undo() {
+    isIrreversible = false;
   }
 }

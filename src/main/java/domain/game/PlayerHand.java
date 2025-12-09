@@ -22,21 +22,31 @@ public class PlayerHand {
     hand.add(card);
   }
 
-  void removeCardFromHand(int index) {
-    checkCardIndexIsWithinBounds(index);
+//  void removeCardFromHand(int index) {
+//    checkCardIndexIsWithinBounds(index);
+//    hand.remove(index);
+//    // TODO: only return cardType if actually necessary for one of the 4 required cards
+//    // CardType cardType = hand.get(index).getCardType();
+//    // return cardType;
+//  }
+
+  void removeCardTypeFromHand(CardType cardType) {
+    int index = getIndexOfCardType(cardType);
     hand.remove(index);
-    // TODO: only return cardType if actually necessary for one of the 4 required cards
-    // CardType cardType = hand.get(index).getCardType();
-    // return cardType;
   }
 
-  private boolean hasCard(CardType cardType) {
+  boolean hasCardType(CardType cardType) {
     for (Card card : hand) {
       if (card.isCardType(cardType)) {
         return true;
       }
     }
     return false;
+  }
+
+  boolean playExplode() {
+    // TODO: add anything more that's needed here later
+    return isDead = true;
   }
 
   private int getIndexOfCardType(CardType cardType) {
@@ -51,9 +61,9 @@ public class PlayerHand {
     throw new IllegalArgumentException(NO_CARD_FOUND_EXCEPTION);
   }
 
-  private void checkCardIndexIsWithinBounds(int index) {
-    if (index < 0 || index >= hand.size()) {
-      throw new IllegalArgumentException(INVALID_INDEX_EXCEPTION);
-    }
-  }
+//  private void checkCardIndexIsWithinBounds(int index) {
+//    if (index < 0 || index >= hand.size()) {
+//      throw new IllegalArgumentException(INVALID_INDEX_EXCEPTION);
+//    }
+//  }
 }

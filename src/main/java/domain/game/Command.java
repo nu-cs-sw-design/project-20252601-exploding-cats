@@ -1,5 +1,10 @@
 package domain.game;
 
-public interface Command {
-  void execute();
+public abstract class Command {
+  protected boolean isIrreversible;
+
+  void execute() {}
+  boolean isIrreversible() {
+    return isIrreversible;
+  }
 }
