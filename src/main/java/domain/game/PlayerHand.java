@@ -3,7 +3,7 @@ package domain.game;
 import java.util.ArrayList;
 import java.util.List;
 
-' TODO: go back into class diagram once I finalize implementation
+// TODO: go back into class diagram once I finalize implementation
 public class PlayerHand {
   final PlayerID playerID;
   final List<Card> hand;
@@ -15,7 +15,6 @@ public class PlayerHand {
   PlayerHand(PlayerID playerID) {
     this.playerID = playerID;
     this.hand = new ArrayList<>();
-    this.isDead = false;
   }
 
   void addCardToHand(Card card) {
@@ -44,11 +43,6 @@ public class PlayerHand {
     return false;
   }
 
-  boolean playExplode() {
-    // TODO: add anything more that's needed here later
-    return isDead = true;
-  }
-
   private int getIndexOfCardType(CardType cardType) {
     for (int i = 0; i < hand.size(); i++) {
       Card card = hand.get(i);
@@ -60,6 +54,11 @@ public class PlayerHand {
 
     throw new IllegalArgumentException(NO_CARD_FOUND_EXCEPTION);
   }
+
+  // TODO: may need command that uses this? I assume this is for selection of card
+//  Card getCardAtIndex(int index) {
+//    return hand.get(index);
+//  }
 
 //  private void checkCardIndexIsWithinBounds(int index) {
 //    if (index < 0 || index >= hand.size()) {

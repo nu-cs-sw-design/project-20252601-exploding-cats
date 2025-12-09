@@ -3,14 +3,10 @@ package domain.game;
 import java.util.*;
 
 public class TurnOrder {
-  private int numPlayers;
   private PlayerID activePlayerID;
   private final List<PlayerID> turnOrder;
-  private final Map<PlayerID, Integer> numTurnsPerPlayer;
 
   public TurnOrder(int numPlayers) {
-    this.numPlayers = numPlayers;
-    this.numTurnsPerPlayer = new HashMap<PlayerID, Integer>();
     this.turnOrder = new ArrayList<PlayerID>();
 
     int numPlayersLeft = numPlayers;
@@ -20,7 +16,6 @@ public class TurnOrder {
       }
 
       turnOrder.add(playerID);
-      numTurnsPerPlayer.put(playerID, 1);
       numPlayersLeft--;
     }
 
@@ -29,11 +24,24 @@ public class TurnOrder {
     this.activePlayerID = turnOrder.get(0);
   }
 
-  void startTurn() {
-
+  void playExplode() {
+    // TODO: add anything more that's needed here later
+    turnOrder.remove(activePlayerID);
+    activePlayerID = turnOrder.get(0);
   }
 
-  private void endTurn() {
+  // TODO: create commands that utilize the following functions?
+  void nextPlayerTurn() {
+    turnOrder.remove(activePlayerID);
+    turnOrder.add(activePlayerID);
+    activePlayerID = turnOrder.get(0);
+  }
 
+  int checkNumberOfAlivePlayers() {
+    return turnOrder.size();
+  }
+
+  boolean playerIsAlive(PlayerID playerID) {
+    return turnOrder.contains(playerID);
   }
 }

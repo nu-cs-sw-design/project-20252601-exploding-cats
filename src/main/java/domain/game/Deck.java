@@ -72,9 +72,9 @@ public class Deck {
     }
   }
 
-  int getDeckSize() {
-    return deck.size();
-  }
+//  int getDeckSize() {
+//    return deck.size();
+//  }
 
 //  public Card getCardAtIndex(int index) {
 //    return deck.get(index);
@@ -106,17 +106,17 @@ public class Deck {
 
   // TODO: figure out where this was called and if should keep
   // TOOD: i imagine it would be necessary during deck instantiation?
-  private int removeBombs() {
-    int counter = 0;
-    for (int index = 0; index < deck.size(); index++) {
-      if (checkIfExplodingKitten(index)) {
-        counter++;
-        deck.remove(index);
-        index--;
-      }
-    }
-    return counter;
-  }
+//  private int removeBombs() {
+//    int counter = 0;
+//    for (int index = 0; index < deck.size(); index++) {
+//      if (checkIfExplodingKitten(index)) {
+//        counter++;
+//        deck.remove(index);
+//        index--;
+//      }
+//    }
+//    return counter;
+//  }
 
   void insertExplodingKittenAtIndex(int indexToInsert) {
     if (indexToInsert < 0) {
@@ -131,22 +131,22 @@ public class Deck {
     }
   }
 
-  protected CardType getCardTypeAtIndex(int index) {
-    return deck.get(index).getCardType();
-  }
+//  protected CardType getCardTypeAtIndex(int index) {
+//    return deck.get(index).getCardType();
+//  }
 
   private boolean addedOutOfBounds(int numberOfCards) {
-    return (deck.size() + numberOfCards) > maxDeckSize;
+    return (deck.size() + numberOfCards) > MAX_DECK_SIZE;
   }
 
-  private boolean explodingKittenIsAtIndex(int index) {
-    Card cardAtIndex = deck.get(index);
-    return cardAtIndex.isCardType(CardType.EXPLODING_KITTEN);
-  }
+//  private boolean explodingKittenIsAtIndex(int index) {
+//    Card cardAtIndex = deck.get(index);
+//    return cardAtIndex.isCardType(CardType.EXPLODING_KITTEN);
+//  }
 
-  private boolean checkIfIndexOutOfRange(int index) {
-    return index < 0 || index >= deck.size();
-  }
+//  private boolean checkIfIndexOutOfRange(int index) {
+//    return index < 0 || index >= deck.size();
+//  }
 
 }
 
