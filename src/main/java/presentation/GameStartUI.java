@@ -1,7 +1,7 @@
 package presentation;
 
 import domain.GameLoader;
-import ui.InputReader;
+import presentation.InputReader;
 
 class GameStartUI {
   private final InputReader inputReader;
