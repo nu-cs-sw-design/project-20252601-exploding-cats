@@ -375,8 +375,11 @@ package domain {
 
     +class Deck {
         -{final} deck: List<Card>
+        ' TODO: add class dependencies and diff private methods for creating diff types of decks
+        -{final} gameType: GameType
+        -{final} numPlayers: int
 
-        +Deck()
+        +Deck(gameType: GameType, numPlayers: int)
         ~drawCardFromTop(): Card
         ~drawCardFromBottom(): Card
         ~swapTopAndBottomCards(): void
