@@ -1,4 +1,4 @@
-package domain.game;
+package domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +51,6 @@ public class GameInvoker {
   }
 
   private boolean isNope(Command command) {
-    return (command instanceof NopeCommand);
+    return (command instanceof domain.NopeCommand);
   }
 }

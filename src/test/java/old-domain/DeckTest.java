@@ -1,5 +1,8 @@
 package domain.game;
 
+import domain.Card;
+import domain.CardType;
+import domain.Deck;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +20,7 @@ public class DeckTest {
     Random rand = EasyMock.createMock(Random.class);
     Card firstCard = EasyMock.createMock(Card.class);
     Card secondCard = EasyMock.createMock(Card.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
 
     List<Card> deckOfSize2 =
             new ArrayList<>(Arrays.asList(firstCard, secondCard));
@@ -37,7 +40,7 @@ public class DeckTest {
     Card firstCard = EasyMock.createMock(Card.class);
     Card secondCard = EasyMock.createMock(Card.class);
     Card thirdCard = EasyMock.createMock(Card.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
 
     List<Card> deckOfSize3 =
             new ArrayList<>(Arrays.asList(firstCard, secondCard, thirdCard));
@@ -54,7 +57,7 @@ public class DeckTest {
 
     List<Card> deckOfSize0 = new ArrayList<>();
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
 
     EasyMock.replay(rand, instantiator);
 
@@ -68,7 +71,7 @@ public class DeckTest {
     final int maxDeckSize = 3;
     Card firstCard = EasyMock.createMock(Card.class);
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
 
     List<Card> deckOfSize2 =
             new ArrayList<>(Arrays.asList(firstCard, firstCard));
@@ -86,7 +89,7 @@ public class DeckTest {
     Random rand = EasyMock.createMock(Random.class);
     Card firstCard = EasyMock.createMock(Card.class);
     Card secondCard = EasyMock.createMock(Card.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     List<Card> deckOfSize2 =
             new ArrayList<>(Arrays.asList(secondCard, firstCard));
     EasyMock.expect(rand.nextInt(2)).andReturn(0);
@@ -104,7 +107,7 @@ public class DeckTest {
     final int maxDeckSize = 3;
 
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     List<Card> deckOfSize2 = new ArrayList<>();
     EasyMock.replay(rand, instantiator);
     Deck deck = new Deck(deckOfSize2, rand, 0, maxDeckSize, instantiator);
@@ -124,7 +127,7 @@ public class DeckTest {
     Card secondCard = EasyMock.createMock(Card.class);
     final int firstRandNumber = 3;
     final int secondRandNumber = 2;
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
 
     List<Card> deckOfSize3 =
             new ArrayList<>(Arrays.asList(firstCard, firstCard, secondCard));
@@ -146,7 +149,7 @@ public class DeckTest {
     final int maxDeckSize = 3;
 
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     Card expectedCard = EasyMock.createMock(Card.class);
     EasyMock.expect(instantiator.createCard(CardType.SHUFFLE)).andReturn(expectedCard);
     CardType cardType = CardType.SHUFFLE;
@@ -165,7 +168,7 @@ public class DeckTest {
     final int maxDeckSize = 3;
 
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     Card expectedCard = EasyMock.createMock(Card.class);
     Card expectedCardTwo = EasyMock.createMock(Card.class);
 
@@ -190,7 +193,7 @@ public class DeckTest {
     final int maxDeckSize = 3;
 
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     Card expectedCard = EasyMock.createMock(Card.class);
     Card expectedCardTwo = EasyMock.createMock(Card.class);
 
@@ -220,7 +223,7 @@ public class DeckTest {
     final int maxDeckSize = 3;
 
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     Card expectedCard = EasyMock.createMock(Card.class);
     Card expectedCardTwo = EasyMock.createMock(Card.class);
 
@@ -257,7 +260,7 @@ public class DeckTest {
     final int fourthCardIndex = 4;
 
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     Card expectedCard = EasyMock.createMock(Card.class);
     Card expectedCardTwo = EasyMock.createMock(Card.class);
     Card expectedCardThree = EasyMock.createMock(Card.class);
@@ -302,7 +305,7 @@ public class DeckTest {
     final int numberOfPlayers = 5;
 
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
 
     Card expectedCardThree = EasyMock.createMock(Card.class);
 
@@ -332,7 +335,7 @@ public class DeckTest {
     final int maxDeckSize = 42;
 
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     List<Card> emptyDeck = EasyMock.createMock(List.class);
 
     EasyMock.expect(emptyDeck.isEmpty()).andReturn(true);
@@ -360,7 +363,7 @@ public class DeckTest {
 
     Card card1 = EasyMock.createMock(Card.class);
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     List<Card> oneCardDeck = EasyMock.createMock(List.class);
 
     EasyMock.expect(oneCardDeck.isEmpty()).andReturn(false).times(1);
@@ -386,7 +389,7 @@ public class DeckTest {
 
     Card card2 = EasyMock.createMock(Card.class);
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     List<Card> twoCardsDeck = EasyMock.createMock(List.class);
 
     EasyMock.expect(twoCardsDeck.isEmpty()).andReturn(false).times(1);
@@ -411,7 +414,7 @@ public class DeckTest {
 
     Random rand = EasyMock.createMock(Random.class);
     Card firstCard = EasyMock.createMock(Card.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     List<Card> maxSizeDeck = EasyMock.createMock(List.class);
 
     EasyMock.expect(maxSizeDeck.size()).andReturn(1).times(1);
@@ -448,7 +451,7 @@ public class DeckTest {
     Random rand = EasyMock.createMock(Random.class);
     Card firstCard = EasyMock.createMock(Card.class);
     Card secondCard = EasyMock.createMock(Card.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
 
     List<Card> maxSizeDeck = EasyMock.createMock(List.class);
 
@@ -493,7 +496,7 @@ public class DeckTest {
     Random rand = EasyMock.createMock(Random.class);
     Card firstCard = EasyMock.createMock(Card.class);
     Card secondCard = EasyMock.createMock(Card.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
 
     List<Card> maxSizeDeck = EasyMock.createMock(List.class);
 
@@ -545,7 +548,7 @@ public class DeckTest {
     Random rand = EasyMock.createMock(Random.class);
     Card firstCard = EasyMock.createMock(Card.class);
     Card secondCard = EasyMock.createMock(Card.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
 
     List<Card> maxSizeDeck = EasyMock.createMock(List.class);
 
@@ -590,7 +593,7 @@ public class DeckTest {
     final int maxDeckSize = 42;
 
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     List<Card> oneCardDeck = EasyMock.createMock(List.class);
 
     EasyMock.replay(rand, instantiator, oneCardDeck);
@@ -620,7 +623,7 @@ public class DeckTest {
     final int deckSizeNoExplodingKitten = 4;
 
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
 
     Card card1 = EasyMock.createMock(Card.class);
     Card card2 = EasyMock.createMock(Card.class);
@@ -682,7 +685,7 @@ public class DeckTest {
     final int deckSizeNoExplodingKitten = 4;
 
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
 
     Card card1 = EasyMock.createMock(Card.class);
     Card card2 = EasyMock.createMock(Card.class);
@@ -744,7 +747,7 @@ public class DeckTest {
     final int deckSizeNoExplodingKitten = 4;
 
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
 
     Card card1 = EasyMock.createMock(Card.class);
     Card card2 = EasyMock.createMock(Card.class);
@@ -801,7 +804,7 @@ public class DeckTest {
     final int deckSizeNoExplodingKitten = 4;
 
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     List<Card> cardsDeck = EasyMock.createMock(List.class);
 
     EasyMock.expect(cardsDeck.size()).andReturn(deckSizeNoExplodingKitten).once();
@@ -834,7 +837,7 @@ public class DeckTest {
     Card card1 = EasyMock.createMock(Card.class);
     Card card2 = EasyMock.createMock(Card.class);
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     Deck deck = new Deck(threeCardsDeck, rand,
             0, maxDeckSize, instantiator);
 
@@ -885,7 +888,7 @@ public class DeckTest {
     Card card1 = EasyMock.createMock(Card.class);
     Card card2 = EasyMock.createMock(Card.class);
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     Deck deck = new Deck(threeCardsDeck, rand,
             0, maxDeckSize, instantiator);
 
@@ -926,7 +929,7 @@ public class DeckTest {
     Card card1 = EasyMock.createMock(Card.class);
     Card card2 = EasyMock.createMock(Card.class);
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     Deck deck = new Deck(threeCardsDeck, rand, 0,
             maxDeckSize, instantiator);
 
@@ -966,7 +969,7 @@ public class DeckTest {
     Card card1 = EasyMock.createMock(Card.class);
     Card card2 = EasyMock.createMock(Card.class);
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     Deck deck = new Deck(threeCardsDeck, rand,
             0, maxDeckSize, instantiator);
 

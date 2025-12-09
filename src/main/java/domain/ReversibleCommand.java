@@ -1,4 +1,4 @@
-package domain.game;
+package domain;
 
 public abstract class ReversibleCommand implements Command {
   public void execute() {

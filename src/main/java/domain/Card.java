@@ -1,9 +1,9 @@
-package domain.game;
+package domain;
 
 public class Card {
 	private final CardType cardType;
 
-	public Card(domain.game.CardType cardType) {
+	public Card(CardType cardType) {
 		this.cardType = cardType;
 	}
 

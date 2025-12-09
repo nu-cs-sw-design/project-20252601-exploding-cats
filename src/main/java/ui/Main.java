@@ -1,9 +1,9 @@
 package ui;
 
 import domain.game.Instantiator;
-import domain.game.Card;
-import domain.game.CardType;
-import domain.game.Deck;
+import domain.Card;
+import domain.CardType;
+import domain.Deck;
 import domain.game.Game;
 
 import domain.game.Player;
@@ -21,7 +21,7 @@ public class Main {
 		final int maxDeckSize = 42;
 		Instantiator instantiator = new Instantiator();
 
-		Deck deck = new domain.game.Deck(new ArrayList<>(), new SecureRandom(),
+		Deck deck = new Deck(new ArrayList<>(), new SecureRandom(),
 						 0, maxDeckSize, instantiator);
 		Player[] players = {new Player(playerIDZero, instantiator),
 				new Player(playerIDOne, instantiator),

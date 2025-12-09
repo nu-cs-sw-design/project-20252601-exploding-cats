@@ -1,4 +1,4 @@
-package domain.game;
+package domain;
 
 class ShuffleDeckCommand extends Command {
   private final Deck deck;

@@ -1,5 +1,8 @@
 package domain.game;
 
+import domain.Card;
+import domain.CardType;
+import domain.Deck;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,10 +32,10 @@ public class GameTest {
     EasyMock.replay(rand);
     Deck deck = EasyMock.createMock(Deck.class);
 
-    Player[] players = {};
+    domain.game.Player[] players = {};
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(0, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(0, deck, players, rand, turnTracker);
 
     try {
       game.selectRandomPlayer();
@@ -47,17 +50,17 @@ public class GameTest {
     Random rand = EasyMock.createMock(Random.class);
     EasyMock.expect(rand.nextInt(1)).andReturn(0);
     EasyMock.replay(rand);
-    Player playerFirst = EasyMock.createMock(Player.class);
+    domain.game.Player playerFirst = EasyMock.createMock(domain.game.Player.class);
     EasyMock.expect(playerFirst.getPlayerID()).andReturn(0);
     EasyMock.replay(playerFirst);
-    Player[] players = {playerFirst};
+    domain.game.Player[] players = {playerFirst};
 
     Deck deck = EasyMock.createMock(Deck.class);
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(1, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(1, deck, players, rand, turnTracker);
 
-    Player player = game.selectRandomPlayer();
+    domain.game.Player player = game.selectRandomPlayer();
 
     assertEquals(player.getPlayerID(), 0);
     EasyMock.verify(rand);
@@ -69,18 +72,18 @@ public class GameTest {
     Random rand = EasyMock.createMock(Random.class);
     EasyMock.expect(rand.nextInt(2)).andReturn(1);
     EasyMock.replay(rand);
-    Player playerFirst = EasyMock.createMock(Player.class);
-    Player playerSecond = EasyMock.createMock(Player.class);
+    domain.game.Player playerFirst = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerSecond = EasyMock.createMock(domain.game.Player.class);
     EasyMock.expect(playerSecond.getPlayerID()).andReturn(1);
     EasyMock.replay(playerSecond);
-    Player[] players = {playerFirst, playerSecond};
+    domain.game.Player[] players = {playerFirst, playerSecond};
 
     Deck deck = EasyMock.createMock(Deck.class);
 
     int[] turnTracker = {1, 1, 1, 1, 1};
-    Game game = new Game(2, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(2, deck, players, rand, turnTracker);
 
-    Player player = game.selectRandomPlayer();
+    domain.game.Player player = game.selectRandomPlayer();
     assertEquals(player.getPlayerID(), 1);
     EasyMock.verify(rand);
     EasyMock.verify(playerSecond);
@@ -96,19 +99,19 @@ public class GameTest {
     EasyMock.expect(rand.nextInt(randNextInput))
             .andReturn(randNextValue);
     EasyMock.replay(rand);
-    Player playerFirst = EasyMock.createMock(Player.class);
-    Player playerSecond = EasyMock.createMock(Player.class);
-    Player playerThird = EasyMock.createMock(Player.class);
+    domain.game.Player playerFirst = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerSecond = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerThird = EasyMock.createMock(domain.game.Player.class);
     EasyMock.expect(playerThird.getPlayerID()).andReturn(2);
     EasyMock.replay(playerThird);
-    Player[] players = {playerFirst, playerSecond, playerThird};
+    domain.game.Player[] players = {playerFirst, playerSecond, playerThird};
 
     Deck deck = EasyMock.createMock(Deck.class);
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
-    Player player = game.selectRandomPlayer();
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Player player = game.selectRandomPlayer();
     assertEquals(player.getPlayerID(), expectedPlayerID);
     EasyMock.verify(rand);
     EasyMock.verify(playerThird);
@@ -125,23 +128,23 @@ public class GameTest {
     EasyMock.expect(rand.nextInt(randNextInput))
             .andReturn(randNextValue);
     EasyMock.replay(rand);
-    Player playerFirst = EasyMock.createMock(Player.class);
-    Player playerSecond = EasyMock.createMock(Player.class);
-    Player playerThird = EasyMock.createMock(Player.class);
-    Player playerFourth = EasyMock.createMock(Player.class);
+    domain.game.Player playerFirst = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerSecond = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerThird = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerFourth = EasyMock.createMock(domain.game.Player.class);
     final int timesPlayerIDReturned = 3;
     EasyMock.expect(playerFourth.getPlayerID())
             .andReturn(timesPlayerIDReturned);
     EasyMock.replay(playerFourth);
-    Player[] players = {playerFirst, playerSecond, playerThird, playerFourth};
+    domain.game.Player[] players = {playerFirst, playerSecond, playerThird, playerFourth};
 
     Deck deck = EasyMock.createMock(Deck.class);
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
-    Player player = game.selectRandomPlayer();
+    domain.game.Player player = game.selectRandomPlayer();
     assertEquals(player.getPlayerID(), expectedPlayerID);
     EasyMock.verify(rand);
     EasyMock.verify(playerFourth);
@@ -158,22 +161,22 @@ public class GameTest {
     EasyMock.expect(rand.nextInt(randNextInput))
             .andReturn(randNextValue);
     EasyMock.replay(rand);
-    Player playerFirst = EasyMock.createMock(Player.class);
-    Player playerSecond = EasyMock.createMock(Player.class);
-    Player playerThird = EasyMock.createMock(Player.class);
-    Player playerFourth = EasyMock.createMock(Player.class);
+    domain.game.Player playerFirst = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerSecond = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerThird = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerFourth = EasyMock.createMock(domain.game.Player.class);
     EasyMock.expect(playerFirst.getPlayerID())
             .andReturn(expectedPlayerID);
     EasyMock.replay(playerFirst);
-    Player[] players = {playerFirst, playerSecond, playerThird, playerFourth};
+    domain.game.Player[] players = {playerFirst, playerSecond, playerThird, playerFourth};
 
     Deck deck = EasyMock.createMock(Deck.class);
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
-    Player player = game.selectRandomPlayer();
+    domain.game.Player player = game.selectRandomPlayer();
     assertEquals(player.getPlayerID(), expectedPlayerID);
     EasyMock.verify(rand);
     EasyMock.verify(playerFirst);
@@ -183,11 +186,11 @@ public class GameTest {
   @ValueSource(ints = {ONE_PLAYER, SIX_PLAYERS})
   public void retrieveNumberOfPlayersException(int numPlayers) {
     Deck deck = EasyMock.createMock(Deck.class);
-    Player[] players = {};
+    domain.game.Player[] players = {};
     EasyMock.replay(deck);
 
     int[] turnTracker = {1, 1, 1, 1, 1};
-    Game game = new Game(numPlayers, deck, players, new SecureRandom(), turnTracker);
+    domain.game.Game game = new domain.game.Game(numPlayers, deck, players, new SecureRandom(), turnTracker);
 
     IllegalArgumentException exception =
             assertThrows(IllegalArgumentException.class, () -> {
@@ -202,7 +205,7 @@ public class GameTest {
   @ValueSource(ints = {TWO_PLAYERS, FIVE_PLAYERS})
   public void retrieveNumberOfPlayersValid(int numPlayers) {
     Deck deck = EasyMock.createMock(Deck.class);
-    Player[] players = {};
+    domain.game.Player[] players = {};
 
     deck.setNumberOfPlayers(numPlayers);
     EasyMock.expectLastCall().andVoid();
@@ -210,7 +213,7 @@ public class GameTest {
     EasyMock.replay(deck);
 
     int[] turnTracker = {1, 1, 1, 1, 1};
-    Game game = new Game(numPlayers, deck, players, new SecureRandom(), turnTracker);
+    domain.game.Game game = new domain.game.Game(numPlayers, deck, players, new SecureRandom(), turnTracker);
 
     game.setNumberOfPlayers(numPlayers);
     int numPlayersRetrieved = game.getNumberOfPlayers();
@@ -223,19 +226,19 @@ public class GameTest {
     final int numOfPlayers = 5;
     final int numOfAlivePlayers = 1;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player = EasyMock.createMock(Player.class);
-    Player player2 = EasyMock.createMock(Player.class);
+    domain.game.Player player = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player2 = EasyMock.createMock(domain.game.Player.class);
     EasyMock.expect(player.getIsDead()).andReturn(false);
     final int timesPlayer2DeadReturned = 4;
     EasyMock.expect(player2.getIsDead()).andReturn(true)
             .times(timesPlayer2DeadReturned);
-    Player[] players = {player, player2, player2, player2, player2};
+    domain.game.Player[] players = {player, player2, player2, player2, player2};
     Random rand = EasyMock.createMock(Random.class);
     EasyMock.replay(deck, rand, player, player2);
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     assertEquals(game.checkNumberOfAlivePlayers(), numOfAlivePlayers);
 
@@ -247,20 +250,20 @@ public class GameTest {
     final int numOfPlayers = 5;
     final int numOfAlivePlayers = 5;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player = EasyMock.createMock(Player.class);
-    Player player2 = EasyMock.createMock(Player.class);
+    domain.game.Player player = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player2 = EasyMock.createMock(domain.game.Player.class);
     EasyMock.expect(player.getIsDead()).andReturn(false);
     final int timesPlayer2DeadReturned = 4;
     EasyMock.expect(player2.getIsDead()).andReturn(false)
             .times(timesPlayer2DeadReturned);
-    Player[] players = {player, player2, player2, player2, player2};
+    domain.game.Player[] players = {player, player2, player2, player2, player2};
     Random rand = EasyMock.createMock(Random.class);
 
     EasyMock.replay(deck, rand, player, player2);
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     assertEquals(game.checkNumberOfAlivePlayers(), numOfAlivePlayers);
 
@@ -272,19 +275,19 @@ public class GameTest {
     final int numOfPlayers = 2;
     final int playerTurn = 1;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player1 = EasyMock.createMock(Player.class);
-    Player player2 = EasyMock.createMock(Player.class);
+    domain.game.Player player1 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player2 = EasyMock.createMock(domain.game.Player.class);
     Random rand = EasyMock.createMock(Random.class);
 
     EasyMock.expect(player2.getIsDead()).andReturn(false);
 
     EasyMock.replay(deck, player1, player2, rand
     );
-    Player[] players = {player1, player2};
+    domain.game.Player[] players = {player1, player2};
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     game.incrementPlayerTurn();
 
@@ -301,10 +304,10 @@ public class GameTest {
     final int playerTurnStart = 1;
     final int playerTurn = 3;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player1 = EasyMock.createMock(Player.class);
-    Player player2 = EasyMock.createMock(Player.class);
-    Player player3 = EasyMock.createMock(Player.class);
-    Player player4 = EasyMock.createMock(Player.class);
+    domain.game.Player player1 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player2 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player3 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player4 = EasyMock.createMock(domain.game.Player.class);
     Random rand = EasyMock.createMock(Random.class);
 
     EasyMock.expect(player3.getIsDead()).andReturn(true);
@@ -312,11 +315,11 @@ public class GameTest {
 
     EasyMock.replay(deck, player1, player2, player3, player4, rand
     );
-    Player[] players = {player1, player2, player3, player4};
+    domain.game.Player[] players = {player1, player2, player3, player4};
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     game.setCurrentPlayerTurn(playerTurnStart);
 
@@ -335,10 +338,10 @@ public class GameTest {
     final int playerTurnStart = 2;
     final int playerTurn = 0;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player1 = EasyMock.createMock(Player.class);
-    Player player2 = EasyMock.createMock(Player.class);
-    Player player3 = EasyMock.createMock(Player.class);
-    Player player4 = EasyMock.createMock(Player.class);
+    domain.game.Player player1 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player2 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player3 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player4 = EasyMock.createMock(domain.game.Player.class);
     Random rand = EasyMock.createMock(Random.class);
 
     EasyMock.expect(player4.getIsDead()).andReturn(true);
@@ -346,10 +349,10 @@ public class GameTest {
 
     EasyMock.replay(deck, player1, player2, player3, player4, rand
     );
-    Player[] players = {player1, player2, player3, player4};
+    domain.game.Player[] players = {player1, player2, player3, player4};
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     game.setCurrentPlayerTurn(playerTurnStart);
     game.incrementPlayerTurn();
@@ -367,20 +370,20 @@ public class GameTest {
     final int playerTurnStart = 3;
     final int playerTurn = 0;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player1 = EasyMock.createMock(Player.class);
-    Player player2 = EasyMock.createMock(Player.class);
-    Player player3 = EasyMock.createMock(Player.class);
-    Player player4 = EasyMock.createMock(Player.class);
+    domain.game.Player player1 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player2 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player3 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player4 = EasyMock.createMock(domain.game.Player.class);
     Random rand = EasyMock.createMock(Random.class);
 
     EasyMock.expect(player1.getIsDead()).andReturn(false);
 
     EasyMock.replay(deck, player1, player2, player3, player4, rand
     );
-    Player[] players = {player1, player2, player3, player4};
+    domain.game.Player[] players = {player1, player2, player3, player4};
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     game.setCurrentPlayerTurn(playerTurnStart);
     game.incrementPlayerTurn();
@@ -395,11 +398,11 @@ public class GameTest {
   public void playShuffleGameDeckTwoCards() {
     final int numOfPlayers = 5;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player1 = EasyMock.createMock(Player.class);
-    Player player2 = EasyMock.createMock(Player.class);
-    Player player3 = EasyMock.createMock(Player.class);
-    Player player4 = EasyMock.createMock(Player.class);
-    Player player5 = EasyMock.createMock(Player.class);
+    domain.game.Player player1 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player2 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player3 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player4 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player5 = EasyMock.createMock(domain.game.Player.class);
     Random rand = EasyMock.createMock(Random.class);
     Card firstCard = EasyMock.createMock(Card.class);
     Card secondCard = EasyMock.createMock(Card.class);
@@ -413,11 +416,11 @@ public class GameTest {
 
     EasyMock.replay(deck, player1, player2, player3, player4,
             player5, rand, firstCard, secondCard);
-    Player[] players = {player1, player2, player3, player4, player5};
+    domain.game.Player[] players = {player1, player2, player3, player4, player5};
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     int timesToShuffle = 1;
     game.playShuffle(timesToShuffle);
@@ -434,11 +437,11 @@ public class GameTest {
     final int deckSize = 0;
     final int timesShuffled = 1;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player1 = EasyMock.createMock(Player.class);
-    Player player2 = EasyMock.createMock(Player.class);
-    Player player3 = EasyMock.createMock(Player.class);
-    Player player4 = EasyMock.createMock(Player.class);
-    Player player5 = EasyMock.createMock(Player.class);
+    domain.game.Player player1 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player2 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player3 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player4 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player5 = EasyMock.createMock(domain.game.Player.class);
     Random rand = EasyMock.createMock(Random.class);
     Card firstCard = EasyMock.createMock(Card.class);
     Card secondCard = EasyMock.createMock(Card.class);
@@ -450,11 +453,11 @@ public class GameTest {
 
     EasyMock.replay(deck, player1, player2, player3, player4,
             player5, rand, firstCard, secondCard);
-    Player[] players = {player1, player2, player3, player4, player5};
+    domain.game.Player[] players = {player1, player2, player3, player4, player5};
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     int timesToShuffle = 1;
     game.playShuffle(timesToShuffle);
@@ -472,11 +475,11 @@ public class GameTest {
     final int randomInputOne = 3;
     final int randomInputTwo = 2;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player1 = EasyMock.createMock(Player.class);
-    Player player2 = EasyMock.createMock(Player.class);
-    Player player3 = EasyMock.createMock(Player.class);
-    Player player4 = EasyMock.createMock(Player.class);
-    Player player5 = EasyMock.createMock(Player.class);
+    domain.game.Player player1 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player2 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player3 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player4 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player5 = EasyMock.createMock(domain.game.Player.class);
     Random rand = EasyMock.createMock(Random.class);
     Card firstCard = EasyMock.createMock(Card.class);
     Card secondCard = EasyMock.createMock(Card.class);
@@ -490,11 +493,11 @@ public class GameTest {
     EasyMock.expect(rand.nextInt(randomInputTwo)).andReturn(0).anyTimes();
     EasyMock.replay(deck, player1, player2, player3, player4,
             player5, rand, firstCard, secondCard);
-    Player[] players = {player1, player2, player3, player4, player5};
+    domain.game.Player[] players = {player1, player2, player3, player4, player5};
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     final int timesToShuffle = 100;
     game.playShuffle(timesToShuffle);
@@ -514,9 +517,9 @@ public class GameTest {
     final int numOfPlayers = 2;
     final int playerIndex = 0;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player = EasyMock.createMock(Player.class);
-    Player player1 = EasyMock.createMock(Player.class);
-    Player player2 = EasyMock.createMock(Player.class);
+    domain.game.Player player = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player1 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player2 = EasyMock.createMock(domain.game.Player.class);
     Random rand = EasyMock.createMock(Random.class);
 
     EasyMock.expect(player.getIndexOfCard(cardType)).andReturn(0);
@@ -527,11 +530,11 @@ public class GameTest {
 
     EasyMock.replay(deck, player, player1, player2, rand
     );
-    Player[] players = {player, player1, player2};
+    domain.game.Player[] players = {player, player1, player2};
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     game.removeCardFromHand(playerIndex, cardType);
     assertFalse(game.checkIfPlayerHasCard(playerIndex, cardType));
@@ -548,9 +551,9 @@ public class GameTest {
     final int numOfPlayers = 2;
     final int playerIndex = 0;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player = EasyMock.createMock(Player.class);
-    Player player1 = EasyMock.createMock(Player.class);
-    Player player2 = EasyMock.createMock(Player.class);
+    domain.game.Player player = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player1 = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player player2 = EasyMock.createMock(domain.game.Player.class);
 
     Random rand = EasyMock.createMock(Random.class);
 
@@ -568,11 +571,11 @@ public class GameTest {
 
     EasyMock.replay(deck, player, player1, player2, rand
     );
-    Player[] players = {player, player1, player2};
+    domain.game.Player[] players = {player, player1, player2};
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     game.removeCardFromHand(playerIndex, cardType);
     game.removeCardFromHand(playerIndex, cardType);
@@ -588,14 +591,14 @@ public class GameTest {
   public void playExplodingKittenInvalidPlayer(int playerIndex) {
     Deck deck = EasyMock.createMock(Deck.class);
 
-    Player[] players = {};
+    domain.game.Player[] players = {};
 
     Random rand = EasyMock.createMock(Random.class);
     EasyMock.replay(deck, rand);
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(2, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(2, deck, players, rand, turnTracker);
 
     Exception exception = assertThrows(UnsupportedOperationException.class, () -> {
       game.playExplodingKitten(playerIndex);
@@ -611,13 +614,13 @@ public class GameTest {
   public void playExplodingKittenWithDefuse() {
     final int numOfPlayers = 5;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player = EasyMock.createMock(Player.class);
-    Player[] players = {player, player, player, player, player};
+    domain.game.Player player = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player[] players = {player, player, player, player, player};
     Random rand = EasyMock.createMock(Random.class);
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     EasyMock.expect(player.hasCard(CardType.DEFUSE)).andReturn(true).anyTimes();
     EasyMock.expect(player.getIsDead()).andReturn(false).anyTimes();
@@ -643,15 +646,15 @@ public class GameTest {
     final int playerIndex = 4;
     final int currentPlayerIndex = 4;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player = EasyMock.createMock(Player.class);
-    Player otherPlayer = EasyMock.createMock(Player.class);
+    domain.game.Player player = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player otherPlayer = EasyMock.createMock(domain.game.Player.class);
     Random rand = EasyMock.createMock(Random.class);
 
-    Player[] players = {otherPlayer, otherPlayer, otherPlayer, otherPlayer, player};
+    domain.game.Player[] players = {otherPlayer, otherPlayer, otherPlayer, otherPlayer, player};
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     game.setCurrentPlayerTurn(currentPlayerIndex);
     game.setCurrentPlayerNumberOfTurns(1);
@@ -682,16 +685,16 @@ public class GameTest {
     final int playerIndex = 4;
     final int currentPlayerIndex = 3;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player = EasyMock.createMock(Player.class);
-    Player deadPlayer = EasyMock.createMock(Player.class);
-    Player alivePlayer = EasyMock.createMock(Player.class);
+    domain.game.Player player = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player deadPlayer = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player alivePlayer = EasyMock.createMock(domain.game.Player.class);
     Random rand = EasyMock.createMock(Random.class);
 
-    Player[] players = {deadPlayer, deadPlayer, deadPlayer, alivePlayer, player};
+    domain.game.Player[] players = {deadPlayer, deadPlayer, deadPlayer, alivePlayer, player};
 
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     game.setCurrentPlayerTurn(currentPlayerIndex);
     game.setCurrentPlayerNumberOfTurns(1);
@@ -722,7 +725,7 @@ public class GameTest {
     final int playerIndex = 0;
     final int idxToInsertExplodingKitten = -1;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player = EasyMock.createMock(Player.class);
+    domain.game.Player player = EasyMock.createMock(domain.game.Player.class);
     Random rand = EasyMock.createMock(Random.class);
 
     deck.insertExplodingKittenAtIndex(idxToInsertExplodingKitten);
@@ -732,10 +735,10 @@ public class GameTest {
                             "Cannot insert into negative index.")).once();
     EasyMock.replay(deck, player, rand);
 
-    Player[] players = {player, player, player, player, player};
+    domain.game.Player[] players = {player, player, player, player, player};
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(FIVE_PLAYERS, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(FIVE_PLAYERS, deck, players, rand, turnTracker);
 
     game.setCurrentPlayerTurn(currentPlayerIndex);
 
@@ -756,7 +759,7 @@ public class GameTest {
     final int currentDeckSize = 20;
     final int idxToInsertExplodingKitten = currentDeckSize + 1;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player = EasyMock.createMock(Player.class);
+    domain.game.Player player = EasyMock.createMock(domain.game.Player.class);
     Random rand = EasyMock.createMock(Random.class);
 
     deck.insertExplodingKittenAtIndex(idxToInsertExplodingKitten);
@@ -767,10 +770,10 @@ public class GameTest {
             .once();
     EasyMock.replay(deck, player, rand);
 
-    Player[] players = {player, player, player, player, player};
+    domain.game.Player[] players = {player, player, player, player, player};
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(FIVE_PLAYERS, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(FIVE_PLAYERS, deck, players, rand, turnTracker);
     game.setCurrentPlayerTurn(currentPlayerIndex);
 
     UnsupportedOperationException exception =
@@ -793,7 +796,7 @@ public class GameTest {
     final int explodingKittenIdx = 0;
 
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player = EasyMock.createMock(Player.class);
+    domain.game.Player player = EasyMock.createMock(domain.game.Player.class);
     Random rand = EasyMock.createMock(Random.class);
     Card explodingKittenCard = EasyMock.createMock(Card.class);
 
@@ -810,10 +813,10 @@ public class GameTest {
 
     EasyMock.replay(deck, explodingKittenCard, player, rand);
 
-    Player[] players = {player, player, player, player, player};
+    domain.game.Player[] players = {player, player, player, player, player};
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(FIVE_PLAYERS, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(FIVE_PLAYERS, deck, players, rand, turnTracker);
     game.setCurrentPlayerTurn(currentPlayerIndex);
     game.setCurrentPlayerNumberOfTurns(1);
 
@@ -834,7 +837,7 @@ public class GameTest {
     final int explodingKittenIdx = 0;
 
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player = EasyMock.createMock(Player.class);
+    domain.game.Player player = EasyMock.createMock(domain.game.Player.class);
     Random rand = EasyMock.createMock(Random.class);
     Card explodingKittenCard = EasyMock.createMock(Card.class);
 
@@ -851,10 +854,10 @@ public class GameTest {
 
     EasyMock.replay(deck, explodingKittenCard, player, rand);
 
-    Player[] players = {player, player, player, player, player};
+    domain.game.Player[] players = {player, player, player, player, player};
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(FIVE_PLAYERS, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(FIVE_PLAYERS, deck, players, rand, turnTracker);
     game.setCurrentPlayerTurn(currentPlayerIndex);
     game.setCurrentPlayerNumberOfTurns(1);
 
@@ -873,15 +876,15 @@ public class GameTest {
     final int currentDeckSize = 20;
     int idxToInsertExplodingKitten = currentDeckSize + 1;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player player = EasyMock.createMock(Player.class);
+    domain.game.Player player = EasyMock.createMock(domain.game.Player.class);
     Random rand = EasyMock.createMock(Random.class);
 
     EasyMock.replay(deck, player, rand);
 
-    Player[] players = {player, player, player, player, player};
+    domain.game.Player[] players = {player, player, player, player, player};
     int[] turnTracker = {1, 1, 1, 1, 1};
 
-    Game game = new Game(FIVE_PLAYERS, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(FIVE_PLAYERS, deck, players, rand, turnTracker);
     game.setCurrentPlayerTurn(currentPlayerIndex);
 
     UnsupportedOperationException exception =
@@ -900,14 +903,14 @@ public class GameTest {
     final int initialPlayerTurn = 3;
     final int numOfTurns = 12;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player playerOne = EasyMock.createMock(Player.class);
-    Player playerTwo = EasyMock.createMock(Player.class);
-    Player playerThree = EasyMock.createMock(Player.class);
-    Player playerFour = EasyMock.createMock(Player.class);
-    Player playerFive = EasyMock.createMock(Player.class);
+    domain.game.Player playerOne = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerTwo = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerThree = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerFour = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerFive = EasyMock.createMock(domain.game.Player.class);
 
     Card card = EasyMock.createMock(Card.class);
-    Player[] players = {playerOne, playerTwo, playerThree, playerFour, playerFive};
+    domain.game.Player[] players = {playerOne, playerTwo, playerThree, playerFour, playerFive};
 
     Random rand = EasyMock.createMock(Random.class);
     ;
@@ -917,7 +920,7 @@ public class GameTest {
     final int fourthPlayerNumOfTurns = 12;
     int[] turnTracker = {1, 1, 1, fourthPlayerNumOfTurns, 1};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     game.setCurrentPlayerTurn(initialPlayerTurn);
     game.setCurrentPlayerNumberOfTurns(0);
@@ -939,14 +942,14 @@ public class GameTest {
     final int initialPlayerTurn = 2;
     final int numOfTurns = 4;
     Deck deck = EasyMock.createMock(Deck.class);
-    Player playerOne = EasyMock.createMock(Player.class);
-    Player playerTwo = EasyMock.createMock(Player.class);
-    Player playerThree = EasyMock.createMock(Player.class);
-    Player playerFour = EasyMock.createMock(Player.class);
-    Player playerFive = EasyMock.createMock(Player.class);
+    domain.game.Player playerOne = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerTwo = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerThree = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerFour = EasyMock.createMock(domain.game.Player.class);
+    domain.game.Player playerFive = EasyMock.createMock(domain.game.Player.class);
 
     Card card = EasyMock.createMock(Card.class);
-    Player[] players = {playerOne, playerTwo, playerThree, playerFour, playerFive};
+    domain.game.Player[] players = {playerOne, playerTwo, playerThree, playerFour, playerFive};
 
     Random rand = EasyMock.createMock(Random.class);
     ;
@@ -960,7 +963,7 @@ public class GameTest {
     int[] turnTracker = {1, secondPlayerNumOfTurns, thirdPlayerNumOfTurns,
             fourthPlayerNumOfTurns, fifthPlayerNumOfTurns};
 
-    Game game = new Game(numOfPlayers, deck, players, rand, turnTracker);
+    domain.game.Game game = new domain.game.Game(numOfPlayers, deck, players, rand, turnTracker);
 
     game.setCurrentPlayerTurn(initialPlayerTurn);
     game.setCurrentPlayerNumberOfTurns(0);

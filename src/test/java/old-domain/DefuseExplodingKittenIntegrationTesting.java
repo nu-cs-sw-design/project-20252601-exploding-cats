@@ -1,5 +1,8 @@
 package domain.game;
 
+import domain.Card;
+import domain.CardType;
+import domain.Deck;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -10,18 +13,18 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DefuseExplodingKittenIntegrationTesting {
-	Game game;
+	domain.game.Game game;
 	Deck deck;
-	Instantiator instantiator;
-	Player playerZero;
-	Player playerOne;
-	Player playerTwo;
-	Player playerThree;
+	domain.game.Instantiator instantiator;
+	domain.game.Player playerZero;
+	domain.game.Player playerOne;
+	domain.game.Player playerTwo;
+	domain.game.Player playerThree;
 
 	@Given("a game with {int} players with current player at index {int}")
 	public void a_game_with_players_with_current_player_at_index(
 			Integer numPlayers, Integer playerIdx) {
-		instantiator = new Instantiator();
+		instantiator = new domain.game.Instantiator();
 
 		final int maxDeckSize = 42;
 
@@ -34,14 +37,14 @@ public class DefuseExplodingKittenIntegrationTesting {
 		final int playerIDThree = 3;
 		final int numOfPlayers = numPlayers;
 
-		playerZero = new Player(playerIDZero, instantiator);
-		playerOne = new Player(playerIDOne, instantiator);
-		playerTwo = new Player(playerIDTwo, instantiator);
-		playerThree = new Player(playerIDThree, instantiator);
-		Player[] players = new Player[]{playerZero, playerOne, playerTwo, playerThree};
+		playerZero = new domain.game.Player(playerIDZero, instantiator);
+		playerOne = new domain.game.Player(playerIDOne, instantiator);
+		playerTwo = new domain.game.Player(playerIDTwo, instantiator);
+		playerThree = new domain.game.Player(playerIDThree, instantiator);
+		domain.game.Player[] players = new domain.game.Player[]{playerZero, playerOne, playerTwo, playerThree};
 
 		int[] turnTracker = {1, 1, 1, 1, 1};
-		game = new Game(numOfPlayers, deck,
+		game = new domain.game.Game(numOfPlayers, deck,
 				players, new SecureRandom(), turnTracker);
 		game.setCurrentPlayerTurn(playerIdx);
 	}
@@ -98,7 +101,7 @@ public class DefuseExplodingKittenIntegrationTesting {
 
 	@Then("the player is alive")
 	public void the_player_is_alive() {
-		Player currentPlayer = game.getPlayerAtIndex(game.getPlayerTurn());
+		domain.game.Player currentPlayer = game.getPlayerAtIndex(game.getPlayerTurn());
 		assertFalse(currentPlayer.getIsDead());
 	}
 }

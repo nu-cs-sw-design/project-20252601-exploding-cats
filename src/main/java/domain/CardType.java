@@ -1,4 +1,4 @@
-package domain.game;
+package domain;
 
 public enum CardType {
 	NOPE(InputType.NO_INPUT),

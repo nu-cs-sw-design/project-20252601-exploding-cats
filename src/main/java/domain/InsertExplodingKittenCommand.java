@@ -1,4 +1,4 @@
-package domain.game;
+package domain;
 
 public class InsertExplodingKittenCommand extends Command {
   Deck deck;

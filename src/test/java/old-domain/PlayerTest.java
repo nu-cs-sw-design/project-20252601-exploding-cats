@@ -1,5 +1,7 @@
 package domain.game;
 
+import domain.Card;
+import domain.CardType;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,7 +22,7 @@ class PlayerTest {
 
   @Test
   public void addDefuseToPlayer() {
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     Card defuse = EasyMock.createMock(Card.class);
     EasyMock.expect(defuse.getCardType()).andReturn(CardType.DEFUSE);
 
@@ -30,7 +32,7 @@ class PlayerTest {
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
 
     EasyMock.replay(defuse, instantiator);
-    Player newPlayer = new Player(1, instantiator);
+    domain.game.Player newPlayer = new domain.game.Player(1, instantiator);
     newPlayer.addDefuse(defuse);
 
     assertEquals(newPlayer.getHandSize(), 1);
@@ -39,7 +41,7 @@ class PlayerTest {
 
   @Test
   public void addNonDefuseToPlayerWhenShouldBeDefuse() {
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     Card defuse = EasyMock.createMock(Card.class);
     EasyMock.expect(defuse.getCardType()).andReturn(CardType.SHUFFLE);
 
@@ -49,7 +51,7 @@ class PlayerTest {
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
 
     EasyMock.replay(defuse, instantiator);
-    Player newPlayer = new Player(1, instantiator);
+    domain.game.Player newPlayer = new domain.game.Player(1, instantiator);
     String expectedMessage = "Must Add Defuse Card";
     Exception exception = assertThrows(IllegalArgumentException.class, () -> {
       newPlayer.addDefuse(defuse);
@@ -64,7 +66,7 @@ class PlayerTest {
   public void addToEmptyHand() {
     Card attack = EasyMock.createMock(Card.class);
     EasyMock.expect(attack.getCardType()).andStubReturn(CardType.SHUFFLE);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     ArrayList<Card> cardList = new ArrayList<>();
 
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
@@ -72,7 +74,7 @@ class PlayerTest {
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     EasyMock.replay(attack, instantiator);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
     player.addCardToHand(attack);
 
     assertEquals(1, player.getHandSize());
@@ -103,7 +105,7 @@ class PlayerTest {
     EasyMock.expect(mark.getCardType()).andStubReturn(CardType.SHUFFLE);
     EasyMock.replay(mark);
 
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     ArrayList<Card> cardList = new ArrayList<>();
 
     Random rand = EasyMock.createMock(Random.class);
@@ -111,7 +113,7 @@ class PlayerTest {
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
     EasyMock.replay(instantiator);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
     player.addCardToHand(nope);
     player.addCardToHand(mark);
 
@@ -143,14 +145,14 @@ class PlayerTest {
     EasyMock.replay(nope);
 
 
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     ArrayList<Card> cardList = new ArrayList<>();
     Random rand = EasyMock.createMock(Random.class);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
     EasyMock.replay(instantiator);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
     player.addCardToHand(nope);
     EasyMock.verify(nope, instantiator);
 
@@ -164,14 +166,14 @@ class PlayerTest {
     EasyMock.replay(nope);
 
 
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     ArrayList<Card> cardList = new ArrayList<>();
     Random rand = EasyMock.createMock(Random.class);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
     EasyMock.replay(instantiator);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
     player.addCardToHand(nope);
     player.addCardToHand(nope);
     EasyMock.verify(nope, instantiator);
@@ -189,14 +191,14 @@ class PlayerTest {
     EasyMock.expect(mark.getCardType()).andStubReturn(CardType.SHUFFLE);
     EasyMock.replay(mark);
 
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     ArrayList<Card> cardList = new ArrayList<>();
     Random rand = EasyMock.createMock(Random.class);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
     EasyMock.replay(instantiator);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
     player.addCardToHand(mark);
     player.addCardToHand(nope);
     EasyMock.verify(nope, instantiator, mark);
@@ -214,14 +216,14 @@ class PlayerTest {
     EasyMock.expect(mark.getCardType()).andStubReturn(CardType.SHUFFLE);
     EasyMock.replay(mark);
 
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     ArrayList<Card> cardList = new ArrayList<>();
     Random rand = EasyMock.createMock(Random.class);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
     EasyMock.replay(instantiator);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
     player.addCardToHand(mark);
     player.addCardToHand(nope);
 
@@ -239,14 +241,14 @@ class PlayerTest {
     EasyMock.expect(nope.getCardType()).andStubReturn(CardType.NOPE);
     EasyMock.replay(nope);
 
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     ArrayList<Card> cardList = new ArrayList<>();
     Random rand = EasyMock.createMock(Random.class);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
     EasyMock.replay(instantiator);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
     player.addCardToHand(nope);
     CardType cardType = player.removeCardFromHand(0);
     assertEquals(player.getHandSize(), 0);
@@ -269,14 +271,14 @@ class PlayerTest {
     EasyMock.expect(skip.getCardType()).andStubReturn(CardType.DEFUSE);
     EasyMock.replay(skip);
 
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     ArrayList<Card> cardList = new ArrayList<>();
     Random rand = EasyMock.createMock(Random.class);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
     EasyMock.replay(instantiator);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
     player.addCardToHand(mark);
     player.addCardToHand(nope);
     player.addCardToHand(skip);
@@ -293,14 +295,14 @@ class PlayerTest {
     EasyMock.expect(nope.getCardType()).andStubReturn(CardType.NOPE);
     EasyMock.replay(nope);
 
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     ArrayList<Card> cardList = new ArrayList<>();
     Random rand = EasyMock.createMock(Random.class);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
     EasyMock.replay(instantiator);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
     player.addCardToHand(nope);
     player.addCardToHand(nope);
     CardType cardType = player.removeCardFromHand(1);
@@ -316,14 +318,14 @@ class PlayerTest {
     EasyMock.expect(nope.getCardType()).andStubReturn(CardType.NOPE);
     EasyMock.replay(nope);
 
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     ArrayList<Card> cardList = new ArrayList<>();
     Random rand = EasyMock.createMock(Random.class);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
     EasyMock.replay(instantiator);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
     player.addCardToHand(nope);
     try {
       player.removeCardFromHand(1);
@@ -340,14 +342,14 @@ class PlayerTest {
     EasyMock.expect(nope.getCardType()).andStubReturn(CardType.NOPE);
     EasyMock.replay(nope);
 
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     ArrayList<Card> cardList = new ArrayList<>();
     Random rand = EasyMock.createMock(Random.class);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
     EasyMock.replay(instantiator);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
     player.addCardToHand(nope);
     try {
       player.removeCardFromHand(-1);
@@ -360,14 +362,14 @@ class PlayerTest {
 
   @Test
   public void removeFromEmptyHand() {
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     ArrayList<Card> cardList = new ArrayList<>();
     Random rand = EasyMock.createMock(Random.class);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
     EasyMock.replay(instantiator);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
     try {
       player.removeCardFromHand(0);
     } catch (IllegalArgumentException e) {
@@ -383,7 +385,7 @@ class PlayerTest {
     Random rand = EasyMock.createMock(Random.class);
     Card firstCard = EasyMock.createMock(Card.class);
     Card secondCard = EasyMock.createMock(Card.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     EasyMock.expect(rand.nextInt(2)).andReturn(0);
     ArrayList<Card> cardList = new ArrayList<>();
@@ -391,7 +393,7 @@ class PlayerTest {
     EasyMock.replay(rand, instantiator);
 
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
     player.addCardToHand(secondCard);
     player.addCardToHand(firstCard);
     player.shuffleHand();
@@ -403,13 +405,13 @@ class PlayerTest {
   @Test
   public void shuffleHandZeroCards() {
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     ArrayList<Card> cardList = new ArrayList<>();
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     EasyMock.replay(rand, instantiator);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
     player.shuffleHand();
     assertEquals(player.getHandSize(), 0);
     EasyMock.verify(rand, instantiator);
@@ -420,7 +422,7 @@ class PlayerTest {
     Random rand = EasyMock.createMock(Random.class);
     Card firstCard = EasyMock.createMock(Card.class);
     Card secondCard = EasyMock.createMock(Card.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
 
     ArrayList<Card> cardList = new ArrayList<>();
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
@@ -431,7 +433,7 @@ class PlayerTest {
     EasyMock.expect(rand.nextInt(randUpperBoundTwo)).andReturn(0);
     EasyMock.replay(rand, firstCard, secondCard, instantiator);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
     player.addCardToHand(firstCard);
     player.addCardToHand(firstCard);
     player.addCardToHand(secondCard);
@@ -447,7 +449,7 @@ class PlayerTest {
 
   @Test
   public void exploded() {
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     Random rand = EasyMock.createMock(Random.class);
 
     ArrayList<Card> cardList = new ArrayList<>();
@@ -455,7 +457,7 @@ class PlayerTest {
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     EasyMock.replay(instantiator);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
 
     assertFalse(player.getIsDead());
 
@@ -469,7 +471,7 @@ class PlayerTest {
   @ParameterizedTest
   @ValueSource(ints = {PLAYER_ID_ONE, PLAYER_ID_TWO, PLAYER_ID_THREE, PLAYER_ID_FOUR})
   public void getPlayerID(int playerID) {
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     Random rand = EasyMock.createMock(Random.class);
 
     ArrayList<Card> cardList = new ArrayList<>();
@@ -477,7 +479,7 @@ class PlayerTest {
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     EasyMock.replay(instantiator);
 
-    Player player = new Player(playerID, instantiator);
+    domain.game.Player player = new domain.game.Player(playerID, instantiator);
 
     assertEquals(player.getPlayerID(), playerID);
 
@@ -487,14 +489,14 @@ class PlayerTest {
   @Test
   public void hasCardEmptyHand() {
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     ArrayList<Card> cardList = new ArrayList<>();
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
     EasyMock.replay(rand, instantiator);
 
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
 
     assertFalse(player.hasCard(CardType.NOPE));
     EasyMock.verify(rand, instantiator);
@@ -504,7 +506,7 @@ class PlayerTest {
   public void hasOneCardNotNope() {
     Card firstCard = EasyMock.createMock(Card.class);
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     ArrayList<Card> cardList = new ArrayList<>();
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
@@ -514,7 +516,7 @@ class PlayerTest {
     EasyMock.replay(rand, instantiator, firstCard);
 
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
 
     player.addCardToHand(firstCard);
 
@@ -526,7 +528,7 @@ class PlayerTest {
   public void hasOneCardNope() {
     Card firstCard = EasyMock.createMock(Card.class);
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     ArrayList<Card> cardList = new ArrayList<>();
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
@@ -536,7 +538,7 @@ class PlayerTest {
     EasyMock.replay(rand, instantiator, firstCard);
 
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
 
     player.addCardToHand(firstCard);
 
@@ -550,7 +552,7 @@ class PlayerTest {
     Card secondCard = EasyMock.createMock(Card.class);
     Card thirdCard = EasyMock.createMock(Card.class);
     Random rand = EasyMock.createMock(Random.class);
-    Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+    domain.game.Instantiator instantiator = EasyMock.createMock(domain.game.Instantiator.class);
     EasyMock.expect(instantiator.createRandom()).andReturn(rand);
     ArrayList<Card> cardList = new ArrayList<>();
     EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
@@ -561,7 +563,7 @@ class PlayerTest {
 
     EasyMock.replay(rand, instantiator, firstCard, secondCard, thirdCard);
 
-    Player player = new Player(0, instantiator);
+    domain.game.Player player = new domain.game.Player(0, instantiator);
 
     player.addCardToHand(firstCard);
     player.addCardToHand(secondCard);

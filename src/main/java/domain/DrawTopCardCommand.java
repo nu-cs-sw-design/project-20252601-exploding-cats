@@ -1,4 +1,4 @@
-package domain.game;
+package domain;
 
 public class DrawTopCardCommand extends Command {
   private final Deck deck;

@@ -1,4 +1,4 @@
-package domain.game;
+package domain;
 
 class NopeCommand extends Command {
   NopeCommand() {

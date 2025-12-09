@@ -1,4 +1,4 @@
-package domain.game;
+package domain;
 
 class DefuseOrExplodeCommand extends Command {
   private final PlayerHand playerHand;

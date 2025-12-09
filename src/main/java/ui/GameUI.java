@@ -1,6 +1,9 @@
 package ui;
 
-import domain.game.*;
+import domain.Card;
+import domain.CardType;
+import domain.game.Game;
+
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;

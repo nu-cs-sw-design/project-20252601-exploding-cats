@@ -1,4 +1,4 @@
-package domain.game;
+package domain;
 
 public enum PlayerID {
   PLAYER_ONE,

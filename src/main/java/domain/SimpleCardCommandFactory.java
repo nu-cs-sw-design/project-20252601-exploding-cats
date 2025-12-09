@@ -1,4 +1,4 @@
-package domain.game;
+package domain;
 
 import java.util.Map;
 

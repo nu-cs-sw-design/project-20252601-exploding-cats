@@ -1,10 +1,12 @@
 package domain.game;
 
+import domain.Deck;
+
 import java.util.Random;
 
 public class Game {
 	private int numberOfPlayers;
-	private domain.game.Deck deck;
+	private Deck deck;
 	private domain.game.Player[] players;
 	private Random rand;
 //	private int currentPlayerTurn;
