@@ -36,30 +36,49 @@ public class GameDurationUI {
       // print end result (based on if number of nopes added being even or odd)
     }
 
-    // END OF TURN -> DRAW CARD
-    inputReader.printEndTurnConfirmation();
-    CardType drawnCardType = gameModel.drawCardForPlayerID(activePlayerID);
-    inputReader.printCardDraw(drawnCardType);
-
-    // if exploding kitten, check for defuse card
-    if (drawnCardType == CardType.EXPLODING_KITTEN) {
-      inputReader.printExplode();
-      // make sure that exploding kitten was still added to player's hand (so that no longer in deck)
-      // COMMAND: remove user from turn order (IN WHICH CASE, NO NEED TO EXPLICITLY SWITCH TO NEXT TURN)
-      // COMMAND: explode
-
-      // if player owns defuse, print that safe but that used a defuse card
-      int index = inputReader.promptForWhereToInsertExplodingKittenAfterDefuse( int deckSize)
-      // COMMAND: remove defuse from player hand
-      // COMMAND: insert ExplodingKitten at index into deck
-    } else {
-
-      // COMMAND: add card to hand
-    }
+    // END OF TURN -> DRAW CARD (and handle explode/defuse as needed)
+    endTurn(activePlayerID, activePlayerCards);
 
     // CHECK TO SEE IF 1 PLAYER LEFT
     // -> if so, end game
     // -> if not, SWITCH TURN TO NEXT PLAYER
 
+  }
+
+  private void endTurn(PlayerID activePlayerID, List<Card> activePlayerCards) {
+    inputReader.printEndTurnConfirmation();
+    // TODO: drawCardForPlayerID currently BOTH removes the card from the deck AND places it in the player's hand
+    CardType drawnCardType = gameModel.drawCardForPlayerID(activePlayerID);
+    inputReader.printCardDraw(drawnCardType);
+
+    if (drawnCardType == CardType.EXPLODING_KITTEN) {
+      if (activePlayerHasDefuse(activePlayerCards)) {
+        int deckSize = gameModel.getDeckSize();
+        int index = inputReader.promptForWhereToInsertExplodingKittenAfterDefuse(deckSize);
+
+        Command removeDefuseAndKittenFromHand = commandFactory
+                .createCommandWithPlayerInput(CardType.DEFUSE, activePlayerID);
+        gameInvoker.addCommand(removeDefuseAndKittenFromHand);
+
+        Command reinsertKittenIntoDeck = commandFactory
+                .createCommandWithIndexInput(CardType.EXPLODING_KITTEN, index);
+        gameInvoker.addCommand(reinsertKittenIntoDeck);
+
+      } else {
+        inputReader.printExplode();
+        Command explodePlayer = commandFactory.createCommandWithNoInput(CardType.EXPLODING_KITTEN);
+        gameInvoker.addCommand(explodePlayer);
+      }
+
+      gameInvoker.executeCommands();
+    }
+  }
+
+  private boolean activePlayerHasDefuse(List<Card> activePlayerCards) {
+    for (Card card : activePlayerCards) {
+      if (Card.getCardType() == CardType.DEFUSE) {
+        return true;
+      }
+    }
   }
 }
