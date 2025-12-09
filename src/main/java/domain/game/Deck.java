@@ -6,7 +6,7 @@ import java.util.Random;
 public class Deck {
 	private List<Card> deck;
 	private Random rand;
-	private GameType gameType;
+
 	private int numberOfPlayers;
 	private int maxDeckSize;
 	private Instantiator instantiator;
@@ -23,13 +23,11 @@ public class Deck {
 	private static final String INDEX_OUT_OF_RANGE_EXCEPTION =
 		"Index out of range: %d. Valid range is 0 to %d.";
 
-
-	public Deck(List<Card> deck, Random rand,
-				domain.game.GameType gameType, int numberOfPlayers, int maxDeckSize,
-				Instantiator instantiator) {
+public Deck(List<Card> deck, Random rand, int numberOfPlayers, int maxDeckSize,
+						Instantiator instantiator) {
 		this.deck = deck;
 		this.rand = rand;
-		this.gameType = gameType;
+
 		this.numberOfPlayers = numberOfPlayers;
 		this.maxDeckSize = maxDeckSize;
 		this.instantiator = instantiator;
@@ -44,54 +42,16 @@ public class Deck {
 	}
 
 	public void initializeDeck() {
-		final int cardAddedThreeTimes = 3;
 		final int cardAddedFourTimes = 4;
 		final int cardAddedFiveTimes = 5;
-		final int cardAddedOnce = 1;
-		final int cardAddedTwice = 2;
-		final int streakingKittensExtraCards = 14;
-		final int implodingKittensExtraCards = 19;
+
 		insertCard(CardType.NOPE, cardAddedFourTimes, false);
-		insertCard(CardType.ATTACK, cardAddedThreeTimes, false);
 		insertCard(CardType.SHUFFLE, cardAddedFourTimes, false);
-		insertCard(CardType.SKIP, cardAddedThreeTimes, false);
-		insertCard(CardType.SEE_THE_FUTURE, cardAddedFourTimes, false);
-		insertCard(CardType.CAT_ONE, cardAddedFourTimes, false);
-		insertCard(CardType.CAT_TWO, cardAddedFourTimes, false);
-		insertCard(CardType.CAT_THREE, cardAddedFourTimes, false);
-		insertCard(CardType.CAT_FOUR, cardAddedFourTimes, false);
 		insertCard(CardType.DEFUSE,
-				cardAddedFiveTimes - numberOfPlayers, false);
-		switch (gameType) {
-			case STREAKING_KITTENS:
-				maxDeckSize = maxDeckSize + streakingKittensExtraCards;
-				insertCard(CardType.STREAKING_KITTEN, cardAddedOnce, false);
-				insertCard(CardType.ALTER_THE_FUTURE, cardAddedOnce, false);
-				insertCard(CardType.CATOMIC_BOMB, cardAddedOnce, false);
-				insertCard(CardType.SUPER_SKIP, cardAddedOnce, false);
-				insertCard(CardType.SWAP_TOP_AND_BOTTOM,
-						cardAddedThreeTimes, false);
-				insertCard(CardType.MARK, cardAddedThreeTimes, false);
-				insertCard(CardType.SEE_THE_FUTURE, cardAddedOnce, false);
-				insertCard(CardType.CURSE_OF_THE_CAT_BUTT, cardAddedTwice, false);
-				insertCard(CardType.GARBAGE_COLLECTION, cardAddedOnce, false);
-				break;
-			case IMPLODING_KITTENS:
-				maxDeckSize = maxDeckSize + implodingKittensExtraCards;
-				insertCard(CardType.DRAW_FROM_THE_BOTTOM,
-						cardAddedFourTimes, false);
-				insertCard(CardType.ALTER_THE_FUTURE, cardAddedFourTimes, false);
-				insertCard(CardType.FERAL_CAT, cardAddedFourTimes, false);
-				insertCard(CardType.REVERSE, cardAddedFourTimes, false);
-				insertCard(CardType.TARGETED_ATTACK, cardAddedThreeTimes, false);
-				break;
-			default:
-				break;
-		}
+						cardAddedFiveTimes - numberOfPlayers, false);
 	}
 
 	public void shuffleDeck() {
-		//Fischer Yates Algorithm
 		for (int deckIndex = deck.size() - 1; deckIndex > 0; deckIndex--) {
 			int indexToSwap = rand.nextInt(deckIndex + 1);
 			Card temporaryCard = deck.get(indexToSwap);
@@ -126,22 +86,8 @@ public class Deck {
 		}
 	}
 
-	public Card drawCardFromBottom() {
-		if (this.deck.isEmpty()) {
-			throw new UnsupportedOperationException
-					(DRAW_FROM_EMPTY_DECK_EXCEPTION);
-		}
-		else {
-			return this.deck.remove(0);
-		}
-	}
-
 	public void setNumberOfPlayers(int numberOfPlayers) {
 		this.numberOfPlayers = numberOfPlayers;
-	}
-
-	public void chooseGameType(domain.game.GameType gameType) {
-		this.gameType = gameType;
 	}
 
 	public int removeBombs() {
@@ -167,11 +113,6 @@ public class Deck {
 			deck.add(indexToInsert, instantiator.createCard(CardType.EXPLODING_KITTEN));
 		}
 	}
-
-	public void insertImplodingKittenAtIndex(int indexToInsert, Card card) {
-		deck.add(indexToInsert, card);
-	}
-
 
 	protected CardType getCardTypeAtIndex(int index) {
 		return deck.get(index).getCardType();

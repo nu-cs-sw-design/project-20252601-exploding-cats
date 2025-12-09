@@ -25,7 +25,7 @@ public class DefuseExplodingKittenIntegrationTesting {
 
 		final int maxDeckSize = 42;
 
-		deck = new Deck(new ArrayList<>(), new SecureRandom(), GameType.NONE,
+		deck = new Deck(new ArrayList<>(), new SecureRandom(),
 				0, maxDeckSize, instantiator);
 
 		final int playerIDZero = 0;
@@ -41,15 +41,14 @@ public class DefuseExplodingKittenIntegrationTesting {
 		Player[] players = new Player[]{playerZero, playerOne, playerTwo, playerThree};
 
 		int[] turnTracker = {1, 1, 1, 1, 1};
-		game = new Game(numOfPlayers, GameType.NONE, deck,
-				players, new SecureRandom(),
-				new ArrayList<Integer>(), turnTracker);
+		game = new Game(numOfPlayers, deck,
+				players, new SecureRandom(), turnTracker);
 		game.setCurrentPlayerTurn(playerIdx);
 	}
 
 	@Given("a deck of size {int} with an exploding kitten card at the top")
 	public void a_deck_of_size_with_an_exploding_kitten_card_at_the_top(Integer deckSize) {
-		deck.insertCard(CardType.CAT_ONE, deckSize, false);
+		deck.insertCard(CardType.SHUFFLE, deckSize, false);
 		deck.insertCard(CardType.EXPLODING_KITTEN, 1, false);
 	}
 

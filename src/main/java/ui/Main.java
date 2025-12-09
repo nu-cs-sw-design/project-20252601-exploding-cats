@@ -5,7 +5,7 @@ import domain.game.Card;
 import domain.game.CardType;
 import domain.game.Deck;
 import domain.game.Game;
-import domain.game.GameType;
+
 import domain.game.Player;
 
 import java.util.ArrayList;
@@ -22,19 +22,19 @@ public class Main {
 		Instantiator instantiator = new Instantiator();
 
 		Deck deck = new domain.game.Deck(new ArrayList<>(), new SecureRandom(),
-				GameType.NONE, 0, maxDeckSize, instantiator);
+						 0, maxDeckSize, instantiator);
 		Player[] players = {new Player(playerIDZero, instantiator),
 				new Player(playerIDOne, instantiator),
 				new Player(playerIDTwo, instantiator),
 				new Player(playerIDThree, instantiator),
 				new Player(playerIDFour, instantiator)};
 		int[] turnTracker = {1, 1, 1, 1, 1};
-		Game game = new Game(0, GameType.NONE, deck,
-				players, new SecureRandom(),
-				new ArrayList<Integer>(), turnTracker);
+
+		Game game = new Game(0, deck,
+						players, new SecureRandom(), turnTracker);
 		GameUI gameUI = new GameUI(game);
 		gameUI.chooseLanguage();
-		gameUI.chooseGame();
+
 		gameUI.chooseNumberOfPlayers();
 		for (int playerCounter = 0; playerCounter <
 				game.getNumberOfPlayers(); playerCounter++) {
@@ -51,17 +51,9 @@ public class Main {
 				current.addCardToHand(game.getDeck().drawCard());
 			}
 		}
-		if (game.getGameType() == GameType.STREAKING_KITTENS) {
-			game.getDeck().insertCard(CardType.EXPLODING_KITTEN,
-					game.getNumberOfPlayers(), false);
-		} else {
-			game.getDeck().insertCard(CardType.EXPLODING_KITTEN,
-					game.getNumberOfPlayers() - 1, false);
-		}
-		if (game.getGameType() == GameType.IMPLODING_KITTENS) {
-			game.getDeck().insertCard(CardType.IMPLODING_KITTEN,
-					1, false);
-		}
+
+		game.getDeck().insertCard(CardType.EXPLODING_KITTEN,
+						game.getNumberOfPlayers() - 1, false);
 
 		game.playShuffle(1);
 

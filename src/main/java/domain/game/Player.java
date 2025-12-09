@@ -8,7 +8,6 @@ public class Player {
 	private List<Card> hand;
 	private boolean isDead;
 	private Random rand;
-	private boolean isCursed;
 
 	private static final String MUST_ADD_DEFUSE_CARD_EXCEPTION = "Must Add Defuse Card";
 	private static final String INVALID_INDEX_EXCEPTION = "Invalid Index";
@@ -19,7 +18,6 @@ public class Player {
 		this.hand = instantiator.createCardList();
 		this.isDead = false;
 		this.rand = instantiator.createRandom();
-		this.isCursed = false;
 	}
 
 	public int getPlayerID() {
@@ -84,30 +82,12 @@ public class Player {
 		}
 	}
 
-	public int checkNumberOfCardsInHand(CardType cardType) {
-		int catCounter = 0;
-		for (Card card : hand) {
-			if (card.getCardType() == cardType) {
-				catCounter++;
-			}
-		}
-		return catCounter;
-	}
-
 	public boolean getIsDead() {
 		return isDead;
 	}
 
 	public void setIsDead() {
 		isDead = true;
-	}
-
-	public boolean getIsCursed() {
-		return isCursed;
-	}
-
-	public void setCursed(boolean isCursed) {
-		this.isCursed = isCursed;
 	}
 
 }
