@@ -335,7 +335,7 @@ package domain {
         -isDead: boolean
         -isCursed: boolean
 
-        +PlayerHand()
+        ~PlayerHand()
         ~addCardTypeToHand(cardType: CardType): void
         ~removeCardFromHand(card: Card): void
         ~playGarbageCollection(card: Card): void

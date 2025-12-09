@@ -1,4 +1,59 @@
 package domain.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
+' TODO: go back into class diagram once I finalize implementation
 public class PlayerHand {
+  final PlayerID playerID;
+  final List<Card> hand;
+  boolean isDead;
+
+  private static final String INVALID_INDEX_EXCEPTION = "Invalid Index";
+  private static final String NO_CARD_FOUND_EXCEPTION = "No Card Found";
+
+  PlayerHand(PlayerID playerID) {
+    this.playerID = playerID;
+    this.hand = new ArrayList<>();
+    this.isDead = false;
+  }
+
+  void addCardToHand(Card card) {
+    hand.add(card);
+  }
+
+  void removeCardFromHand(int index) {
+    checkCardIndexIsWithinBounds(index);
+    hand.remove(index);
+    // TODO: only return cardType if actually necessary for one of the 4 required cards
+    // CardType cardType = hand.get(index).getCardType();
+    // return cardType;
+  }
+
+  private boolean hasCard(CardType cardType) {
+    for (Card card : hand) {
+      if (card.isCardType(cardType)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private int getIndexOfCardType(CardType cardType) {
+    for (int i = 0; i < hand.size(); i++) {
+      Card card = hand.get(i);
+
+      if (card.isCardType(cardType)) {
+        return i;
+      }
+    }
+
+    throw new IllegalArgumentException(NO_CARD_FOUND_EXCEPTION);
+  }
+
+  private void checkCardIndexIsWithinBounds(int index) {
+    if (index < 0 || index >= hand.size()) {
+      throw new IllegalArgumentException(INVALID_INDEX_EXCEPTION);
+    }
+  }
 }
