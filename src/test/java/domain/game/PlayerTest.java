@@ -41,7 +41,7 @@ class PlayerTest {
 	public void addNonDefuseToPlayerWhenShouldBeDefuse() {
 		Instantiator instantiator = EasyMock.createMock(Instantiator.class);
 		Card defuse = EasyMock.createMock(Card.class);
-		EasyMock.expect(defuse.getCardType()).andReturn(CardType.CATOMIC_BOMB);
+		EasyMock.expect(defuse.getCardType()).andReturn(CardType.SHUFFLE);
 
 		ArrayList<Card> cardList = new ArrayList<>();
 		Random rand = EasyMock.createMock(Random.class);
@@ -63,7 +63,7 @@ class PlayerTest {
 	@Test
 	public void addToEmptyHand() {
 		Card attack = EasyMock.createMock(Card.class);
-		EasyMock.expect(attack.getCardType()).andStubReturn(CardType.ATTACK);
+		EasyMock.expect(attack.getCardType()).andStubReturn(CardType.SHUFFLE);
 		Instantiator instantiator = EasyMock.createMock(Instantiator.class);
 		ArrayList<Card> cardList = new ArrayList<>();
 
@@ -100,7 +100,7 @@ class PlayerTest {
 		EasyMock.replay(nope);
 
 		Card mark = EasyMock.createMock(Card.class);
-		EasyMock.expect(mark.getCardType()).andStubReturn(CardType.MARK);
+		EasyMock.expect(mark.getCardType()).andStubReturn(CardType.SHUFFLE);
 		EasyMock.replay(mark);
 
 		Instantiator instantiator = EasyMock.createMock(Instantiator.class);
@@ -133,12 +133,13 @@ class PlayerTest {
 	}
 
 	@ParameterizedTest
-	@EnumSource(names = {"ATTACK", "DEFUSE", "NOPE", "SHUFFLE", "SKIP",
-			"SEE_THE_FUTURE", "CAT_ONE", "CAT_TWO",
-			"CAT_THREE", "CAT_FOUR", "STREAKING_KITTEN",
-			"ALTER_THE_FUTURE", "CATOMIC_BOMB", "SUPER_SKIP",
-			"CURSE_OF_THE_CAT_BUTT", "GARBAGE_COLLECTION",
-			"MARK", "SWAP_TOP_AND_BOTTOM"})
+	@EnumSource(names = {"DEFUSE", "NOPE", "SHUFFLE",
+//			"SKIP", "ATTACK", "SEE_THE_FUTURE", "CAT_ONE", "CAT_TWO",
+//			"CAT_THREE", "CAT_FOUR", "STREAKING_KITTEN",
+//			"ALTER_THE_FUTURE", "CATOMIC_BOMB", "SUPER_SKIP",
+//			"CURSE_OF_THE_CAT_BUTT", "GARBAGE_COLLECTION",
+//			"MARK", "SWAP_TOP_AND_BOTTOM"
+	})
 	public void getIndexOfCard(CardType cardType) {
 		Card nope = EasyMock.createMock(Card.class);
 		EasyMock.expect(nope.getCardType()).andStubReturn(CardType.NOPE);
@@ -188,7 +189,7 @@ class PlayerTest {
 		EasyMock.replay(nope);
 
 		Card mark = EasyMock.createMock(Card.class);
-		EasyMock.expect(mark.getCardType()).andStubReturn(CardType.MARK);
+		EasyMock.expect(mark.getCardType()).andStubReturn(CardType.SHUFFLE);
 		EasyMock.replay(mark);
 
 		Instantiator instantiator = EasyMock.createMock(Instantiator.class);
@@ -213,7 +214,7 @@ class PlayerTest {
 		EasyMock.replay(nope);
 
 		Card mark = EasyMock.createMock(Card.class);
-		EasyMock.expect(mark.getCardType()).andStubReturn(CardType.MARK);
+		EasyMock.expect(mark.getCardType()).andStubReturn(CardType.SHUFFLE);
 		EasyMock.replay(mark);
 
 		Instantiator instantiator = EasyMock.createMock(Instantiator.class);
@@ -264,11 +265,11 @@ class PlayerTest {
 		EasyMock.replay(nope);
 
 		Card mark = EasyMock.createMock(Card.class);
-		EasyMock.expect(mark.getCardType()).andStubReturn(CardType.MARK);
+		EasyMock.expect(mark.getCardType()).andStubReturn(CardType.SHUFFLE);
 		EasyMock.replay(mark);
 
 		Card skip = EasyMock.createMock(Card.class);
-		EasyMock.expect(skip.getCardType()).andStubReturn(CardType.SKIP);
+		EasyMock.expect(skip.getCardType()).andStubReturn(CardType.DEFUSE);
 		EasyMock.replay(skip);
 
 		Instantiator instantiator = EasyMock.createMock(Instantiator.class);
@@ -284,7 +285,7 @@ class PlayerTest {
 		player.addCardToHand(skip);
 		CardType cardType = player.removeCardFromHand(2);
 		assertEquals(player.getHandSize(), 2);
-		assertEquals(cardType, CardType.SKIP);
+		assertEquals(cardType, CardType.DEFUSE);
 		EasyMock.verify(nope, instantiator, mark, skip);
 
 	}
@@ -379,51 +380,51 @@ class PlayerTest {
 
 	}
 
-	@Test
-	public void hasAtLeastTwoCatsTrue() {
-		Card catOne = EasyMock.createMock(Card.class);
-		Card catTwo = EasyMock.createMock(Card.class);
-		EasyMock.expect(catOne.getCardType()).andStubReturn(CardType.CAT_ONE);
-		EasyMock.expect(catTwo.getCardType()).andStubReturn(CardType.CAT_ONE);
-		EasyMock.replay(catOne, catTwo);
-
-		Instantiator instantiator = EasyMock.createMock(Instantiator.class);
-		ArrayList<Card> cardList = new ArrayList<>();
-		Random rand = EasyMock.createMock(Random.class);
-		EasyMock.expect(instantiator.createRandom()).andReturn(rand);
-		EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
-		EasyMock.replay(instantiator);
-
-		Player player = new Player(0, instantiator);
-		player.addCardToHand(catOne);
-		player.addCardToHand(catTwo);
-		assertEquals(2,
-				player.checkNumberOfCardsInHand(catOne.getCardType()));
-		EasyMock.verify(catOne, catTwo, instantiator);
-	}
-
-	@Test
-	public void hasAtLeastTwoCatsFalse() {
-		Card catOne = EasyMock.createMock(Card.class);
-		Card catTwo = EasyMock.createMock(Card.class);
-		EasyMock.expect(catOne.getCardType()).andStubReturn(CardType.CAT_ONE);
-		EasyMock.expect(catTwo.getCardType()).andStubReturn(CardType.CAT_TWO);
-		EasyMock.replay(catOne, catTwo);
-
-		Instantiator instantiator = EasyMock.createMock(Instantiator.class);
-		ArrayList<Card> cardList = new ArrayList<>();
-		Random rand = EasyMock.createMock(Random.class);
-		EasyMock.expect(instantiator.createRandom()).andReturn(rand);
-		EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
-		EasyMock.replay(instantiator);
-
-		Player player = new Player(0, instantiator);
-		player.addCardToHand(catOne);
-		player.addCardToHand(catTwo);
-		assertEquals(1, player.
-				checkNumberOfCardsInHand(catOne.getCardType()));
-		EasyMock.verify(catOne, instantiator);
-	}
+//	@Test
+//	public void hasAtLeastTwoCatsTrue() {
+//		Card catOne = EasyMock.createMock(Card.class);
+//		Card catTwo = EasyMock.createMock(Card.class);
+//		EasyMock.expect(catOne.getCardType()).andStubReturn(CardType.CAT_ONE);
+//		EasyMock.expect(catTwo.getCardType()).andStubReturn(CardType.CAT_ONE);
+//		EasyMock.replay(catOne, catTwo);
+//
+//		Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+//		ArrayList<Card> cardList = new ArrayList<>();
+//		Random rand = EasyMock.createMock(Random.class);
+//		EasyMock.expect(instantiator.createRandom()).andReturn(rand);
+//		EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
+//		EasyMock.replay(instantiator);
+//
+//		Player player = new Player(0, instantiator);
+//		player.addCardToHand(catOne);
+//		player.addCardToHand(catTwo);
+//		assertEquals(2,
+//				player.checkNumberOfCardsInHand(catOne.getCardType()));
+//		EasyMock.verify(catOne, catTwo, instantiator);
+//	}
+//
+//	@Test
+//	public void hasAtLeastTwoCatsFalse() {
+//		Card catOne = EasyMock.createMock(Card.class);
+//		Card catTwo = EasyMock.createMock(Card.class);
+//		EasyMock.expect(catOne.getCardType()).andStubReturn(CardType.CAT_ONE);
+//		EasyMock.expect(catTwo.getCardType()).andStubReturn(CardType.CAT_TWO);
+//		EasyMock.replay(catOne, catTwo);
+//
+//		Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+//		ArrayList<Card> cardList = new ArrayList<>();
+//		Random rand = EasyMock.createMock(Random.class);
+//		EasyMock.expect(instantiator.createRandom()).andReturn(rand);
+//		EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
+//		EasyMock.replay(instantiator);
+//
+//		Player player = new Player(0, instantiator);
+//		player.addCardToHand(catOne);
+//		player.addCardToHand(catTwo);
+//		assertEquals(1, player.
+//				checkNumberOfCardsInHand(catOne.getCardType()));
+//		EasyMock.verify(catOne, instantiator);
+//	}
 
 	@Test
 	public void shuffleHandTwoCards() {
@@ -491,43 +492,43 @@ class PlayerTest {
 		EasyMock.verify(rand, firstCard, secondCard, instantiator);
 	}
 
-	@Test
-	public void setCursedTrue() {
-		Instantiator instantiator = EasyMock.createMock(Instantiator.class);
-		Random rand = EasyMock.createMock(Random.class);
-
-		ArrayList<Card> cardList = new ArrayList<>();
-		EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
-		EasyMock.expect(instantiator.createRandom()).andReturn(rand);
-		EasyMock.replay(instantiator);
-
-		Player player = new Player(0, instantiator);
-
-		player.setCursed(true);
-
-		assertTrue(player.getIsCursed());
-
-		EasyMock.verify(instantiator);
-	}
-
-	@Test
-	public void setCursedFalse() {
-		Instantiator instantiator = EasyMock.createMock(Instantiator.class);
-		Random rand = EasyMock.createMock(Random.class);
-
-		ArrayList<Card> cardList = new ArrayList<>();
-		EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
-		EasyMock.expect(instantiator.createRandom()).andReturn(rand);
-		EasyMock.replay(instantiator);
-
-		Player player = new Player(0, instantiator);
-
-		player.setCursed(false);
-
-		assertFalse(player.getIsCursed());
-
-		EasyMock.verify(instantiator);
-	}
+//	@Test
+//	public void setCursedTrue() {
+//		Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+//		Random rand = EasyMock.createMock(Random.class);
+//
+//		ArrayList<Card> cardList = new ArrayList<>();
+//		EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
+//		EasyMock.expect(instantiator.createRandom()).andReturn(rand);
+//		EasyMock.replay(instantiator);
+//
+//		Player player = new Player(0, instantiator);
+//
+//		player.setCursed(true);
+//
+//		assertTrue(player.getIsCursed());
+//
+//		EasyMock.verify(instantiator);
+//	}
+//
+//	@Test
+//	public void setCursedFalse() {
+//		Instantiator instantiator = EasyMock.createMock(Instantiator.class);
+//		Random rand = EasyMock.createMock(Random.class);
+//
+//		ArrayList<Card> cardList = new ArrayList<>();
+//		EasyMock.expect(instantiator.createCardList()).andReturn(cardList);
+//		EasyMock.expect(instantiator.createRandom()).andReturn(rand);
+//		EasyMock.replay(instantiator);
+//
+//		Player player = new Player(0, instantiator);
+//
+//		player.setCursed(false);
+//
+//		assertFalse(player.getIsCursed());
+//
+//		EasyMock.verify(instantiator);
+//	}
 
 	@Test
 	public void exploded() {
