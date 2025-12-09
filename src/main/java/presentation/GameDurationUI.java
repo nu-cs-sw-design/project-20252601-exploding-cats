@@ -26,14 +26,9 @@ public class GameDurationUI {
     while (inputReader.promptForPlayersWantsToEndTurn() == false) {
       int cardIndexToPlay = inputReader.promptForCardIndexToPlay(activePlayerHandSize);
       Card cardToPlay = activePlayerCards.get(cardIndexToPlay);
+      CardType cardTypeToPlay = cardToPlay.getCardType();
 
-      // COMMAND: add command to command history
-      // check if that card is reversible (i.e. SHUFFLE) AND if other players have nope
-
-      // prompt other players for NOPE's
-      // COMMAND: add any nope's to command history
-      // execute commands
-      // print end result (based on if number of nopes added being even or odd)
+      playCardType(cardTypeToPlay);
     }
 
     // END OF TURN -> DRAW CARD (and handle explode/defuse as needed)
@@ -43,6 +38,32 @@ public class GameDurationUI {
     // -> if so, end game
     // -> if not, SWITCH TURN TO NEXT PLAYER
 
+  }
+
+  private void playCardType(CardType cardTypeToPlay) {
+    //
+    // TODO: finish implementing NOPE card
+    //
+    // COMMAND: add command to command history
+    // check if that card is reversible (i.e. SHUFFLE) AND if other players have nope
+
+    // prompt other players for NOPE's
+    // COMMAND: add any nope's to command history
+    // execute commands
+    // print end result (based on if number of nopes added being even or odd)
+
+    if (cardTypeToPlay == CardType.SHUFFLE) {
+      Command shuffle = commandFactory.createCommandWithNoInput(CardType.SHUFFLE);
+      gameInvoker.addCommand(shuffle);
+    } else if (cardTypeToPlay == CardType.NOPE) {
+      // TODO: implement nope logic here
+      Command nope = commandFactory.createCommandWithNoInput(CardType.NOPE);
+      gameInvoker.addCommand(nope);
+    } else {
+        throw new UnsupportedOperationException("Requirements to play " + cardTypeToPlay + " not met.");
+    }
+
+    gameInvoker.executeCommands();
   }
 
   private void endTurn(PlayerID activePlayerID, List<Card> activePlayerCards) {
