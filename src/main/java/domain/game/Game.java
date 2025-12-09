@@ -66,7 +66,7 @@ public Game (int numberOfPlayers,
 					(INVALID_NUMBER_OF_PLAYERS_EXCEPTION);
 		}
 		this.numberOfPlayers = numberOfPlayers;
-		getDeck().setNumberOfPlayers(numberOfPlayers);
+		getDeck().setNumPlayers(numberOfPlayers);
 	}
 
 	public domain.game.Player selectRandomPlayer() {
