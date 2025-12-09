@@ -6,7 +6,7 @@ import java.util.Random;
 public class Deck {
 	private List<Card> deck;
 	private Random rand;
-	private GameType gameType;
+//	private GameType gameType;
 	private int numberOfPlayers;
 	private int maxDeckSize;
 	private Instantiator instantiator;
@@ -24,12 +24,14 @@ public class Deck {
 		"Index out of range: %d. Valid range is 0 to %d.";
 
 
-	public Deck(List<Card> deck, Random rand,
-				domain.game.GameType gameType, int numberOfPlayers, int maxDeckSize,
-				Instantiator instantiator) {
+//	public Deck(List<Card> deck, Random rand,
+//				domain.game.GameType gameType, int numberOfPlayers, int maxDeckSize,
+//				Instantiator instantiator) {
+public Deck(List<Card> deck, Random rand, int numberOfPlayers, int maxDeckSize,
+						Instantiator instantiator) {
 		this.deck = deck;
 		this.rand = rand;
-		this.gameType = gameType;
+//		this.gameType = gameType;
 		this.numberOfPlayers = numberOfPlayers;
 		this.maxDeckSize = maxDeckSize;
 		this.instantiator = instantiator;
@@ -49,45 +51,46 @@ public class Deck {
 		final int cardAddedFiveTimes = 5;
 		final int cardAddedOnce = 1;
 		final int cardAddedTwice = 2;
-		final int streakingKittensExtraCards = 14;
-		final int implodingKittensExtraCards = 19;
+//		final int streakingKittensExtraCards = 14;
+//		final int implodingKittensExtraCards = 19;
 		insertCard(CardType.NOPE, cardAddedFourTimes, false);
-		insertCard(CardType.ATTACK, cardAddedThreeTimes, false);
+//		insertCard(CardType.ATTACK, cardAddedThreeTimes, false);
 		insertCard(CardType.SHUFFLE, cardAddedFourTimes, false);
-		insertCard(CardType.SKIP, cardAddedThreeTimes, false);
-		insertCard(CardType.SEE_THE_FUTURE, cardAddedFourTimes, false);
-		insertCard(CardType.CAT_ONE, cardAddedFourTimes, false);
-		insertCard(CardType.CAT_TWO, cardAddedFourTimes, false);
-		insertCard(CardType.CAT_THREE, cardAddedFourTimes, false);
-		insertCard(CardType.CAT_FOUR, cardAddedFourTimes, false);
+//		insertCard(CardType.SKIP, cardAddedThreeTimes, false);
 		insertCard(CardType.DEFUSE,
-				cardAddedFiveTimes - numberOfPlayers, false);
-		switch (gameType) {
-			case STREAKING_KITTENS:
-				maxDeckSize = maxDeckSize + streakingKittensExtraCards;
-				insertCard(CardType.STREAKING_KITTEN, cardAddedOnce, false);
-				insertCard(CardType.ALTER_THE_FUTURE, cardAddedOnce, false);
-				insertCard(CardType.CATOMIC_BOMB, cardAddedOnce, false);
-				insertCard(CardType.SUPER_SKIP, cardAddedOnce, false);
-				insertCard(CardType.SWAP_TOP_AND_BOTTOM,
-						cardAddedThreeTimes, false);
-				insertCard(CardType.MARK, cardAddedThreeTimes, false);
-				insertCard(CardType.SEE_THE_FUTURE, cardAddedOnce, false);
-				insertCard(CardType.CURSE_OF_THE_CAT_BUTT, cardAddedTwice, false);
-				insertCard(CardType.GARBAGE_COLLECTION, cardAddedOnce, false);
-				break;
-			case IMPLODING_KITTENS:
-				maxDeckSize = maxDeckSize + implodingKittensExtraCards;
-				insertCard(CardType.DRAW_FROM_THE_BOTTOM,
-						cardAddedFourTimes, false);
-				insertCard(CardType.ALTER_THE_FUTURE, cardAddedFourTimes, false);
-				insertCard(CardType.FERAL_CAT, cardAddedFourTimes, false);
-				insertCard(CardType.REVERSE, cardAddedFourTimes, false);
-				insertCard(CardType.TARGETED_ATTACK, cardAddedThreeTimes, false);
-				break;
-			default:
-				break;
-		}
+						cardAddedFiveTimes - numberOfPlayers, false);
+		// TODO: eventually add exploding kittens into deck here rather than in Main
+//		insertCard(CardType.SEE_THE_FUTURE, cardAddedFourTimes, false);
+//		insertCard(CardType.CAT_ONE, cardAddedFourTimes, false);
+//		insertCard(CardType.CAT_TWO, cardAddedFourTimes, false);
+//		insertCard(CardType.CAT_THREE, cardAddedFourTimes, false);
+//		insertCard(CardType.CAT_FOUR, cardAddedFourTimes, false);
+//		switch (gameType) {
+//			case STREAKING_KITTENS:
+//				maxDeckSize = maxDeckSize + streakingKittensExtraCards;
+//				insertCard(CardType.STREAKING_KITTEN, cardAddedOnce, false);
+//				insertCard(CardType.ALTER_THE_FUTURE, cardAddedOnce, false);
+//				insertCard(CardType.CATOMIC_BOMB, cardAddedOnce, false);
+//				insertCard(CardType.SUPER_SKIP, cardAddedOnce, false);
+//				insertCard(CardType.SWAP_TOP_AND_BOTTOM,
+//						cardAddedThreeTimes, false);
+//				insertCard(CardType.MARK, cardAddedThreeTimes, false);
+//				insertCard(CardType.SEE_THE_FUTURE, cardAddedOnce, false);
+//				insertCard(CardType.CURSE_OF_THE_CAT_BUTT, cardAddedTwice, false);
+//				insertCard(CardType.GARBAGE_COLLECTION, cardAddedOnce, false);
+//				break;
+//			case IMPLODING_KITTENS:
+//				maxDeckSize = maxDeckSize + implodingKittensExtraCards;
+//				insertCard(CardType.DRAW_FROM_THE_BOTTOM,
+//						cardAddedFourTimes, false);
+//				insertCard(CardType.ALTER_THE_FUTURE, cardAddedFourTimes, false);
+//				insertCard(CardType.FERAL_CAT, cardAddedFourTimes, false);
+//				insertCard(CardType.REVERSE, cardAddedFourTimes, false);
+//				insertCard(CardType.TARGETED_ATTACK, cardAddedThreeTimes, false);
+//				break;
+//			default:
+//				break;
+//		}
 	}
 
 	public void shuffleDeck() {
@@ -140,9 +143,9 @@ public class Deck {
 		this.numberOfPlayers = numberOfPlayers;
 	}
 
-	public void chooseGameType(domain.game.GameType gameType) {
-		this.gameType = gameType;
-	}
+//	public void chooseGameType(domain.game.GameType gameType) {
+//		this.gameType = gameType;
+//	}
 
 	public int removeBombs() {
 		int counter = 0;
@@ -168,9 +171,9 @@ public class Deck {
 		}
 	}
 
-	public void insertImplodingKittenAtIndex(int indexToInsert, Card card) {
-		deck.add(indexToInsert, card);
-	}
+//	public void insertImplodingKittenAtIndex(int indexToInsert, Card card) {
+//		deck.add(indexToInsert, card);
+//	}
 
 
 	protected CardType getCardTypeAtIndex(int index) {

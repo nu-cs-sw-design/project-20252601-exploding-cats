@@ -5,19 +5,19 @@ import java.util.Random;
 
 public class Game {
 	private int numberOfPlayers;
-	private domain.game.GameType gameType;
+//	private domain.game.GameType gameType;
 	private domain.game.Deck deck;
 	private domain.game.Player[] players;
 	private Random rand;
 
 	private int currentPlayerTurn;
 	private int currentPlayerNumberOfTurns;
-	private boolean isReversed;
-	private List<Integer> attackQueue;
-	private int attackCounter;
-	private int numberOfAttacks;
+//	private boolean isReversed;
+//	private List<Integer> attackQueue;
+//	private int attackCounter;
+//	private int numberOfAttacks;
 	private int[] turnTracker;
-	private boolean attacked;
+//	private boolean attacked;
 
 	private static final String PLAYER_HAND_EMPTY_EXCEPTION = "Player has no cards to steal";
 	private static final String INVALID_PLAYER_INDEX_EXCEPTION = "Invalid player index.";
@@ -34,104 +34,107 @@ public class Game {
 	private static final String NUMBER_OF_TURNS_OUT_OF_BOUNDS_EXCEPTION =
 			"Number of turns must be between 1 and 6.";
 
-	public Game (int numberOfPlayers, GameType gameType,
-                 Deck deck, domain.game.Player[] players, Random rand,
-                 List<Integer> attackQueue,
-                 int[] turnTracker) {
+//	public Game (int numberOfPlayers, GameType gameType,
+//                 Deck deck, domain.game.Player[] players, Random rand,
+//                 List<Integer> attackQueue,
+//                 int[] turnTracker) {
+public Game (int numberOfPlayers,
+						 Deck deck, domain.game.Player[] players, Random rand,
+						 int[] turnTracker) {
 		this.numberOfPlayers = numberOfPlayers;
-		this.gameType = gameType;
+//		this.gameType = gameType;
 		this.deck = deck;
 		this.players = players;
 		this.rand = rand;
 		this.currentPlayerTurn = 0;
 		this.currentPlayerNumberOfTurns = 0;
-		this.attackQueue = attackQueue;
-		isReversed = false;
+//		this.attackQueue = attackQueue;
+//		isReversed = false;
 		this.turnTracker = turnTracker;
-		this.attackCounter = 0;
-		this.numberOfAttacks = 0;
-		this.attacked = false;
+//		this.attackCounter = 0;
+//		this.numberOfAttacks = 0;
+//		this.attacked = false;
 	}
 
-	public void swapTopAndBottom() {
-		if (checkDeckHasOneCardOrLess()) {
-			return;
-		}
-		Card bottomCard = deck.drawCardFromBottom();
-		Card topCard = drawCard();
-		deck.insertCard(bottomCard.getCardType(), 1, false);
-		deck.insertCard(topCard.getCardType(), 1, true);
-	}
+//	public void swapTopAndBottom() {
+//		if (checkDeckHasOneCardOrLess()) {
+//			return;
+//		}
+//		Card bottomCard = deck.drawCardFromBottom();
+//		Card topCard = drawCard();
+//		deck.insertCard(bottomCard.getCardType(), 1, false);
+//		deck.insertCard(topCard.getCardType(), 1, true);
+//	}
 
-	public Card stealRandomCard(int playerToStealFrom) {
-		domain.game.Player player = players[playerToStealFrom];
-		if (checkPlayerHandEmpty(player)) {
-			throw new IllegalArgumentException(PLAYER_HAND_EMPTY_EXCEPTION);
-		}
-
-		int randomCardIndex = rand.nextInt(player.getHandSize());
-		Card stealedCard = player.getCardAt(randomCardIndex);
-		player.removeCardFromHand(randomCardIndex);
-		addCardToHand(stealedCard);
-		return stealedCard;
-	}
-
-	public void stealTypeCard(CardType cardType, int playerToStealFrom) {
-		domain.game.Player player = players[playerToStealFrom];
-		try {
-			int cardIndex = getIndexOfCardFromHand(playerToStealFrom,
-					cardType);
-			Card stealedCard = player.getCardAt(cardIndex);
-			player.removeCardFromHand(cardIndex);
-			players[currentPlayerTurn].addCardToHand(stealedCard);
-		}
-		catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException
-					(CARD_TYPE_NOT_FOUND_EXCEPTION);
-		}
-	}
-
-
-	public void startAttackPhase() {
-
-		final int attackedAttackThreshold = 4;
-		attackCounter = currentPlayerTurn;
-		numberOfAttacks = 0;
-		while (!isAttackQueueEmpty()) {
-			int attack = removeAttackQueue();
-			if (attack <= attackedAttackThreshold) {
-				playTargetedAttack(attack);
-			} else {
-				playAttack();
-			}
-		}
-		if (turnTracker[attackCounter] == 1) {
-			turnTracker[attackCounter] = 0;
-		}
-		if (attackCounter == currentPlayerTurn) {
-			currentPlayerNumberOfTurns += numberOfAttacks;
-			turnTracker[attackCounter] = 1;
-			attacked = false;
-		} else {
-			turnTracker[attackCounter] += numberOfAttacks;
-		}
-		decrementNumberOfTurns();
-		if (checkIfNumberOfTurnsIsZero()) {
-			incrementPlayerTurn();
-		}
-	}
-
-	public void playAttack() {
-		incrementAttackCounter();
-		addAttacks();
-		attacked = true;
-	}
-
-	public void playTargetedAttack (int attackedPlayerIndex) {
-		setAttackCounter(attackedPlayerIndex);
-		addAttacks();
-		attacked = true;
-	}
+//	public Card stealRandomCard(int playerToStealFrom) {
+//		domain.game.Player player = players[playerToStealFrom];
+//		if (checkPlayerHandEmpty(player)) {
+//			throw new IllegalArgumentException(PLAYER_HAND_EMPTY_EXCEPTION);
+//		}
+//
+//		int randomCardIndex = rand.nextInt(player.getHandSize());
+//		Card stealedCard = player.getCardAt(randomCardIndex);
+//		player.removeCardFromHand(randomCardIndex);
+//		addCardToHand(stealedCard);
+//		return stealedCard;
+//	}
+//
+//	public void stealTypeCard(CardType cardType, int playerToStealFrom) {
+//		domain.game.Player player = players[playerToStealFrom];
+//		try {
+//			int cardIndex = getIndexOfCardFromHand(playerToStealFrom,
+//					cardType);
+//			Card stealedCard = player.getCardAt(cardIndex);
+//			player.removeCardFromHand(cardIndex);
+//			players[currentPlayerTurn].addCardToHand(stealedCard);
+//		}
+//		catch (IllegalArgumentException e) {
+//			throw new IllegalArgumentException
+//					(CARD_TYPE_NOT_FOUND_EXCEPTION);
+//		}
+//	}
+//
+//
+//	public void startAttackPhase() {
+//
+//		final int attackedAttackThreshold = 4;
+//		attackCounter = currentPlayerTurn;
+//		numberOfAttacks = 0;
+//		while (!isAttackQueueEmpty()) {
+//			int attack = removeAttackQueue();
+//			if (attack <= attackedAttackThreshold) {
+//				playTargetedAttack(attack);
+//			} else {
+//				playAttack();
+//			}
+//		}
+//		if (turnTracker[attackCounter] == 1) {
+//			turnTracker[attackCounter] = 0;
+//		}
+//		if (attackCounter == currentPlayerTurn) {
+//			currentPlayerNumberOfTurns += numberOfAttacks;
+//			turnTracker[attackCounter] = 1;
+//			attacked = false;
+//		} else {
+//			turnTracker[attackCounter] += numberOfAttacks;
+//		}
+//		decrementNumberOfTurns();
+//		if (checkIfNumberOfTurnsIsZero()) {
+//			incrementPlayerTurn();
+//		}
+//	}
+//
+//	public void playAttack() {
+//		incrementAttackCounter();
+//		addAttacks();
+//		attacked = true;
+//	}
+//
+//	public void playTargetedAttack (int attackedPlayerIndex) {
+//		setAttackCounter(attackedPlayerIndex);
+//		addAttacks();
+//		attacked = true;
+//	}
 
 	public boolean playExplodingKitten(int playerIndex) {
 		if (checkUserOutOfBounds(playerIndex)) {
@@ -147,10 +150,10 @@ public class Game {
 		return true;
 	}
 
-	public void playImplodingKitten() {
-		setCurrentPlayerNumberOfTurns(0);
-		players[currentPlayerTurn].setIsDead();
-	}
+//	public void playImplodingKitten() {
+//		setCurrentPlayerNumberOfTurns(0);
+//		players[currentPlayerTurn].setIsDead();
+//	}
 
 	public void playDefuse(int idxToInsertExplodingKitten, int playerIndex) {
 		if (checkUserOutOfBounds(playerIndex)) {
@@ -171,18 +174,18 @@ public class Game {
 
 	}
 
-	public Card drawFromBottom() {
-		return deck.drawCardFromBottom();
-	}
-
-	public void playCatomicBomb() {
-		int numberOfBombs = deck.removeBombs();
-		deck.insertCard(CardType.EXPLODING_KITTEN, numberOfBombs, false);
-		decrementNumberOfTurns();
-		if (checkIfNumberOfTurnsIsZero()) {
-			incrementPlayerTurn();
-		}
-	}
+//	public Card drawFromBottom() {
+//		return deck.drawCardFromBottom();
+//	}
+//
+//	public void playCatomicBomb() {
+//		int numberOfBombs = deck.removeBombs();
+//		deck.insertCard(CardType.EXPLODING_KITTEN, numberOfBombs, false);
+//		decrementNumberOfTurns();
+//		if (checkIfNumberOfTurnsIsZero()) {
+//			incrementPlayerTurn();
+//		}
+//	}
 
 	public void setNumberOfPlayers (int numberOfPlayers) {
 		if (checkInvalidNumberOfPlayers(numberOfPlayers)) {
@@ -193,32 +196,32 @@ public class Game {
 		getDeck().setNumberOfPlayers(numberOfPlayers);
 	}
 
-	public void playReverse() {
-		int startPointer = 0;
-		int endPointer = numberOfPlayers - 1;
-		isReversed = !isReversed;
-		while (startPointer < endPointer) {
-			domain.game.Player temporaryPlayerOne = players[startPointer];
-			domain.game.Player temporaryPlayerTwo = players[endPointer];
-			players[startPointer] = temporaryPlayerTwo;
-			players[endPointer] = temporaryPlayerOne;
-			startPointer++;
-			endPointer--;
-		}
-		currentPlayerTurn = numberOfPlayers - currentPlayerTurn - 1;
-		decrementNumberOfTurns();
-		if (checkIfNumberOfTurnsIsZero()) {
-			incrementPlayerTurn();
-		}
-	}
-
-	public void retrieveGameMode(GameType gameType) {
-		if (matchingGameType(gameType)) {
-			throw new IllegalArgumentException(INVALID_GAME_TYPE_EXCEPTION);
-		}
-		this.gameType = gameType;
-		deck.chooseGameType(gameType);
-	}
+//	public void playReverse() {
+//		int startPointer = 0;
+//		int endPointer = numberOfPlayers - 1;
+//		isReversed = !isReversed;
+//		while (startPointer < endPointer) {
+//			domain.game.Player temporaryPlayerOne = players[startPointer];
+//			domain.game.Player temporaryPlayerTwo = players[endPointer];
+//			players[startPointer] = temporaryPlayerTwo;
+//			players[endPointer] = temporaryPlayerOne;
+//			startPointer++;
+//			endPointer--;
+//		}
+//		currentPlayerTurn = numberOfPlayers - currentPlayerTurn - 1;
+//		decrementNumberOfTurns();
+//		if (checkIfNumberOfTurnsIsZero()) {
+//			incrementPlayerTurn();
+//		}
+//	}
+//
+//	public void retrieveGameMode(GameType gameType) {
+//		if (matchingGameType(gameType)) {
+//			throw new IllegalArgumentException(INVALID_GAME_TYPE_EXCEPTION);
+//		}
+//		this.gameType = gameType;
+//		deck.chooseGameType(gameType);
+//	}
 
 	public domain.game.Player selectRandomPlayer() {
 		int randomPlayerIndex = rand.nextInt(numberOfPlayers);
@@ -235,26 +238,26 @@ public class Game {
 	}
 
 
-	public int playSkip(boolean superSkip) {
-		if (checkIfNumberOfTurnsOutOfBounds()) {
-			throw new UnsupportedOperationException(
-					NUMBER_OF_TURNS_OUT_OF_BOUNDS_EXCEPTION);
-		}
-		if (superSkip) {
-			setCurrentPlayerNumberOfTurns(0);
-		} else {
-			currentPlayerNumberOfTurns--;
-		}
-		if (checkIfNumberOfTurnsIsZero()) {
-			incrementPlayerTurn();
-		}
-		return currentPlayerNumberOfTurns;
-	}
+//	public int playSkip(boolean superSkip) {
+//		if (checkIfNumberOfTurnsOutOfBounds()) {
+//			throw new UnsupportedOperationException(
+//					NUMBER_OF_TURNS_OUT_OF_BOUNDS_EXCEPTION);
+//		}
+//		if (superSkip) {
+//			setCurrentPlayerNumberOfTurns(0);
+//		} else {
+//			currentPlayerNumberOfTurns--;
+//		}
+//		if (checkIfNumberOfTurnsIsZero()) {
+//			incrementPlayerTurn();
+//		}
+//		return currentPlayerNumberOfTurns;
+//	}
 
-	public void playGarbageCollection(CardType cardToDiscard) {
-		deck.insertCard(cardToDiscard, 1, false);
-		deck.shuffleDeck();
-	}
+//	public void playGarbageCollection(CardType cardToDiscard) {
+//		deck.insertCard(cardToDiscard, 1, false);
+//		deck.shuffleDeck();
+//	}
 
 	public Deck getDeck() {
 		return deck;
@@ -266,59 +269,59 @@ public class Game {
 		} while (checkIfPlayerDead(currentPlayerTurn));
 	}
 
-	public void incrementAttackCounter() {
-		do {
-			attackCounter = (attackCounter + 1) % numberOfPlayers;
-		} while (checkIfPlayerDead(attackCounter));
-	}
-
-	public void setAttackCounter(int playerIndex) {
-		attackCounter = playerIndex;
-	}
-
-	GameType getGameTypeForTesting() {
-		return gameType;
-	}
-
-	public GameType getGameType() {
-		return gameType;
-	}
+//	public void incrementAttackCounter() {
+//		do {
+//			attackCounter = (attackCounter + 1) % numberOfPlayers;
+//		} while (checkIfPlayerDead(attackCounter));
+//	}
+//
+//	public void setAttackCounter(int playerIndex) {
+//		attackCounter = playerIndex;
+//	}
+//
+//	GameType getGameTypeForTesting() {
+//		return gameType;
+//	}
+//
+//	public GameType getGameType() {
+//		return gameType;
+//	}
 
 	public domain.game.Player getPlayerAtIndex(int playerIndex) {
 		return players[playerIndex];
 	}
 
-	public void addAttacks() {
-		numberOfAttacks++;
-		numberOfAttacks++;
-	}
+//	public void addAttacks() {
+//		numberOfAttacks++;
+//		numberOfAttacks++;
+//	}
 
-	public void playMark(int playerIndex, int cardIndex) {
-		if (checkUserOutOfBounds(playerIndex)) {
-			throw new IllegalArgumentException(OUT_OF_BOUNDS_PLAYER_INDEX_EXCEPTION);
-		}
-		if (checkIfPlayerDead(playerIndex)) {
-			throw new IllegalArgumentException(PLAYER_DEAD_EXCEPTION);
-		}
-		if (checkCardOutOfBoundsIndexed(cardIndex, playerIndex)) {
-			throw new IllegalArgumentException(CARD_INDEX_OUT_OF_BOUNDS_EXCEPTION);
-		}
-		Card card = getPlayerAtIndex(playerIndex).getCardAt(cardIndex);
-		card.markCard();
-
-	}
-
-	public void addAttackQueue(int attack) {
-		attackQueue.add(attack);
-	}
-
-	public int removeAttackQueue() {
-		return attackQueue.remove(0);
-	}
-
-	public boolean isAttackQueueEmpty() {
-		return attackQueue.isEmpty();
-	}
+//	public void playMark(int playerIndex, int cardIndex) {
+//		if (checkUserOutOfBounds(playerIndex)) {
+//			throw new IllegalArgumentException(OUT_OF_BOUNDS_PLAYER_INDEX_EXCEPTION);
+//		}
+//		if (checkIfPlayerDead(playerIndex)) {
+//			throw new IllegalArgumentException(PLAYER_DEAD_EXCEPTION);
+//		}
+//		if (checkCardOutOfBoundsIndexed(cardIndex, playerIndex)) {
+//			throw new IllegalArgumentException(CARD_INDEX_OUT_OF_BOUNDS_EXCEPTION);
+//		}
+//		Card card = getPlayerAtIndex(playerIndex).getCardAt(cardIndex);
+//		card.markCard();
+//
+//	}
+//
+//	public void addAttackQueue(int attack) {
+//		attackQueue.add(attack);
+//	}
+//
+//	public int removeAttackQueue() {
+//		return attackQueue.remove(0);
+//	}
+//
+//	public boolean isAttackQueueEmpty() {
+//		return attackQueue.isEmpty();
+//	}
 
 	public void setPlayerNumberOfTurns() {
 		currentPlayerNumberOfTurns = turnTracker[currentPlayerTurn];
@@ -402,19 +405,20 @@ public class Game {
 		return getCardAtIndex(deckIndex).getCardType();
 	}
 
-	public boolean getIsReversed() {
-		return isReversed;
-	}
+//	public boolean getIsReversed() {
+//		return isReversed;
+//	}
 
 	protected void setCurrentPlayerTurn(int turn) {
 		currentPlayerTurn = turn;
 
 	}
 
-	private boolean matchingGameType (GameType gameType) {
-		return gameType == GameType.NONE;
-	}
+//	private boolean matchingGameType (GameType gameType) {
+//		return gameType == GameType.NONE;
+//	}
 
+	// TODO: delete any unused functions later
 	private boolean checkCardOutOfBoundsIndexed(int cardIndex, int playerIndex) {
 		return cardIndex > getHandSize(playerIndex) - 1
 				|| cardIndex < 0;
@@ -456,37 +460,37 @@ public class Game {
 		return currentPlayerNumberOfTurns == 0;
 	}
 
-	public void setTurnToTargetedIndexIfAttackOccurred() {
-		if (attacked) {
-			attacked = false;
-			currentPlayerTurn = attackCounter;
-			if (checkIfPlayerDead(currentPlayerTurn)) {
-				incrementPlayerTurn();
-			}
-		}
-	}
+//	public void setTurnToTargetedIndexIfAttackOccurred() {
+//		if (attacked) {
+//			attacked = false;
+//			currentPlayerTurn = attackCounter;
+//			if (checkIfPlayerDead(currentPlayerTurn)) {
+//				incrementPlayerTurn();
+//			}
+//		}
+//	}
 
 	public int getTurnCountOfPlayer(int playerIndex) {
 		return turnTracker[playerIndex];
 	}
 
-	public boolean getAttacked() {
-		return attacked;
-	}
-
-	public int getAttackCounter() {
-		return attackCounter;
-	}
-
-	public int getNumberOfAttacks() {
-		return numberOfAttacks;
-	}
-
-	void setNumberOfAttacks(int numberOfAttacks) {
-		this.numberOfAttacks = numberOfAttacks;
-	}
-
-	void setAttacked(boolean attacked) {
-		this.attacked = attacked;
-	}
+//	public boolean getAttacked() {
+//		return attacked;
+//	}
+//
+//	public int getAttackCounter() {
+//		return attackCounter;
+//	}
+//
+//	public int getNumberOfAttacks() {
+//		return numberOfAttacks;
+//	}
+//
+//	void setNumberOfAttacks(int numberOfAttacks) {
+//		this.numberOfAttacks = numberOfAttacks;
+//	}
+//
+//	void setAttacked(boolean attacked) {
+//		this.attacked = attacked;
+//	}
 }
