@@ -21,26 +21,25 @@ public class GameDurationUI {
   void runGameLoop() {
     PlayerID activePlayerID = gameModel.getCurrentPlayer();
     List<Card> activePlayerCards = gameModel.getHandForPlayerID(activePlayerID);
-    int activePlayerHandSize = activePlayerCards.size();
 
     inputReader.printStartTurn(activePlayerID, activePlayerCards);
-    while (inputReader.promptForPlayersWantsToEndTurn() == false) {
-      activePlayerCards = gameModel.getHandForPlayerID(activePlayerID);
-      inputReader.printHand(activePlayerCards);
+    while (!inputReader.promptForPlayersWantsToEndTurn()) {
+      List<Card> newPlayerCards = gameModel.getHandForPlayerID(activePlayerID);
+      int activePlayerHandSize = newPlayerCards.size();
+
+      inputReader.printHand(newPlayerCards);
       int cardIndexToPlay = inputReader.promptForCardIndexToPlay(activePlayerHandSize);
-      Card cardToPlay = activePlayerCards.get(cardIndexToPlay);
+      Card cardToPlay = newPlayerCards.get(cardIndexToPlay);
       CardType cardTypeToPlay = cardToPlay.getCardType();
 
       if (reactiveCardTypes.contains(cardTypeToPlay)) {
-        System.out.println(cardTypeToPlay + " IS REACTIVE");
         inputReader.printCardRequirementsNotMet();
-        continue;
       }
-
-      playCardType(cardTypeToPlay, activePlayerID);
+      else {
+        playCardType(cardTypeToPlay, activePlayerID);
+      }
     }
 
-    // END OF TURN -> DRAW CARD (and handle explode/defuse as needed)
     endTurn(activePlayerID, activePlayerCards);
 
     if (gameIsOver()) {
@@ -55,7 +54,7 @@ public class GameDurationUI {
   private void playCardType(CardType cardTypeToPlay, PlayerID activePlayerID) {
     // Because I'm only implementing 4 cards, the only card this could be is the Shuffle card
     inputReader.printPlayShuffle();
-    Command initialCommand = commandFactory.createCommandWithNoInput(cardTypeToPlay);
+    Command initialCommand = commandFactory.createCommandWithPlayerInput(cardTypeToPlay, activePlayerID);
     gameInvoker.addCommand(initialCommand);
 
     List<PlayerID> playersWithNopeCards = gameModel.getOtherPlayersWithNopeCards(activePlayerID);
@@ -108,7 +107,7 @@ public class GameDurationUI {
 
       } else {
         inputReader.printExplode();
-        Command explodePlayer = commandFactory.createCommandWithNoInput(CardType.EXPLODING_KITTEN);
+        Command explodePlayer = commandFactory.createCommandWithPlayerInput(CardType.EXPLODING_KITTEN, activePlayerID);
         gameInvoker.addCommand(explodePlayer);
       }
 

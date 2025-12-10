@@ -13,25 +13,18 @@ public class SimpleCardCommandFactory {
     this.playerHands = playerHands;
   }
 
-  public Command createCommandWithNoInput(CardType cardType) {
-    switch (cardType) {
-      case SHUFFLE:
-        return new ShuffleDeckCommand(deck);
-      case EXPLODING_KITTEN:
-        return new ExplodeCommand(turnOrder);
-      default:
-        throw new UnsupportedOperationException("Card type requires input: " + cardType);
-    }
-  }
-
   public Command createCommandWithPlayerInput(CardType cardType, PlayerID playerID) {
     PlayerHand playerHand = playerHands.get(playerID);
 
     switch (cardType) {
+      case SHUFFLE:
+        return new ShuffleDeckCommand(playerHand, deck);
       case NOPE:
         return new NopeCommand(playerHand);
       case DEFUSE:
         return new DefuseCommand(playerHand);
+      case EXPLODING_KITTEN:
+        return new ExplodeCommand(turnOrder);
       default:
         throw new UnsupportedOperationException("Card type requires player input: " + cardType);
     }
