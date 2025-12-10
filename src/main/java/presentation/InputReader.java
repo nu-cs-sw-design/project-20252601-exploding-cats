@@ -108,7 +108,6 @@ class InputReader {
   }
 
   boolean promptForPlayersWantsToEndTurn() {
-    Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
     final String endTurnPrompt = messages.getString("endTurnPrompt");
     final String typeOptionPrompt = messages.getString("typeOptionPrompt");
     final String optionYes = messages.getString("optionYes");
