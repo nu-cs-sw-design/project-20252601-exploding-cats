@@ -8,12 +8,11 @@ Refactoring conducted by Joanna Soltys
 - JDK 11
 - JUnit 5.10
 - Gradle 8.10
-- [TODO] add any external libraries here
 
 ## Build Instructions
 1) In IntelliJ, press the Gradle (elephant) icon on the right-hand side of the IDE.
 2) Under course-project/Tasks/build, double-click on "build" to build the project.
-3) To run the project, first open the Main file in [src/main/java/ui/Main](src/main/java/ui/Main.java).
+3) To run the project, first open the [Main file](src/main/java/presentation/Main.java).
 4) Then navigate the green arrow play button located towards the top right of the IntelliJ IDE.
 5) If needed, select the dropdown to the left of the play button so that "Current File" is selected.
 6) Press the play button to begin running this project, which is a command-line application that will prompt the user in the terminal.
