@@ -8,7 +8,6 @@ public class Deck {
   private final List<Card> deck;
   private final int numPlayers;
 
-  private static final String DECK_FULL_EXCEPTION = "Deck is full, cannot insert more cards.";
   private static final String DRAW_FROM_EMPTY_DECK_EXCEPTION =
           "Cannot draw card from empty deck.";
   private static final String NEGATIVE_INDEX_EXCEPTION =
@@ -42,7 +41,7 @@ public class Deck {
   void removeExplodingKittens() {
     for (int i = deck.size() - 1; i >= 0; i--) {
       Card card = deck.get(i);
-      if (card.isCardType(CardType.EXPLODING_KITTEN)) {
+      if (card.getCardType() == CardType.EXPLODING_KITTEN) {
         deck.remove(i);
       }
     }
@@ -71,7 +70,7 @@ public class Deck {
     Collections.shuffle(deck);
   }
 
-  public Card drawCard() {
+  Card drawCard() {
     if (this.deck.isEmpty()) {
       throw new UnsupportedOperationException
               (DRAW_FROM_EMPTY_DECK_EXCEPTION);
@@ -95,11 +94,6 @@ public class Deck {
 
   int getDeckSize() {
     return deck.size();
-  }
-
-  private boolean addedOutOfBounds(int numberOfCards) {
-    final int MAX_DECK_SIZE = 56;
-    return (deck.size() + numberOfCards) > MAX_DECK_SIZE;
   }
 }
 

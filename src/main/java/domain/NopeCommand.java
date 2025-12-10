@@ -1,7 +1,7 @@
 package domain;
 
 class NopeCommand extends Command {
-  PlayerHand playerHand;
+  private final PlayerHand playerHand;
 
   NopeCommand(PlayerHand playerHand) {
     isIrreversible = false;

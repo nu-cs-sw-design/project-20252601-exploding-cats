@@ -81,49 +81,40 @@ package domain {
     ' ============================================================
     +class GameLoader {
         -{final} numPlayers: int
-        -{final} gameType: GameType
-        -deck: Deck
-        -turnOrder: TurnOrder
+        -{final} deck: Deck
         -playerHands: Map<PlayerID, PlayerHand>
-        -{final} commandFactory: SimpleCardCommandFactory
-        -{final} gameInvoker: GameInvoker
+        -{final} gameType: GameType
 
-        +GameLoader(numPlayers: int, gameType: GameType)
-        +setUpGame(): void
-        -instantiateDeck(): void
-        -instantiateTurnOrder(): void
-        -instantiatePlayerHands(): void
-        ~instantiateCommandFactory(): SimpleCardCommandFactory
-        ~instantiateGameInvoker(): GameInvoker
+        +GameLoader(numPlayers: int, deck: Deck, gameType: GameType)
+        +instantiatePlayerHands(): Map<PlayerID, PlayerHand>
+        -populatePlayerHands(): void
+    }
+
+    +class GameModel {
+        -{final} deck: Deck
+        -{final} turnOrder: TurnOrder
+        -{final} playerHands: Map<PlayerID, PlayerHand>
+
+        +GameModel(deck: Deck, turnOrder: TurnORder, playerHands: Map<PlayerID, PlayerHand>
+        +getCurrentPlayer(): PlayerID
+        +getDeckSize(): int
+        +getHandForPlayerID(playerID: PlayerID): List<Card>
+        +drawCardForPlayerID(playerID: PlayerID): List<Card>
+        +getOtherPlayersWithNopeCards(currentPlayer: PlayerID): List<PlayerID>
+        +playerHasCardType(playerID: PlayerID, cardType: CardType): boolean
+        +gameIsOver(): boolean
+        +nextPlayerTurn(): void
     }
 
     +class GameInvoker {
-        -commandHistory: CommandHistory
+        -{final} commandHistory: List<Command>
+        -{final} nopedCommandHistory: List<Command>
 
         +GameInvoker()
-        ' PLAN: executeCommand always calls commandHistory.addCommand()
-        ' PLAN: and performs no action if a card is Noped
-        +executeCommand(): void
-    }
-
-    ~class CommandHistory {
-        ' PLAN: Nope Commands are not actually included in either List
-        ' PLAN: Rather, Nope cards dictate how Commands move between the lists
-        -commandsToDo: List<Command>
-        -nopedCommands: List<Command>
-
-        ~CommandHistory()
-        ' PLAN: addCommand checks if the command is a NOPE command, and if so, calls either
-        ' PLAN: undoLastCommand or redoLastCommand as appropriate (the latter representing)
-        ' PLAN: "noping" a Nope
-        ~addCommand(): void
-        ' PLAN: before undoing any command, CommandHistory will confirm that CommandHistory
-        ' PLAN: is an instance of ReversibleCommand first (which opts to increase coupling
-        ' PLAN: by a bit for the goal keeping the Command interface representative of its
-        ' PLAN: true capabilities rather than claiming some commands are reversible when
-        ' PLAN: they are not)
-        -undoLastCommand(): void
-        -redoLastCommand(): void
+        +addCommand(command: Command): void
+        +executeCommands(): void
+        -handleNope(): void
+        -isNope(command: Command): boolean
     }
 
     +class SimpleCardCommandFactory {
@@ -132,26 +123,18 @@ package domain {
         -{final} playerHands: Map<PlayerID, PlayerHand>
 
         +SimpleCardCommandFactory(deck: Deck, turnOrder: TurnOrder, hands: Map<PlayerID, PlayerHand>)
-        ' TODO: adjust these "command constructor" options as needed later to ensure minimum required dependencies created
-        ' NOTE: getCommandForCardType will instantiate and return a Command corresponding to the CardType
-        ' NOTE: there are less Commands than CardTypes because some share functionalities, like how CAT_ONE and CAT_TWO
-        +createCommand(cardType: CardType, currentPlayerID: PlayerID): Command
+        +createCommandWithPlayerInput(cardType: CardType, currentPlayerID: PlayerID): Command
+        +createCommandWithIndexInput(cardType: CardType, index: int): Command
+        +createCommandWithPlayerAndIndexInput(cardType: CardType, player: PlayerID, index: int): Command
         +createTargetedCommand(cardType: CardType, currentPlayerID: PlayerID, targetPlayerID: PlayerID): Command
-        +createIndexCommand(cardType: CardType, currentPlayer: PlayerID, index: int): Command
         +createTypeRequestCommand(actionCardType: CardType, currentPlayer: PlayerID, inputCardType: CardType): Command
     }
 
-    +interface Command {
-        +execute(): void
-    }
+    +abstract class Command {
+        #isIrreversible: boolean
 
-    ~abstract class ReversibleCommand {
-        +execute(): void
-        +undo(): void
-    }
-
-    ~abstract class IrreversibleCommand {
-        +execute(): void
+        ~execute(): void
+        ~isIrreversible(): boolean
     }
 
     ' ============================================================
@@ -159,8 +142,30 @@ package domain {
     ' ============================================================
     ~class ShuffleDeckCommand {
         -{final} deck: Deck
+        -{final} playerHand: PlayerHand
 
-        ~ShuffleDeckCommand(deck: Deck)
+        ~ShuffleDeckCommand(playerHand: PlayerHand, deck: Deck)
+        ~execute(): void
+    }
+
+    ~class DefuseCommand {
+        -{final} playerHand: PlayerHand
+
+        ~DefuseCommand(playerHand: PlayerHand)
+        ~execute(): void
+    }
+
+    ~class NopeCommand {
+        -{final} playerHand: PlayerHand
+
+        ~NopeCommand(playerHand: PlayerHand)
+        ~execute(): void
+    }
+
+     ~class ExplodeCommand {
+        -{final} turnOrder: TurnOrder
+
+        ~ExplodeCommand(turnOrder: TurnOrder)
         ~execute(): void
     }
 
@@ -172,7 +177,6 @@ package domain {
         ' NOTE: if timeFives is false, then 3 cards into the future (original version)
         ~SeeTheFutureCommand(deck: Deck, timesFive: boolean)
         ~execute(): void
-        ~undo(): void
     }
 
     ~class SwapTopAndBottomCardCommand {
@@ -180,20 +184,6 @@ package domain {
 
         ~SwapTopAndBottomCardCommand(deck: Deck)
         ~execute(): void
-        ~undo(): void
-    }
-
-    ~class DefuseCommand {
-        -{final} playerHand: PlayerHand
-
-        ~DefuseCommand(playerHand: PlayerHand)
-        ~execute(): void
-    }
-
-    ~class NopeCommand {
-        ~NopeCommand()
-        ~execute(): void
-        ~undo(): void
     }
 
      ~class SkipTurnCommand {
@@ -202,7 +192,6 @@ package domain {
 
         ~SkipTurnCommand(turnOrder: TurnOrder, isSuper: boolean)
         ~execute(): void
-        ~undo(): void
     }
 
     ~class ReverseTurnOrderCommand {
@@ -210,17 +199,13 @@ package domain {
 
         ~SkipTurnCommand(turnOrder: TurnOrder)
         ~execute(): void
-        ~undo(): void
     }
 
-    ' PLAN: Utilize this class and GameInvoker list to implement attack stacking
-    ' PLAN: and to replace the need for a manual attack queue
     ~class AttackPlayerCommand {
         -{final} turnOrder: TurnOrder
 
         ~AttackCommand(turnOrder: TurnOrder)
         ~execute(): void
-        ~undo(): void
     }
 
     ~class AttackTargetedPlayerCommand {
@@ -229,7 +214,6 @@ package domain {
 
         ~AttackTargetedCommand(turnOrder: TurnOrder, targetPlayerID: PlayerID)
         ~execute(): void
-        ~undo(): void
     }
 
     ~class FlipImplodeFaceUpCommand {
@@ -239,28 +223,19 @@ package domain {
         ~execute(): void
     }
 
-    ~class ExplodeCommand {
-        -{final} playerHand: PlayerHand
-        -deck: Deck
-
-        ~ExplodeCommand(playerHand: PlayerHand, deck: Deck)
-        ~execute(): void
-    }
-
     ~class CursePlayerCommand {
         -{final} targetPlayerHand: PlayerHand
 
         ~CursePlayerCommand(targetPlayerHand: PlayerHand)
         ~execute(): void
-        ~undo(): void
     }
 
     ~class MarkCardCommand {
+        -{final} cardType: CardType
         -{final} targetPlayerHand: PlayerHand
 
-        ~MarkCardCommand(targetPlayerHand: PlayerHand)
+        ~MarkCardCommand(targetCardType: CardType, targetPlayerHand: PlayerHand)
         ~execute(): void
-        ~undo(): void
     }
 
     ~class StealRandomCardCommand {
@@ -268,39 +243,6 @@ package domain {
         -{final} targetPlayerHand: PlayerHand
 
         ~StealRandomCardCommand(sourcePlayerHand: PlayerHand, targetPlayerHand: PlayerHand)
-        ~execute(): void
-        ~undo(): void
-    }
-
-    ~class AddCardTypeToHandCommand {
-        -{final} cardType: CardType
-        -{final} playerHand: PlayerHand
-
-        ~AddCardTypeToHandCommand(cardType: CardType, playerHand: PlayerHand)
-        ~execute(): void
-    }
-
-    ~class RemoveCardFromHandCommand {
-        -{final} cardIndex: int
-        -{final} playerHand: PlayerHand
-
-        ~RemoveCardFromCommand(cardIndex: int, playerHand: PlayerHand)
-        ~execute(): void
-    }
-
-    ~class DrawTopCardCommand {
-        -{final} playerHand: PlayerHand
-        -{final} deck: Deck
-
-        ~DrawTopCardCommand(playerHand: PlayerHand, deck: Deck)
-        ~execute(): void
-    }
-
-    ~class DrawBottomCardCommand {
-        -{final} playerHand: PlayerHand
-        -{final} deck: Deck
-
-        ~DrawBottomCardCommand(playerHand: PlayerHand, deck: Deck)
         ~execute(): void
     }
 
@@ -310,25 +252,25 @@ package domain {
 
         ~CatomicBombCommand(deck: Deck, turnOrder: TurnOrder)
         ~execute(): void
-        ~undo(): void
     }
 
     ' ============================================================
     '                          RECEIVERS
     ' ============================================================
 
-    ' TODO: try to abstract more of this logic to Commands to avoid low cohesion
-    ' TODO: which may depend slightly on my success with passing in args from the
-    ' TODO: UI in my implementation
     +class PlayerHand {
+        -{static}{final} NO_CARD_FOUND_EXCEPTION: String
         -{final} playerID: PlayerID
         -{final} hand: List<Card>
         -isDead: boolean
         -isCursed: boolean
 
-        ~PlayerHand()
-        ~addCardTypeToHand(cardType: CardType): void
-        ~removeCardFromHand(card: Card): void
+        +PlayerHand(playerID: PlayerID)
+        ~addCardToHand(card: Card): void
+        ~removeCardTypeFromHand(cardType: CardType): void
+        ~hasCardType(cardType: CardType): boolean
+        ~getHand(): List<Card>
+        -getIndexOfCardType(cardType: CardType): int
         ~playGarbageCollection(card: Card): void
         ~stealRandomCardFromPlayer(targetPlayerHand: PlayerHand): void
         ~stealSpecificCardFromPlayer(cardType: CardType, targetPlayerHand: PlayerHand): void
@@ -338,43 +280,45 @@ package domain {
         ~playExplode(): void
         ~playImplode(): void
         -setCursed(isCursed: boolean): void
-        -getIndexOfCardType(cardType: CardType): int
-        -checkIfPlayerDead(playerIndex: int): boolean
-        -checkIfPlayerHasCard(playerIndex: int, cardType: CardType): boolean
         -checkPlayerHandEmpty(player: Player): boolean
         -checkCardIndexWithinBounds(index: int): boolean
     }
 
     +class TurnOrder {
-        -numPlayers: int
         -activePlayer: PlayerID
         -{final} turnOrder: List<PlayerID>
-        -{final} numTurnsPerPlayer: Map<PlayerID, Integer>
-        -{final} random: Random
 
         +TurnOrder(numPlayers: int)
-        ~startTurn(): void
+        ~playExplode(): void
+        ~nextPlayerTurn(): void
+        ~getCurrentPlayer(): PlayerID
+        ~checkNumberOfAlivePlayers(): int
         ~playSkip(superSkip: boolean): int
         ~playReverseTurnOrder(): void
         ~playAttack(): void
         ~playTargetedAttack(targetPlayer): void
         -addToNumTurnsForPlayerID(playerID: PlayerID, numTurnsToAdd: int): void
         -subtractFromNumTurnsForPlayerID(playerID: PlayerID, numTurnsToSubstract: int): void
-        -endTurn(): void
         -selectRandomPlayer(): PlayerID
     }
 
     +class Deck {
+        -{static}{final} DRAW_FROM_EMPTY_DECK_EXCEPTION: String
+        -{static}{final} NEGATIVE_INDEX_EXCEPTION: String
+        -{static}{final} INDEX_GREATER_THAN_DECK_SIZE_EXCEPTION: String
         -{final} deck: List<Card>
-        ' TODO: add class dependencies and diff private methods for creating diff types of decks
         -{final} gameType: GameType
         -{final} numPlayers: int
 
         +Deck(gameType: GameType, numPlayers: int)
-        ~drawCardFromTop(): Card
-        ~drawCardFromBottom(): Card
-        ~swapTopAndBottomCards(): void
+        ~removeExplodingKittens(): void
+        ~reinsertExplodingKittens(): void
+        ~insertCard(cardType: CardType, numberOfCards: int, bottom: boolean): void
         ~shuffleDeck(): void
+        ~drawCard(): Card
+        ~insertExplodingKittenAtIndex(indexToInsert: int): void
+        ~getDeckSize(): int
+        ~swapTopAndBottomCards(): void
         ~peekTopThreeCards(): List<Card>
         ~peekTopFiveCards(): List<Card>
         ~insertCardAtIndex(cardType: CardType, index: int): void
@@ -389,6 +333,7 @@ package domain {
         -isFaceUp: boolean
 
         +Card(cardType: CardType)
+        +getCardType(): CardType
     }
 
     ' ============================================================
@@ -422,11 +367,9 @@ package domain {
         DRAW_FROM_THE_BOTTOM
 
         -{final} gameType: GameType
-        -{final} inputType: InputType
 
         +CardType(gameType: GameType)
         +hasMatchingGameType(otherCardType: CardType): boolean
-        +isInputType(inputType: InputType): boolean
     }
 
     +enum GameType {
@@ -434,13 +377,6 @@ package domain {
         EXPLODING_KITTENS,
         STREAKING_KITTENS,
         IMPLODING_KITTENS
-    }
-
-    +enum InputType {
-        NO_INPUT,
-        PLAYER_ID_INPUT,
-        INDEX_INPUT,
-        CARD_TYPE_INPUT
     }
 
     +enum PlayerID {
