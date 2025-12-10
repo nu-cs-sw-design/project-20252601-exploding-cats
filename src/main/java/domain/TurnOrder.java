@@ -25,12 +25,10 @@ public class TurnOrder {
   }
 
   void playExplode() {
-    // TODO: add anything more that's needed here later
     turnOrder.remove(activePlayerID);
     activePlayerID = turnOrder.get(0);
   }
 
-  // TODO: create commands that utilize the following functions?
   void nextPlayerTurn() {
     turnOrder.remove(activePlayerID);
     turnOrder.add(activePlayerID);
@@ -43,9 +41,5 @@ public class TurnOrder {
 
   int checkNumberOfAlivePlayers() {
     return turnOrder.size();
-  }
-
-  boolean playerIsAlive(PlayerID playerID) {
-    return turnOrder.contains(playerID);
   }
 }

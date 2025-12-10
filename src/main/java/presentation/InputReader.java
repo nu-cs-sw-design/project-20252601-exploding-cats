@@ -128,7 +128,7 @@ class InputReader {
 
   void printExplode() {
     final String noDefuseCardMessage = messages.getString("noDefuseCardMessage");
-		final String youExplodedMessage = messages.getString("youExplodedMessage");
+    final String youExplodedMessage = messages.getString("youExplodedMessage");
 
     System.out.println(noDefuseCardMessage);
     System.out.println(youExplodedMessage);
@@ -209,7 +209,6 @@ class InputReader {
     return index >= 0 && index < maxBound;
   }
 
-
 //  private informNopePlayedBy(PlayerID playerID) {
 //    int playerIndex = playerID.ordinal();
 //
@@ -223,73 +222,55 @@ class InputReader {
 //    System.out.println(successfullyPlayedNope);
 //  }
 
-//  boolean promptOtherPlayersForNope(int playerIndex) {
-//    // TODO: confirm these message names exist
-//    String msg = MessageFormat.format(messages.getString("playerHasNopeCard"), playerIndex);
-//    System.out.println(msg);
-//    System.out.println(messages.getString("wouldYouPlayNope"));
-//    System.out.println(messages.getString("optionYes"));
-//    System.out.println(messages.getString("optionNo"));
-//
-//    while (true) {
-//      String input = scanner.nextLine().trim();
-//
-//      switch (input) {
-//        case "1": return true;
-//        case "2":
-//          String noMsg = MessageFormat.format(messages.getString("playerDidNotPlayNope"), playerIndex);
-//          System.out.println(noMsg);
-//          return false;
-//        default:
-//          System.out.println(messages.getString("invalidChoiceForNope"));
-//      }
+  // CALL INFORM OTHER PLAYER NOPED IN HERE
+  int promptOtherPlayersForNope(List<PlayerID> activePlayers, int lastActorID) {
+    final String hasNopeCard = MessageFormat.format(messages.getString("playerHasNopeCard"), lastActorID);
+    final String wouldYouPlayNope = messages.getString("wouldYouPlayNope");
+    final String optionYes = messages.getString("optionYes");
+    final String optionNo = messages.getString("optionNo");
+    final String invalidChoice = messages.getString("invalidChoiceForNope");
+
+    for (PlayerID playerID : activePlayers) {
+      System.out.println(hasNopeCard);
+      System.out.println(wouldYouPlayNope);
+      System.out.println(optionYes);
+      System.out.println(optionNo);
+
+      String userInput = scanner.nextLine();
+      switch (userInput) {
+        case "1":
+          final String decidedToPlayNope = MessageFormat.format(
+                  messages.getString("decidedToPlayNope"), playerIndex);
+          System.out.println(decidedToPlayNope);
+          return playerID.ordinal();
+        case "2":
+          final String didNotPlayNope = MessageFormat.format(
+                  messages.getString("playerDidNotPlayNope"), playerID.ordinal());
+          System.out.println(didNotPlayNope);
+          return -1;
+        default:
+          System.out.println(invalidChoice);
+      }
+    }
+  }
+
+  void printPlayShuffle() {
+    final String decidedShuffle = messages.getString("decidedShuffle");
+    System.out.println(decidedShuffle);
+  }
+
+  void printEndGame() {
+    final String gameOverMessage = messages.getString("gameOverMessage");
+    System.out.println(gameOverMessage);
+  }
+
+  // TODO: if decide that want to
+//  void printNopeDuelResult(int nopeCount) {
+//    // TODO: internationalization
+//    if (nopeCount % 2 != 0) {
+//      System.out.println("Final Result: The action was NOPED.");
+//    } else {
+//      System.out.println("Final Result: The action EXECUTED.");
 //    }
-//  }
-//
-//  private boolean checkAllPlayersForNope(PlayerID activePlayer) {
-//
-//    for (PlayerID playerID: PlayerID.values()) {
-//      if (playerID != activePlayer) {
-//        if (game.checkIfPlayerHasCard(playerCounter, CardType.NOPE)) {
-//          final String hasNopeCard = MessageFormat.format(
-//                  messages.getString
-//                          ("playerHasNopeCard"), playerCounter);
-//          final String wouldYouPlayNope = messages.getString
-//                  ("wouldYouPlayNope");
-//          final String optionYes = messages.getString("optionYes");
-//          final String optionNo = messages.getString("optionNo");
-//          final String invalidChoice = messages.getString
-//                  ("invalidChoiceForNope");
-//
-//          System.out.println(hasNopeCard);
-//          System.out.println(wouldYouPlayNope);
-//          System.out.println(optionYes);
-//          System.out.println(optionNo);
-//
-//          Scanner scanner = new Scanner(System.in,
-//                  StandardCharsets.UTF_8);
-//          String userInput = scanner.nextLine();
-//          switch (userInput) {
-//            case "1":
-//              playNope(playerCounter);
-//              return !checkAllPlayersForNope
-//                      (playerCounter);
-//            case "2":
-//              final String didNotPlayNope =
-//                      MessageFormat.format
-//                              (messages.getString
-//                                              ("playerDidNotPlayNope"),
-//                                      playerCounter);
-//              System.out.println(didNotPlayNope);
-//              break;
-//            default:
-//              System.out.println(invalidChoice);
-//              playerCounter--;
-//              break;
-//          }
-//        }
-//      }
-//    }
-//    return false;
 //  }
 }

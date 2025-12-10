@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,5 +32,33 @@ public class GameModel {
     Card newCard = deck.drawCard();
     playerHand.addCardToHand(newCard);
     return newCard.getCardType();
+  }
+
+  public List<PlayerID> getOtherPlayersWithNopeCards(PlayerID currentPlayer) {
+    List<PlayerID> playersWithNopeCards = new ArrayList<PlayerID>();
+
+    for (PlayerID playerID : PlayerID.values()) {
+      if (playerID == currentPlayer) {
+        continue;
+      }
+
+      if (playerHasCardType(playerID, CardType.NOPE)) {
+        playersWithNopeCards.add(playerID);
+      }
+    }
+
+    return playersWithNopeCards;
+  }
+
+  public boolean playerHasCardType(PlayerID playerID, CardType cardType) {
+    return playerHands.get(playerID).hasCardType(cardType);
+  }
+
+  public boolean gameIsOver() {
+    return turnOrder.checkNumberOfAlivePlayers() == 1;
+  }
+
+  public void nextPlayerTurn() {
+    turnOrder.nextPlayerTurn();
   }
 }

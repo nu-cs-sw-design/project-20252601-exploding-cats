@@ -14,10 +14,11 @@ public class GameInvoker {
 
   public void addCommand(Command command) {
     if (isNope(command)) {
-      this.undoLastCommand();
+      handleNope();
       return;
     }
 
+    nopedCommandHistory.clear();
     commandHistory.add(command);
   }
 
@@ -30,24 +31,29 @@ public class GameInvoker {
     nopedCommandHistory.clear();
   }
 
-  private void undoLastCommand() {
-    int lastCommandIndex = commandHistory.size() - 1;
-    Command lastCommand = commandHistory.get(lastCommandIndex);
-
-    if (isNope(lastCommand)) {
-      redoLastCommand();
-    } else if (lastCommand.isIrreversible()) {
-      throw new UnsupportedOperationException("Cannot nope an irreversible command.");
-    } else {
-      commandHistory.remove(lastCommandIndex);
-      nopedCommandHistory.add(lastCommand);
+  private void handleNope() {
+    // Nothing to nope
+    if (commandHistory.isEmpty()) {
+      return;
     }
-  }
 
-  private void redoLastCommand() {
-    int lastNopedCommandIndex = nopedCommandHistory.size() - 1;
-    Command lastNopedCommand = nopedCommandHistory.remove(lastNopedCommandIndex);
-    commandHistory.add(lastNopedCommand);
+    // Noping a Nope
+    int lastCommandIndex = commandHistory.size() - 1;
+    if (!nopedCommandHistory.isEmpty()) {
+      Command resurrectedCommand = nopedCommandHistory.remove(lastCommandIndex);
+
+      commandHistory.add(resurrectedCommand);
+      return;
+    }
+
+    // Standard, single Nope
+    Command lastCommand = commandHistory.get(lastCommandIndex);
+    if (lastCommand.isIrreversible()) {
+      throw new UnsupportedOperationException("Cannot nope an irreversible command.");
+    }
+
+    commandHistory.remove(lastCommandIndex);
+    nopedCommandHistory.add(lastCommand);
   }
 
   private boolean isNope(Command command) {

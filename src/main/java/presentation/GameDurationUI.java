@@ -28,52 +28,68 @@ public class GameDurationUI {
       Card cardToPlay = activePlayerCards.get(cardIndexToPlay);
       CardType cardTypeToPlay = cardToPlay.getCardType();
 
-      playCardType(cardTypeToPlay);
+      playCardType(cardTypeToPlay, activePlayerID);
     }
 
     // END OF TURN -> DRAW CARD (and handle explode/defuse as needed)
     endTurn(activePlayerID, activePlayerCards);
 
-    // CHECK TO SEE IF 1 PLAYER LEFT
-    // -> if so, end game
-    // -> if not, SWITCH TURN TO NEXT PLAYER
-
+    if (gameIsOver()) {
+      inputReader.printEndGame();
+      return;
+    } else {
+      gameModel.nextPlayerTurn();
+      runGameLoop();
+    }
   }
 
-  private void playCardType(CardType cardTypeToPlay) {
-    //
-    // TODO: finish implementing NOPE card
-    //
-    // COMMAND: add command to command history
-    // check if that card is reversible (i.e. SHUFFLE) AND if other players have nope
+  private void playCardType(CardType cardTypeToPlay, PlayerID activePlayerID) {
 
-    // prompt other players for NOPE's
-    // COMMAND: add any nope's to command history
-    // execute commands
-    // print end result (based on if number of nopes added being even or odd)
+    if (cardTypeToPlay != CardType.SHUFFLE) {
+      throw new UnsupportedOperationException("Requirements to play " + cardTypeToPlay + " not met.");
+    }
 
-    if (cardTypeToPlay == CardType.SHUFFLE) {
-      Command shuffle = commandFactory.createCommandWithNoInput(CardType.SHUFFLE);
-      gameInvoker.addCommand(shuffle);
-    } else if (cardTypeToPlay == CardType.NOPE) {
-      // TODO: implement nope logic here
-      Command nope = commandFactory.createCommandWithNoInput(CardType.NOPE);
-      gameInvoker.addCommand(nope);
-    } else {
-        throw new UnsupportedOperationException("Requirements to play " + cardTypeToPlay + " not met.");
+    inputReader.printPlayShuffle();
+    Command initialCommand = commandFactory.createCommandWithNoInput(cardTypeToPlay);
+    gameInvoker.addCommand(initialCommand);
+
+    List<PlayerID> playersWithNopeCards = gameModel.getOtherPlayersWithNopeCards(activePlayerID);
+    if (!playersWithNopeCards.isEmpty()) {
+      enterNopeDuel(activePlayerID);
     }
 
     gameInvoker.executeCommands();
   }
 
+  private void enterNopeDuel(PlayerID activePlayerID) {
+    int nopeCount = 0;
+    boolean nopeDuelActive = true;
+    int lastActorID = activePlayerID.ordinal();
+
+    while (nopeDuelActive) {
+      List<PlayerID> playersWithNopeCards = gameModel.getOtherPlayersWithNopeCards(activePlayerID);
+      lastActorID = inputReader.promptOtherPlayersForNope(playersWithNopeCards, lastActorID);
+      PlayerID lastActorPlayerID = PlayerID.values()[lastActorID];
+
+      if (lastActorID != -1) {
+        Command nope = commandFactory.createCommandWithPlayerInput(CardType.NOPE, lastActorPlayerID);
+        gameInvoker.addCommand(nope);
+        nopeCount++;
+      } else {
+        nopeDuelActive = false;
+      }
+    }
+
+    // TODO maybe: inputReader.printNopeDuelResult(nopeCount);
+  }
+
   private void endTurn(PlayerID activePlayerID, List<Card> activePlayerCards) {
     inputReader.printEndTurnConfirmation();
-    // TODO: drawCardForPlayerID currently BOTH removes the card from the deck AND places it in the player's hand
     CardType drawnCardType = gameModel.drawCardForPlayerID(activePlayerID);
     inputReader.printCardDraw(drawnCardType);
 
     if (drawnCardType == CardType.EXPLODING_KITTEN) {
-      if (activePlayerHasDefuse(activePlayerCards)) {
+      if (gameModel.playerHasCardType(activePlayerID, CardType.DEFUSE)) {
         int deckSize = gameModel.getDeckSize();
         int index = inputReader.promptForWhereToInsertExplodingKittenAfterDefuse(deckSize);
 
@@ -95,11 +111,7 @@ public class GameDurationUI {
     }
   }
 
-  private boolean activePlayerHasDefuse(List<Card> activePlayerCards) {
-    for (Card card : activePlayerCards) {
-      if (Card.getCardType() == CardType.DEFUSE) {
-        return true;
-      }
-    }
+  private boolean gameIsOver() {
+    return gameModel.gameIsOver();
   }
 }

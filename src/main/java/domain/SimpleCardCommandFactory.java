@@ -15,8 +15,6 @@ public class SimpleCardCommandFactory {
 
   public Command createCommandWithNoInput(CardType cardType) {
     switch (cardType) {
-      case NOPE:
-        return new NopeCommand();
       case SHUFFLE:
         return new ShuffleDeckCommand(deck);
       case EXPLODING_KITTEN:
@@ -29,10 +27,13 @@ public class SimpleCardCommandFactory {
   public Command createCommandWithPlayerInput(CardType cardType, PlayerID playerID) {
     PlayerHand playerHand = playerHands.get(playerID);
 
-    if (cardType == CardType.DEFUSE) {
-      return new DefuseCommand(playerHand);
-    } else {
-      throw new UnsupportedOperationException("Card type does not require player input: " + cardType);
+    switch (cardType) {
+      case NOPE:
+        return new NopeCommand(playerHand);
+      case DEFUSE:
+        return new DefuseCommand(playerHand);
+      default:
+        throw new UnsupportedOperationException("Card type requires player input: " + cardType);
     }
   }
 
