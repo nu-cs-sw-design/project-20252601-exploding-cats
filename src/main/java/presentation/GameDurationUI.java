@@ -89,13 +89,13 @@ public class GameDurationUI {
   }
 
   private void endTurn(PlayerID activePlayerID, List<Card> activePlayerCards) {
+    int deckSize = gameModel.getDeckSize();
     inputReader.printEndTurnConfirmation();
     CardType drawnCardType = gameModel.drawCardForPlayerID(activePlayerID);
     inputReader.printCardDraw(drawnCardType);
 
     if (drawnCardType == CardType.EXPLODING_KITTEN) {
       if (gameModel.playerHasCardType(activePlayerID, CardType.DEFUSE)) {
-        int deckSize = gameModel.getDeckSize();
         int index = inputReader.promptForWhereToInsertExplodingKittenAfterDefuse(deckSize);
 
         Command removeDefuseAndKittenFromHand = commandFactory

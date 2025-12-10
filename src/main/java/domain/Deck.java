@@ -83,12 +83,17 @@ public class Deck {
     if (indexToInsert < 0) {
       throw new UnsupportedOperationException
               (NEGATIVE_INDEX_EXCEPTION);
-    } else if (indexToInsert >= deck.size()) {
+    } else if (indexToInsert > deck.size()) {
       throw new UnsupportedOperationException
               (INDEX_GREATER_THAN_DECK_SIZE_EXCEPTION);
     } else {
       Card newExplodingKitten = new Card(CardType.EXPLODING_KITTEN);
-      deck.add(indexToInsert, newExplodingKitten);
+
+      if (indexToInsert == deck.size()) {
+        deck.add(newExplodingKitten);
+      } else {
+        deck.add(indexToInsert, newExplodingKitten);
+      }
     }
   }
 
