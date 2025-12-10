@@ -128,7 +128,7 @@ class InputReader {
         case "2":
           return false;
         default:
-          System.out.println(messages.getString("invalidChoice"));
+          System.out.println(invalidChoice);
       }
     }
   }
@@ -275,12 +275,12 @@ class InputReader {
   }
 
   // TODO: if decide that want to
-//  void printNopeDuelResult(int nopeCount) {
-//    // TODO: internationalization
-//    if (nopeCount % 2 != 0) {
-//      System.out.println("Final Result: The action was NOPED.");
-//    } else {
-//      System.out.println("Final Result: The action EXECUTED.");
-//    }
-//  }
+  //  void printNopeDuelResult(int nopeCount) {
+  //    // TODO: internationalization
+  //    if (nopeCount % 2 != 0) {
+  //      System.out.println("Final Result: The action was NOPED.");
+  //    } else {
+  //      System.out.println("Final Result: The action EXECUTED.");
+  //    }
+  //  }
 }

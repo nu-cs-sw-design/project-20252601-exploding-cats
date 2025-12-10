@@ -54,10 +54,6 @@ public class Deck {
   }
 
   void insertCard(CardType cardType, int numberOfCards, boolean bottom) {
-    if (addedOutOfBounds(numberOfCards)) {
-      throw new UnsupportedOperationException(DECK_FULL_EXCEPTION);
-    }
-
     if (!bottom) {
       for (int i = 0; i < numberOfCards; i++) {
         Card newCard = new Card(cardType);
