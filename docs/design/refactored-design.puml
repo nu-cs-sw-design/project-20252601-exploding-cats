@@ -49,7 +49,6 @@ package presentation {
 
 Main..>java.Scanner
 Main..>InputReader
-Main..>presentation.GameStartUI
 Main..>domain.Deck
 Main..>domain.GameLoader
 Main..>domain.TurnOrder
@@ -70,7 +69,7 @@ GameDurationUI..>domain.PlayerID
 
 InputReader-->java.ResourceBundle
 InputReader-->java.Scanner
-InputReader-->GameType
+InputReader-->domain.GameType
 InputReader..>PlayerID
 InputReader..>CardType
 InputReader..>Card
@@ -95,7 +94,7 @@ package domain {
         -{final} turnOrder: TurnOrder
         -{final} playerHands: Map<PlayerID, PlayerHand>
 
-        +GameModel(deck: Deck, turnOrder: TurnORder, playerHands: Map<PlayerID, PlayerHand>
+        +GameModel(deck: Deck, turnOrder: TurnORder, playerHands: Map<PlayerID, PlayerHand>)
         +getCurrentPlayer(): PlayerID
         +getDeckSize(): int
         +getHandForPlayerID(playerID: PlayerID): List<Card>
@@ -167,6 +166,14 @@ package domain {
 
         ~ExplodeCommand(turnOrder: TurnOrder)
         ~execute(): void
+    }
+
+    ~class InsertExplodingKittenCommand {
+        -{final} deck: Deck
+        -{final} index: int
+
+        +InsertExplodingKittenCommand(deck: Deck, index: int)
+        +execute(): void
     }
 
     ~class SeeTheFutureCommand {
@@ -380,65 +387,66 @@ package domain {
     }
 
     +enum PlayerID {
+        PLAYER_ZERO,
         PLAYER_ONE,
         PLAYER_TWO,
-        PLAYER_THREE,
-        PLAYER_FOUR,
-        PLAYER_FIVE
+        PLAYER_THREE
     }
 
     ' ============================================================
     '                      CLASS RELATIONSHIPS
     ' ============================================================
     GameLoader-->Deck
-    GameLoader-->TurnOrder
     GameLoader-->"*"PlayerHand
-    GameLoader-->GameType
+    GameLoader-->domain.GameType
     GameLoader-->"*"PlayerID
-    GameLoader-->SimpleCardCommandFactory
-    GameLoader-->GameInvoker
+
+    GameModel-->Deck
+    GameModel-->TurnOrder
+    GameModel-->"*"PlayerID
+    GameModel-->"*"PlayerHand
+    GameModel..>Card
+    GameModel..>CardType
 
     GameInvoker-->"*"Command
 
-    ' TODO: see if can think of better way to structure reversability as a behavior while maintaining substituability
-    ReversibleCommand..|>Command
-    IrreversibleCommand..|>Command
-
     SimpleCardCommandFactory-->Deck
+    SimpleCardCommandFactory-->"*"PlayerHand
     SimpleCardCommandFactory-->"*"PlayerID
+    SimpleCardCommandFactory-->TurnOrder
     SimpleCardCommandFactory..>Command
+    SimpleCardCommandFactory..>CardType
 
-    ' Interfaces implemented by concrete commands
-    ShuffleDeckCommand--|>ReversibleCommand
-    SeeTheFutureCommand--|>ReversibleCommand
-    SwapTopAndBottomCardCommand--|>ReversibleCommand
-    DrawBottomCardCommand--|>IrreversibleCommand
-    DrawTopCardCommand--|>IrreversibleCommand
-    DefuseCommand--|>IrreversibleCommand
-    NopeCommand--|>ReversibleCommand
-    SkipTurnCommand--|>ReversibleCommand
-    ReverseTurnOrderCommand--|>ReversibleCommand
-    AttackPlayerCommand--|>ReversibleCommand
-    AttackTargetedPlayerCommand--|>ReversibleCommand
-    FlipImplodeFaceUpCommand--|>IrreversibleCommand
-    ExplodeCommand--|>IrreversibleCommand
-    CursePlayerCommand--|>ReversibleCommand
-    MarkCardCommand--|>ReversibleCommand
-    StealRandomCardCommand--|>ReversibleCommand
-    AddCardTypeToHandCommand--|>IrreversibleCommand
-    RemoveCardFromHandCommand--|>IrreversibleCommand
-    CatomicBombCommand--|>ReversibleCommand
+    note top of SimpleCardCommandFactory
+        For cleanliness, I chose to exclude the dependency arrows
+        going from SimpleCardCommandFactory to every concrete Command
+    end note
+
+    ShuffleDeckCommand--|>Command
+    SeeTheFutureCommand--|>Command
+    SwapTopAndBottomCardCommand--|>Command
+    DefuseCommand--|>Command
+    NopeCommand--|>Command
+    SkipTurnCommand--|>Command
+    ReverseTurnOrderCommand--|>Command
+    AttackPlayerCommand--|>Command
+    AttackTargetedPlayerCommand--|>Command
+    FlipImplodeFaceUpCommand--|>Command
+    ExplodeCommand--|>Command
+    CursePlayerCommand--|>Command
+    MarkCardCommand--|>Command
+    StealRandomCardCommand--|>Command
+    CatomicBombCommand--|>Command
 
     ' Concrete command instance variables
     StealRandomCardCommand-->"*"PlayerHand
     MarkCardCommand-->PlayerHand
+    MarkCardCommand-->CardType
     CursePlayerCommand-->PlayerHand
-    DrawTopCardCommand-->PlayerHand
-    DrawBottomCardCommand-->PlayerHand
-    ExplodeCommand-->PlayerHand
-    AddCardTypeToHandCommand-->PlayerHand
-    RemoveCardFromHandCommand-->PlayerHand
+    ExplodeCommand-->TurnOrder
+    NopeCommand-->PlayerHand
     DefuseCommand-->PlayerHand
+    ShuffleDeckCommand-->PlayerHand
 
     AttackPlayerCommand-->TurnOrder
     AttackTargetedPlayerCommand-->TurnOrder
@@ -448,30 +456,26 @@ package domain {
 
     ExplodeCommand-->Deck
     ShuffleDeckCommand-->Deck
+    InsertExplodingKittenCommand-->Deck
     StealRandomCardCommand-->Deck
     FlipImplodeFaceUpCommand-->Deck
-    DrawBottomCardCommand-->Deck
-    DrawTopCardCommand-->Deck
     SeeTheFutureCommand-->Deck
     SwapTopAndBottomCardCommand-->Deck
     CatomicBombCommand-->Deck
 
     AttackTargetedPlayerCommand-->PlayerID
-    AddCardTypeToHandCommand-->CardType
 
     Deck-->"*"Card
     Deck..>CardType
 
     TurnOrder-->"*"PlayerID
-    TurnOrder..>CardType
 
     PlayerHand-->PlayerID
     PlayerHand-->"*"Card
     PlayerHand..>CardType
 
     Card-->CardType
-    CardType-->GameType
-    CardType-->InputType
+    CardType-->domain.GameType
 }
 
 package java {

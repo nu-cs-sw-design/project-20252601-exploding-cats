@@ -1,10 +1,10 @@
 package domain;
 
-public class InsertExplodingKittenCommand extends Command {
-  Deck deck;
-  int indexToInsertAt;
+class InsertExplodingKittenCommand extends Command {
+  private final Deck deck;
+  private final int indexToInsertAt;
 
-  public InsertExplodingKittenCommand(Deck deck, int indexToInsertAt) {
+  InsertExplodingKittenCommand(Deck deck, int indexToInsertAt) {
     isIrreversible = true;
     this.deck = deck;
     this.indexToInsertAt = indexToInsertAt;
