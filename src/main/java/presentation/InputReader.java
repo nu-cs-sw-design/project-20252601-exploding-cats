@@ -36,14 +36,14 @@ class InputReader {
           final String languageSetEnglish = messages.getString
                   ("setLanguage");
           System.out.println(languageSetEnglish);
-          return messages;
+          return;
         case "2":
           this.messages = ResourceBundle.getBundle
                   ("message", new Locale("ko"));
           final String languageSetKorean = messages.getString
                   ("setLanguage");
           System.out.println(languageSetKorean);
-          return messages;
+          return;
         default:
           System.out.println(invalidChoice);
       }
@@ -148,22 +148,29 @@ class InputReader {
 
     while (true) {
       String userInput = scanner.nextLine();
-      try {
-        int userIndex = Integer.parseInt(userInput);
+      int userIndex;
 
-        if (!indexWithinBounds(userIndex, deckSize)) {
-          final String formattedInvalidIndexMessage =
-                  MessageFormat.format(invalidIndexMessage, deckSize - 1);
-          System.out.println(formattedInvalidIndexMessage);
+      try {
+        userIndex = Integer.parseInt(userInput);
+
+        if (indexWithinBounds(userIndex, deckSize)) {
+          return userIndex;
         }
 
-        return userIndex;
+        final String formattedInvalidIndexMessage =
+                MessageFormat.format(invalidIndexMessage, deckSize - 1);
+        System.out.println(formattedInvalidIndexMessage);
       } catch (NumberFormatException e) {
         System.out.println(invalidInputMessage);
       } catch (UnsupportedOperationException e) {
         System.out.println(e.getMessage());
       }
     }
+  }
+
+  void printCardRequirementsNotMet() {
+    final String cardRequirementsNotMet = messages.getString("cardRequirementsNotMet");
+    System.out.println(cardRequirementsNotMet);
   }
 
 
@@ -209,20 +216,6 @@ class InputReader {
     return index >= 0 && index < maxBound;
   }
 
-//  private informNopePlayedBy(PlayerID playerID) {
-//    int playerIndex = playerID.ordinal();
-//
-//    final String decidedToPlayNope = MessageFormat.format(
-//            messages.getString("decidedToPlayNope"), playerIndex);
-//    final String successfullyPlayedNope = MessageFormat.format(
-//            messages.getString("successfullyPlayedNope"), playerIndex);
-//
-//    System.out.println(decidedToPlayNope);
-//    game.removeCardFromHand(playerIndex, CardType.NOPE);
-//    System.out.println(successfullyPlayedNope);
-//  }
-
-  // CALL INFORM OTHER PLAYER NOPED IN HERE
   int promptOtherPlayersForNope(List<PlayerID> activePlayers, int lastActorID) {
     final String hasNopeCard = MessageFormat.format(messages.getString("playerHasNopeCard"), lastActorID);
     final String wouldYouPlayNope = messages.getString("wouldYouPlayNope");
@@ -236,22 +229,27 @@ class InputReader {
       System.out.println(optionYes);
       System.out.println(optionNo);
 
-      String userInput = scanner.nextLine();
-      switch (userInput) {
-        case "1":
-          final String decidedToPlayNope = MessageFormat.format(
-                  messages.getString("decidedToPlayNope"), playerIndex);
-          System.out.println(decidedToPlayNope);
-          return playerID.ordinal();
-        case "2":
-          final String didNotPlayNope = MessageFormat.format(
-                  messages.getString("playerDidNotPlayNope"), playerID.ordinal());
-          System.out.println(didNotPlayNope);
-          return -1;
-        default:
-          System.out.println(invalidChoice);
+      while (true) {
+        String userInput = scanner.nextLine();
+
+        switch (userInput) {
+          case "1":
+            final String decidedToPlayNope = MessageFormat.format(
+                    messages.getString("decidedToPlayNope"), playerID.ordinal());
+            System.out.println(decidedToPlayNope);
+            return playerID.ordinal();
+          case "2":
+            final String didNotPlayNope = MessageFormat.format(
+                    messages.getString("playerDidNotPlayNope"), playerID.ordinal());
+            System.out.println(didNotPlayNope);
+            return -1;
+          default:
+            System.out.println(invalidChoice);
+        }
       }
     }
+
+    return -1;
   }
 
   void printPlayShuffle() {

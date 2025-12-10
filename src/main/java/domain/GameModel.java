@@ -37,7 +37,7 @@ public class GameModel {
   public List<PlayerID> getOtherPlayersWithNopeCards(PlayerID currentPlayer) {
     List<PlayerID> playersWithNopeCards = new ArrayList<PlayerID>();
 
-    for (PlayerID playerID : PlayerID.values()) {
+    for (PlayerID playerID : playerHands.keySet()) {
       if (playerID == currentPlayer) {
         continue;
       }

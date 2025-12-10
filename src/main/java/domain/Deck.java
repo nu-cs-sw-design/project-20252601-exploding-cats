@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Deck {
+  private final int MAX_DECK_SIZE = 56;
   private final List<Card> deck;
   private int numPlayers;
 
@@ -104,25 +105,11 @@ public class Deck {
 //    this.numPlayers = numPlayers;
 //  }
 
-  // TODO: figure out where this was called and if should keep
-  // TOOD: i imagine it would be necessary during deck instantiation?
-//  private int removeBombs() {
-//    int counter = 0;
-//    for (int index = 0; index < deck.size(); index++) {
-//      if (checkIfExplodingKitten(index)) {
-//        counter++;
-//        deck.remove(index);
-//        index--;
-//      }
-//    }
-//    return counter;
-//  }
-
   void insertExplodingKittenAtIndex(int indexToInsert) {
     if (indexToInsert < 0) {
       throw new UnsupportedOperationException
               (NEGATIVE_INDEX_EXCEPTION);
-    } else if (indexToInsert > deck.size()) {
+    } else if (indexToInsert >= deck.size()) {
       throw new UnsupportedOperationException
               (INDEX_GREATER_THAN_DECK_SIZE_EXCEPTION);
     } else {
@@ -136,21 +123,12 @@ public class Deck {
 //  }
 
   int getDeckSize() {
+    System.out.println("DECK SIZE REQUESTED, IT IS" + deck.size());
     return deck.size();
   }
 
   private boolean addedOutOfBounds(int numberOfCards) {
-    return (deck.size() + numberOfCards) > deck.size();
+    return (deck.size() + numberOfCards) > MAX_DECK_SIZE;
   }
-
-//  private boolean explodingKittenIsAtIndex(int index) {
-//    Card cardAtIndex = deck.get(index);
-//    return cardAtIndex.isCardType(CardType.EXPLODING_KITTEN);
-//  }
-
-//  private boolean checkIfIndexOutOfRange(int index) {
-//    return index < 0 || index >= deck.size();
-//  }
-
 }
 

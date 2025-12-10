@@ -28,6 +28,11 @@ public class GameDurationUI {
       Card cardToPlay = activePlayerCards.get(cardIndexToPlay);
       CardType cardTypeToPlay = cardToPlay.getCardType();
 
+      if (cardTypeToPlay == CardType.DEFUSE) {
+        inputReader.printCardRequirementsNotMet();
+        continue;
+      }
+
       playCardType(cardTypeToPlay, activePlayerID);
     }
 
@@ -44,11 +49,7 @@ public class GameDurationUI {
   }
 
   private void playCardType(CardType cardTypeToPlay, PlayerID activePlayerID) {
-
-    if (cardTypeToPlay != CardType.SHUFFLE) {
-      throw new UnsupportedOperationException("Requirements to play " + cardTypeToPlay + " not met.");
-    }
-
+    // Because I'm only implementing 4 cards, the only card this could be is the Shuffle card
     inputReader.printPlayShuffle();
     Command initialCommand = commandFactory.createCommandWithNoInput(cardTypeToPlay);
     gameInvoker.addCommand(initialCommand);
