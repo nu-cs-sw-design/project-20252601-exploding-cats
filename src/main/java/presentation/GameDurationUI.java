@@ -5,7 +5,7 @@ import domain.*;
 import java.util.List;
 
 public class GameDurationUI {
-  private final List<CardType> reactiveCardTypes = List.of(CardType.EXPLODING_KITTEN, CardType.DEFUSE, CardType.NOPE);
+  private static final List<CardType> reactiveCardTypes = List.of(CardType.EXPLODING_KITTEN, CardType.DEFUSE, CardType.NOPE);
   private final SimpleCardCommandFactory commandFactory;
   private final GameInvoker gameInvoker;
   private final InputReader inputReader;

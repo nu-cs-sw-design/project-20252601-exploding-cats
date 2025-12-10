@@ -25,7 +25,7 @@ public class PlayerHand {
 
   boolean hasCardType(CardType cardType) {
     for (Card card : hand) {
-      if (card.isCardType(cardType)) {
+      if (card.getCardType() == cardType) {
         return true;
       }
     }
@@ -40,7 +40,7 @@ public class PlayerHand {
     for (int i = 0; i < hand.size(); i++) {
       Card card = hand.get(i);
 
-      if (card.isCardType(cardType)) {
+      if (card.getCardType() == cardType) {
         return i;
       }
     }
