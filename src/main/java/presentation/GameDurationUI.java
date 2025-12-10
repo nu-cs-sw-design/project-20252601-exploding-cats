@@ -70,11 +70,12 @@ public class GameDurationUI {
     int lastActorID = activePlayerID.ordinal();
 
     while (nopeDuelActive) {
-      List<PlayerID> playersWithNopeCards = gameModel.getOtherPlayersWithNopeCards(activePlayerID);
+      PlayerID lastActorPlayerID = PlayerID.values()[lastActorID];
+      List<PlayerID> playersWithNopeCards = gameModel.getOtherPlayersWithNopeCards(lastActorPlayerID);
       lastActorID = inputReader.promptOtherPlayersForNope(playersWithNopeCards, lastActorID);
 
       if (lastActorID != -1) {
-        PlayerID lastActorPlayerID = PlayerID.values()[lastActorID];
+        lastActorPlayerID = PlayerID.values()[lastActorID];
         Command nope = commandFactory.createCommandWithPlayerInput(CardType.NOPE, lastActorPlayerID);
         gameInvoker.addCommand(nope);
         nopeCount++;
@@ -83,7 +84,8 @@ public class GameDurationUI {
       }
     }
 
-    // TODO maybe: inputReader.printNopeDuelResult(nopeCount);
+    gameInvoker.executeCommands();
+    inputReader.printNopeDuelResult(nopeCount);
   }
 
   private void endTurn(PlayerID activePlayerID, List<Card> activePlayerCards) {

@@ -8,16 +8,19 @@ public class GameInvoker {
   private final List<Command> nopedCommandHistory;
 
   public GameInvoker() {
-    commandHistory = new ArrayList<Command>();
-    nopedCommandHistory = new ArrayList<Command>();
+    commandHistory = new ArrayList<>();
+    nopedCommandHistory = new ArrayList<>();
   }
 
   public void addCommand(Command command) {
     if (isNope(command)) {
+      // Execute the Nope immediately to remove the card from player's deck
+      command.execute();
       handleNope();
       return;
     }
 
+    // Standard flow for non-Nope commands
     nopedCommandHistory.clear();
     commandHistory.add(command);
   }
@@ -32,22 +35,24 @@ public class GameInvoker {
   }
 
   private void handleNope() {
-    // Nothing to nope
-    if (commandHistory.isEmpty()) {
-      return;
-    }
-
-    // Noping a Nope
-    int lastCommandIndex = commandHistory.size() - 1;
+    // Noping a nope
     if (!nopedCommandHistory.isEmpty()) {
-      Command resurrectedCommand = nopedCommandHistory.remove(lastCommandIndex);
+      int lastNopedIndex = nopedCommandHistory.size() - 1;
+      Command resurrectedCommand = nopedCommandHistory.remove(lastNopedIndex);
 
       commandHistory.add(resurrectedCommand);
       return;
     }
 
-    // Standard, single Nope
+    // Nothing to Nope
+    if (commandHistory.isEmpty()) {
+      return;
+    }
+
+    // Standard, single Nope (Undo)
+    int lastCommandIndex = commandHistory.size() - 1;
     Command lastCommand = commandHistory.get(lastCommandIndex);
+
     if (lastCommand.isIrreversible()) {
       throw new UnsupportedOperationException("Cannot nope an irreversible command.");
     }
@@ -57,6 +62,6 @@ public class GameInvoker {
   }
 
   private boolean isNope(Command command) {
-    return (command instanceof domain.NopeCommand);
+    return (command instanceof NopeCommand);
   }
 }

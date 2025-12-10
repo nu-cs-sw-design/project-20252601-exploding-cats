@@ -228,13 +228,18 @@ class InputReader {
   }
 
   int promptOtherPlayersForNope(List<PlayerID> activePlayers, int lastActorID) {
-    final String hasNopeCard = MessageFormat.format(messages.getString("playerHasNopeCard"), lastActorID);
     final String wouldYouPlayNope = messages.getString("wouldYouPlayNope");
     final String optionYes = messages.getString("optionYes");
     final String optionNo = messages.getString("optionNo");
     final String invalidChoice = messages.getString("invalidChoiceForNope");
 
     for (PlayerID playerID : activePlayers) {
+      final String hasNopeCard = MessageFormat.format(messages.getString("playerHasNopeCard"), playerID.ordinal());
+
+      if (playerID.ordinal() == lastActorID) {
+        continue;
+      }
+
       System.out.println(hasNopeCard);
       System.out.println(wouldYouPlayNope);
       System.out.println(optionYes);
@@ -273,13 +278,14 @@ class InputReader {
     System.out.println(gameOverMessage);
   }
 
-  // TODO: if decide that want to
-  //  void printNopeDuelResult(int nopeCount) {
-  //    // TODO: internationalization
-  //    if (nopeCount % 2 != 0) {
-  //      System.out.println("Final Result: The action was NOPED.");
-  //    } else {
-  //      System.out.println("Final Result: The action EXECUTED.");
-  //    }
-  //  }
+  void printNopeDuelResult(int nopeCount) {
+    final String nopedResult = messages.getString("nopedDuelResult");
+    final String executedResult = messages.getString("executedDuelResult");
+
+    if (nopeCount % 2 != 0) {
+      System.out.println(nopedResult);
+    } else {
+      System.out.println(executedResult);
+    }
+  }
 }
