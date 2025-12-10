@@ -5,6 +5,7 @@ import domain.*;
 import java.util.List;
 
 public class GameDurationUI {
+  private final List<CardType> reactiveCardTypes = List.of(CardType.EXPLODING_KITTEN, CardType.DEFUSE);
   private final SimpleCardCommandFactory commandFactory;
   private final GameInvoker gameInvoker;
   private final InputReader inputReader;
@@ -24,11 +25,14 @@ public class GameDurationUI {
 
     inputReader.printStartTurn(activePlayerID, activePlayerCards);
     while (inputReader.promptForPlayersWantsToEndTurn() == false) {
+      activePlayerCards = gameModel.getHandForPlayerID(activePlayerID);
+      inputReader.printHand(activePlayerCards);
       int cardIndexToPlay = inputReader.promptForCardIndexToPlay(activePlayerHandSize);
       Card cardToPlay = activePlayerCards.get(cardIndexToPlay);
       CardType cardTypeToPlay = cardToPlay.getCardType();
 
-      if (cardTypeToPlay == CardType.DEFUSE) {
+      if (reactiveCardTypes.contains(cardTypeToPlay)) {
+        System.out.println(cardTypeToPlay + " IS REACTIVE");
         inputReader.printCardRequirementsNotMet();
         continue;
       }
@@ -70,9 +74,9 @@ public class GameDurationUI {
     while (nopeDuelActive) {
       List<PlayerID> playersWithNopeCards = gameModel.getOtherPlayersWithNopeCards(activePlayerID);
       lastActorID = inputReader.promptOtherPlayersForNope(playersWithNopeCards, lastActorID);
-      PlayerID lastActorPlayerID = PlayerID.values()[lastActorID];
 
       if (lastActorID != -1) {
+        PlayerID lastActorPlayerID = PlayerID.values()[lastActorID];
         Command nope = commandFactory.createCommandWithPlayerInput(CardType.NOPE, lastActorPlayerID);
         gameInvoker.addCommand(nope);
         nopeCount++;

@@ -5,9 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class Deck {
-  private final int MAX_DECK_SIZE = 56;
   private final List<Card> deck;
-  private int numPlayers;
+  private final int numPlayers;
 
   private static final String DECK_FULL_EXCEPTION = "Deck is full, cannot insert more cards.";
   private static final String DRAW_FROM_EMPTY_DECK_EXCEPTION =
@@ -16,10 +15,6 @@ public class Deck {
           "Invalid index. Cannot insert into negative index.";
   private static final String INDEX_GREATER_THAN_DECK_SIZE_EXCEPTION =
           "Invalid index. Cannot insert into index greater than deck size.";
-  private static final String MISMATCH_ORDER_SIZE_EXCEPTION =
-          "Mismatch: The number of indices (%d) does not match the number of cards (%d).";
-  private static final String INDEX_OUT_OF_RANGE_EXCEPTION =
-          "Index out of range: %d. Valid range is 0 to %d.";
 
   public Deck(int numPlayers) {
     this.numPlayers = numPlayers;
@@ -76,20 +71,8 @@ public class Deck {
     }
   }
 
-
-//  public Card getCardAtIndex(int index) {
-//    return deck.get(index);
-//  }
-
   void shuffleDeck() {
     Collections.shuffle(deck);
-//    for (int deckIndex = deck.size() - 1; deckIndex > 0; deckIndex--) {
-//
-//      int indexToSwap = rand.nextInt(deckIndex + 1);
-//      Card temporaryCard = deck.get(indexToSwap);
-//      deck.set(indexToSwap, deck.get(deckIndex));
-//      deck.set(deckIndex, temporaryCard);
-//    }
   }
 
   public Card drawCard() {
@@ -100,10 +83,6 @@ public class Deck {
       return this.deck.remove(this.deck.size() - 1);
     }
   }
-
-//  public void setNumPlayers(int numPlayers) {
-//    this.numPlayers = numPlayers;
-//  }
 
   void insertExplodingKittenAtIndex(int indexToInsert) {
     if (indexToInsert < 0) {
@@ -118,16 +97,12 @@ public class Deck {
     }
   }
 
-//  protected CardType getCardTypeAtIndex(int index) {
-//    return deck.get(index).getCardType();
-//  }
-
   int getDeckSize() {
-    System.out.println("DECK SIZE REQUESTED, IT IS" + deck.size());
     return deck.size();
   }
 
   private boolean addedOutOfBounds(int numberOfCards) {
+    final int MAX_DECK_SIZE = 56;
     return (deck.size() + numberOfCards) > MAX_DECK_SIZE;
   }
 }

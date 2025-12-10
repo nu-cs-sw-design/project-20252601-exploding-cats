@@ -87,14 +87,17 @@ class InputReader {
     int currentPlayer = activePlayerID.ordinal();
 
     final String dividerLine = messages.getString("dividerLine");
-    final String currentPlayerTurnMessage;
-    currentPlayerTurnMessage = MessageFormat.format(
+    final String currentPlayerTurnMessage = MessageFormat.format(
             messages.getString("currentPlayerTurn"), currentPlayer);
-    final StringBuilder handMessage =
-            new StringBuilder(messages.getString("playerHand"));
 
     System.out.println(dividerLine);
     System.out.println(currentPlayerTurnMessage);
+    printHand(hand);
+  }
+
+  void printHand(List<Card> hand) {
+    final StringBuilder handMessage =
+            new StringBuilder(messages.getString("playerHand"));
 
     for (Card card : hand) {
       CardType cardType = card.getCardType();
@@ -108,17 +111,26 @@ class InputReader {
     Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
     final String endTurnPrompt = messages.getString("endTurnPrompt");
     final String typeOptionPrompt = messages.getString("typeOptionPrompt");
-    // NOT REQUIRED: final String playCardOrCombo = messages.getString("playCardOrCombo");
     final String optionYes = messages.getString("optionYes");
     final String optionNo = messages.getString("optionNo");
+    final String invalidChoice = messages.getString("invalidChoice");
 
     System.out.println(endTurnPrompt);
     System.out.println(optionYes);
     System.out.println(optionNo);
     System.out.println(typeOptionPrompt);
 
-    String userInput = scanner.nextLine();
-    return userInput.equals("1");
+    while (true) {
+      String userInput = scanner.nextLine();
+      switch (userInput) {
+        case "1":
+          return true;
+        case "2":
+          return false;
+        default:
+          System.out.println(messages.getString("invalidChoice"));
+      }
+    }
   }
 
   void printEndTurnConfirmation() {
