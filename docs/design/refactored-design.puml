@@ -1,88 +1,79 @@
 @startuml
 
-' TODO: go back in to add static and final
-
-package ui {
+package presentation {
     +class Main {
         +{static} main(String[] args): void
     }
 
-    ~class GameStartUI {
-        -{final} inputReader: InputReader
-        -{final} gameLoader: GameLoader
-
-        ~GameStartUI(inputReader: InputReader, gameLoader: GameLoader)
-        ' PLAN: calls InputReader's methods to prompt for language, game type, and player number
-        ' PLAN: then, calls GameLoader#setUpGame, #instantiateCommandFactory, and #instantiateGameInvoker
-        ' PLAN: lastly, instantiates GameDurationUI and calls runGameLoop
-        ~startGame(): void
-    }
-
     ~class InputReader {
-        -{final} messages: ResourceBundle
+        -messages: ResourceBundle
         -{final} scanner: Scanner
         -numPlayers: int
         -gameType: GameType
 
-        +InputReader(scanner: Scanner, messages: ResourceBundle)
-        ~promptForLanguage(): ResourceBundle
+        +InputReader(scanner: Scanner)
+        ~promptAndSetLanguage(): void
+        ~promptForNumPlayers(): int
+        ~printStartTurn(activePlayerID: PlayerID, hand: List<Card)
+        ~promptForPlayersWantsToEndTurn(): boolean
+        ~printEndTurnConfirmation(): void
+        ~printExplode(): void
+        ~promptForWhereToInsertExplodingKittenAfterDefuse(): int
+        ~printCardRequirementsNotMet(): void
+        ~promptForCardIndexToPlay(activePlayerHandSize: int): int
+        ~printCardDraw(drawnCardType: CardType)
+        ~promptOtherPlayersForNope(activePlayers: List<PlayerID>, lastActorID: int): int
+        ~printPlayShuffle(): void
+        ~printEndGame(): void
+        ~printNopeDuelResult(nopeCount: int): void
         ~promptForGameType(): GameType
-        ~promptForNumberOfPlayers(): int
-        ~promptForPlayerID(): PlayerID
-        ~promptForCardIndex(): int
-        ~promptForCardType(): CardType
-        ~promptForYesNo(): boolean
-        -playerIndexIsValid(): boolean
-        -cardTypeIsValid(): boolean
+        -indexWithinBounds(index: int, maxBound: int): boolean
     }
 
     ~class GameDurationUI {
+        -{static}{final} reactiveCardTypes: List<CardType>
         -{final} commandFactory: SimpleCardCommandFactory
         -{final} gameInvoker: GameInvoker
         -{final} inputReader: InputReader
-        -{final} messages: ResourceBundle
+        -{final} gameModel: GameModel
 
-        ' PLAN: incorporate logic from printPlayerTurn into startTurn, if possible
-        ~GameDurationUI(messages: ResourceBundle, commandFactory: SimpleCardCommandFactory, gameInvoker: GameInvoker)
+        ~GameDurationUI(inputReader: InputReader, commandFactory: SimpleCardCommandFactory, gameInvoker: GameInvoker, gameModel: GameModel)
         ~runGameLoop(): void
         -promptForTurnStart(): void
-        ' PLAN: playCard() will call the user for the desired inputs, take that input in
-        ' PLAN: then, based on the CardType, will call the commandFactory's createCommand with
-        ' PLAN: any necessary args, and then will call the invoker to execute that CommandType
-        ' PLAN: The goal here is to abstract the need to have so many different card-specific 'play' methods
-        -playCard(CardType card): void
-        ' PLAN: will prompt the user for the desired inputs based on the card's InputType
-        -promptPlayerForInputBasedOnCardType(CardType card): void
-        -promptOtherPlayersForNope(): void
-        ' NOTE: promptForEndTurn was previously called checkIfTheyEndTurn
-        -promptForTurnEnd(): boolean
-        -endTurn(): void
-        -checkIfGameOver(): boolean
-        -endGame(): void
+        -playCardType(cardTypeToPlay: CardType, activePlayerID: PlayerID): void
+        -enterNopeDuel(activePlayerID: PlayerID): void
+        -endTurn(activePlayerID: PlayerID, activePlayerCards: List<Card>): void
+        -gameIsOver(): boolean
     }
 }
 
 Main..>java.Scanner
 Main..>InputReader
-Main..>ui.GameStartUI
+Main..>presentation.GameStartUI
+Main..>domain.Deck
+Main..>domain.GameLoader
+Main..>domain.TurnOrder
+Main..>"*"domain.PlayerID
+Main..>"*"domain.PlayerHand
+Main..>domain.SimpleCardCommandFactory
+Main..>domain.GameInvoker
+Main..>domain.GameModel
 
-GameStartUI..>java.ResourceBundle
-GameStartUI-->domain.GameLoader
-GameStartUI..>domain.GameType
-GameStartUI..>ui.GameDurationUI
-GameStartUI-->ui.InputReader
-
-GameDurationUI-->java.ResourceBundle
-GameDurationUI-->ui.InputReader
+GameDurationUI-->presentation.InputReader
 GameDurationUI-->domain.SimpleCardCommandFactory
 GameDurationUI-->domain.GameInvoker
+GameDurationUI-->domain.GameModel
 GameDurationUI..>domain.CardType
+GameDurationUI..>domain.Card
+GameDurationUI..>domain.Command
+GameDurationUI..>domain.PlayerID
 
 InputReader-->java.ResourceBundle
 InputReader-->java.Scanner
 InputReader-->GameType
 InputReader..>PlayerID
 InputReader..>CardType
+InputReader..>Card
 
 package domain {
     ' ============================================================
